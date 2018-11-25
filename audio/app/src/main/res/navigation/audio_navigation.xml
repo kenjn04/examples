@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            xmlns:tools="http://schemas.android.com/tools"
+            app:startDestination="@+id/menu_fragment">
+
+    <fragment
+        android:id="@+id/menu_fragment"
+        android:name="com.example.hmi.audio.view.MenuFragment"
+        android:label="Menu Fragment"
+        tools:layout="@layout/fragment_menu"
+    >
+        <action
+            android:id="@+id/song_selected"
+            app:destination="@+id/play_fragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right"
+        />
+    </fragment>
+
+    <fragment
+        android:id="@+id/play_fragment"
+        android:name="com.example.hmi.audio.view.PlayFragment"
+        android:label="Play Fragment"
+        tools:layout="@layout/fragment_play"
+    >
+        <action
+            android:id="@+id/to_menu"
+            app:destination="@+id/menu_fragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right"
+        />
+    </fragment>
+</navigation>
