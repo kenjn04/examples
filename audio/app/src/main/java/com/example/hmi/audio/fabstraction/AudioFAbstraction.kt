@@ -1,17 +1,16 @@
 package com.example.hmi.audio.fabstraction
 
 import android.arch.lifecycle.MutableLiveData
-import android.arch.lifecycle.Observer
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.content.ServiceConnection
 import android.os.IBinder
 import com.example.hmi.audio.common.Song
-import com.example.hmi.audio.common.SongData
+import com.example.hmi.audio.common.PlayingSongData
 
-class AudioFAbstraction(
-        context: Context
+class AudioFAbstraction private constructor(
+    context: Context
 ): AudioClient {
 
     private lateinit var audioService: AudioService
@@ -44,28 +43,19 @@ class AudioFAbstraction(
         audioService.registerClient(this)
     }
 
-    val songData = MutableLiveData<SongData>()
+    val songData = MutableLiveData<PlayingSongData>()
 
-    var songList: List<Song> = listOf()
-        set(list: List<Song>) {
-            audioService.setSongList(list)
-        }
-
-    var position: Int = 0
-        set(pos: Int) {
-            audioService.setPosition(pos)
+    var song: Song?= null
+        set(song) {
+            audioService.song = song
         }
 
     fun play() = audioService.start()
     fun stop() = audioService.pause()
     fun seek(position: Int) = audioService.seek(position)
 
-    fun setSongDataUpdateObserver(observer: Observer<SongData>) {
-        songData.observeForever(observer)
-    }
-
-    override fun onMetadataUpdate(track: String, progress: Int, duration: Int, isPlaying: Boolean) {
-        songData.postValue(SongData(track, progress, duration, isPlaying))
+    override fun onMetadataUpdate(playingSongData: PlayingSongData) {
+        songData.postValue(playingSongData)
     }
 
     companion object {

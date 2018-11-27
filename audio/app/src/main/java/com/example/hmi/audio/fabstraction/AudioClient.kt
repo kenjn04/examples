@@ -1,7 +1,9 @@
 package com.example.hmi.audio.fabstraction
 
+import com.example.hmi.audio.common.PlayingSongData
+
 interface AudioClient {
 
-    fun onMetadataUpdate(track: String, progress: Int, duration: Int, isPlaying: Boolean);
+    fun onMetadataUpdate(playingSongData: PlayingSongData)
 }
 

@@ -15,9 +15,11 @@ class Song private constructor() {
     var albumArt: ByteArray? = null
 
     lateinit var fileDescriptor: FileDescriptor
+    lateinit var aFileDescriptor: AssetFileDescriptor
 
     constructor(assetFileDescriptor: AssetFileDescriptor) : this() {
         fileDescriptor = assetFileDescriptor.fileDescriptor
+        aFileDescriptor = assetFileDescriptor
         val retriever = MediaMetadataRetriever()
         retriever.setDataSource(fileDescriptor)
         retrieveMetadata(retriever)

@@ -29,19 +29,18 @@ class AudioApplication : Application() {
 
     // Koin dependency injection
     private val viewModelModule = module {
-        viewModel { MediaViewModel(androidApplication(), get(), get(), get(), get(), get()) }
+        viewModel { MediaViewModel(androidApplication(), get(), get(), get(), get()) }
     }
 
     private val useCaseModule = module {
-        factory { SetSongDataObserverTask(get()) }
+        factory { PlayingSongObserveTask(get()) }
         factory { GetSongListTask(get()) }
-        factory { PlaySongTask(get()) }
-        factory { StopSongTask(get()) }
-        factory { SetSongTask(get()) }
+        factory { SongOperationTask(get()) }
+        factory { SongToPlaySetTask(get()) }
     }
 
     private val FAModule = module {
-        single<AudioFAbstraction> { AudioFAbstraction(androidContext()) }
+        single<AudioFAbstraction> { AudioFAbstraction.getInstance(androidContext()) }
     }
 
     private val repositoryModule = module {

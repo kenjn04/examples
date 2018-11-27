@@ -3,6 +3,8 @@ package com.example.hmi.audio.fabstraction
 import android.app.Service
 import android.content.Intent
 import android.os.*
+import android.util.Log
+import com.example.hmi.audio.common.PlayingSongData
 import com.example.hmi.audio.common.Song
 
 import java.io.IOException
@@ -12,10 +14,6 @@ class AudioService : Service() {
     private val mediaPlayer = android.media.MediaPlayer()
 
     private val handler: Handler
-
-    private lateinit var songList: List<Song>
-
-    private var position: Int = 0
 
     private val clients: MutableList<AudioClient> = mutableListOf()
 
@@ -31,28 +29,29 @@ class AudioService : Service() {
         return binder
     }
 
-    init {
-        mediaPlayer.setOnCompletionListener {
-            position++
-            position %= songList.size
+    var song: Song? = null
+        set(song) {
+            field = song
             initializeMediaPlayer()
-            start()
         }
+
+    init {
         val handlerThread = HandlerThread("")
         handlerThread.start()
         handler = Handler(handlerThread.looper)
     }
 
     private fun initializeMediaPlayer() {
-        if (this::songList.isInitialized) {
-            val song: Song = songList[position]
-            mediaPlayer.reset()
-            try {
-                mediaPlayer.setDataSource(song.fileDescriptor)
-                mediaPlayer.prepare()
-            } catch (e: IOException) {
-                e.printStackTrace()
-            }
+        mediaPlayer.reset()
+        try {
+            mediaPlayer.setDataSource(
+                song!!.fileDescriptor,
+                song!!.aFileDescriptor.startOffset,
+                song!!.aFileDescriptor.length
+            )
+            mediaPlayer.prepare()
+        } catch (e: IOException) {
+            e.printStackTrace()
         }
     }
 
@@ -74,24 +73,13 @@ class AudioService : Service() {
     }
 
     fun pause() {
+        Log.d("aaaaaaa", "qqqqqqq")
         mediaPlayer.pause()
         onMetadataUpdate()
     }
 
     fun seek(position: Int) {
         mediaPlayer.seekTo(position)
-        onMetadataUpdate()
-    }
-
-    fun setSongList(list: List<Song>) {
-        songList = list
-        initializeMediaPlayer()
-        onMetadataUpdate()
-    }
-
-    fun setPosition(pos: Int) {
-        position = pos
-        initializeMediaPlayer()
         onMetadataUpdate()
     }
 
@@ -104,13 +92,14 @@ class AudioService : Service() {
     fun unregisterClient(client: AudioClient) = clients.remove(client)
 
     private fun onMetadataUpdate() {
-        if (this::songList.isInitialized) {
+        if (song != null) {
             for (client in clients) {
                 client.onMetadataUpdate(
-                    songList[position].title!!,
-                    mediaPlayer.currentPosition,
-                    mediaPlayer.duration,
-                    mediaPlayer.isPlaying
+                    PlayingSongData(
+                        song!!,
+                        mediaPlayer.currentPosition,
+                        mediaPlayer.isPlaying
+                    )
                 )
             }
         }
