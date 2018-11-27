@@ -10,7 +10,7 @@ class GetSongListTask(
         private val mediaSourceRepository: MediaSourceRepository
 ) {
 
-    fun getSongList(context: Context): Single<ArrayList<Song>> {
+    fun getSongList(): Single<ArrayList<Song>> {
         return Single.fromCallable { mediaSourceRepository.getSongList() }
     }
 }

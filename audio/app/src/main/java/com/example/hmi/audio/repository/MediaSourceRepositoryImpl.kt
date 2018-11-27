@@ -8,7 +8,7 @@ class MediaSourceRepositoryImpl(
         private val usbDataProvider: USBDataProvider
 ) : MediaSourceRepository {
 
-    private lateinit var currentDataProvider: MediaDataProvider
+    private var currentDataProvider: MediaDataProvider
 
     init {
         currentDataProvider = assetDataProvider

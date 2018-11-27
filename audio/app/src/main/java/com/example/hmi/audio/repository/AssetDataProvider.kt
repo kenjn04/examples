@@ -2,6 +2,7 @@ package com.example.hmi.audio.repository
 
 import android.content.Context
 import android.content.res.AssetFileDescriptor
+import android.media.MediaMetadataRetriever
 import com.example.hmi.audio.common.Song
 
 import java.io.IOException
@@ -33,7 +34,6 @@ class AssetDataProvider(context: Context) : MediaDataProvider {
                 } catch (e: IOException) {
                     e.printStackTrace()
                 }
-
                 val song = Song(file, afd!!)
                 fetchingSongList.add(song)
             }

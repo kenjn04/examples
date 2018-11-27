@@ -1,31 +1,40 @@
 package com.example.hmi.audio.common
 
 import android.content.res.AssetFileDescriptor
-import android.os.Parcel
-import android.os.Parcelable
+import android.media.MediaMetadataRetriever
+import java.io.FileDescriptor
 
-data class Song(val track: String, val fileDescriptor: AssetFileDescriptor) : Parcelable {
-    constructor(parcel: Parcel) : this(
-            parcel.readString(),
-            parcel.readParcelable(AssetFileDescriptor::class.java.classLoader)) {}
+class Song private constructor() {
+    var albumTitle: String? = null
+    var albumArtists: String? = null
+    var artists: String? = null
+    var trackNumber: String? = null
+    var duration: Long? = null
+    var genre: String? = null
+    var title: String? = null
+    var albumArt: ByteArray? = null
 
-    override fun writeToParcel(parcel: Parcel, flags: Int) {
-        parcel.writeString(track)
-        parcel.writeParcelable(fileDescriptor, flags)
+    lateinit var fileDescriptor: FileDescriptor
+
+    constructor(assetFileDescriptor: AssetFileDescriptor) : this() {
+        fileDescriptor = assetFileDescriptor.fileDescriptor
+        val retriever = MediaMetadataRetriever()
+        retriever.setDataSource(fileDescriptor)
+        retrieveMetadata(retriever)
     }
 
-    override fun describeContents(): Int {
-        return 0
+    constructor(track: String, fileDescriptor: AssetFileDescriptor): this(fileDescriptor) {
+        title = track
     }
 
-    companion object CREATOR : Parcelable.Creator<Song> {
-        override fun createFromParcel(parcel: Parcel): Song {
-            return Song(parcel)
-        }
-
-        override fun newArray(size: Int): Array<Song?> {
-            return arrayOfNulls(size)
-        }
+    private fun retrieveMetadata(retriever: MediaMetadataRetriever) {
+        albumTitle = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ALBUM)
+        albumArtists = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ALBUMARTIST)
+        artists = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST)
+        trackNumber = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_CD_TRACK_NUMBER)
+        duration = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION).toLongOrNull()
+        genre = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_GENRE)
+        title = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE)
+        albumArt = retriever.embeddedPicture
     }
-
 }

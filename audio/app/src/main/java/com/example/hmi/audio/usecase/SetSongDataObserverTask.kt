@@ -3,13 +3,13 @@ package com.example.hmi.audio.usecase
 import android.arch.lifecycle.MutableLiveData
 import android.arch.lifecycle.Observer
 import com.example.hmi.audio.common.SongData
-import com.example.hmi.audio.fabstraction.AudioServiceFA
+import com.example.hmi.audio.fabstraction.AudioFAbstraction
 
 import io.reactivex.Completable
 import io.reactivex.Single
 
 class SetSongDataObserverTask(
-        private val audioService: AudioServiceFA
+        private val audioService: AudioFAbstraction
 ) {
 
     fun getSongData(): Single<MutableLiveData<SongData>> {

@@ -19,14 +19,7 @@
         </activity>
         <service
                 android:name=".fabstraction.AudioService"
-                android:process=":service"
-                android:enabled="true"
-                android:exported="true"
         >
-            <intent-filter>
-                <action android:name="com.example.hmi.audio.AudioService"/>
-                <action android:name="com.example.hmi.audio.service.IAudioService"/>
-            </intent-filter>
         </service>
     </application>
 

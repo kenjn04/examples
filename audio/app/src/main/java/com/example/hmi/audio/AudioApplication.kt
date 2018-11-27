@@ -1,8 +1,7 @@
 package com.example.hmi.audio
 
 import android.app.Application
-import com.example.hmi.audio.fabstraction.AudioServiceFA
-import com.example.hmi.audio.fabstraction.AudioServiceProxy
+import com.example.hmi.audio.fabstraction.AudioFAbstraction
 import com.example.hmi.audio.repository.AssetDataProvider
 import com.example.hmi.audio.repository.MediaSourceRepository
 import com.example.hmi.audio.repository.MediaSourceRepositoryImpl
@@ -28,7 +27,7 @@ class AudioApplication : Application() {
         ))
     }
 
-    // Koin
+    // Koin dependency injection
     private val viewModelModule = module {
         viewModel { MediaViewModel(androidApplication(), get(), get(), get(), get(), get()) }
     }
@@ -42,8 +41,7 @@ class AudioApplication : Application() {
     }
 
     private val FAModule = module {
-        single<AudioServiceFA> { AudioServiceFA(androidContext(), get()) }
-        single<AudioServiceProxy> { AudioServiceProxy() }
+        single<AudioFAbstraction> { AudioFAbstraction(androidContext()) }
     }
 
     private val repositoryModule = module {

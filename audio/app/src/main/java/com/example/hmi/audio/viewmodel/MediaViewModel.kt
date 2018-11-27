@@ -78,6 +78,9 @@ class MediaViewModel(
             MediaOperation.STOP -> {
                 stopSong()
             }
+            MediaOperation.SEEK -> {
+                // TODO
+            }
         }
     }
 
@@ -103,8 +106,7 @@ class MediaViewModel(
 
     @SuppressLint("CheckResult")
     private fun getSongList() {
-        val context = getApplication<Application>().applicationContext
-        getSongListTask.getSongList(context).subscribeOn(Schedulers.io())
+        getSongListTask.getSongList().subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
                         {
