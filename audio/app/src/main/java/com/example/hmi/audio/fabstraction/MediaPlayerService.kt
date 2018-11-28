@@ -2,14 +2,14 @@ package com.example.hmi.audio.fabstraction
 
 import android.app.Service
 import android.content.Intent
+import android.media.MediaPlayer
 import android.os.*
-import android.util.Log
 import com.example.hmi.audio.common.PlayingSongData
 import com.example.hmi.audio.common.Song
 
 import java.io.IOException
 
-class AudioService : Service() {
+class MediaPlayerService : Service() {
 
     private val mediaPlayer = android.media.MediaPlayer()
 
@@ -19,10 +19,10 @@ class AudioService : Service() {
 
     private var periodicalUpdateStarted = false
 
-    private val binder: IBinder = AudioBinder()
+    private val binder: IBinder = MediaPlayerBinder()
 
-    inner class AudioBinder: Binder() {
-        fun getService(): AudioService = this@AudioService
+    inner class MediaPlayerBinder: Binder() {
+        fun getService(): MediaPlayerService = this@MediaPlayerService
     }
 
     override fun onBind(intent: Intent?): IBinder {
@@ -73,7 +73,6 @@ class AudioService : Service() {
     }
 
     fun pause() {
-        Log.d("aaaaaaa", "qqqqqqq")
         mediaPlayer.pause()
         onMetadataUpdate()
     }
@@ -91,6 +90,10 @@ class AudioService : Service() {
 
     fun unregisterClient(client: AudioClient) = clients.remove(client)
 
+    fun setOnCompletionListener(listener: MediaPlayer.OnCompletionListener) {
+        mediaPlayer.setOnCompletionListener(listener)
+    }
+
     private fun onMetadataUpdate() {
         if (song != null) {
             for (client in clients) {
@@ -98,6 +101,7 @@ class AudioService : Service() {
                     PlayingSongData(
                         song!!,
                         mediaPlayer.currentPosition,
+                        mediaPlayer.duration,
                         mediaPlayer.isPlaying
                     )
                 )
@@ -108,13 +112,13 @@ class AudioService : Service() {
     companion object {
 
         @Volatile
-        private var INSTANCE: AudioService? = null
+        private var INSTANCE: MediaPlayerService? = null
 
-        fun getInstance(): AudioService {
+        fun getInstance(): MediaPlayerService {
             if (INSTANCE == null) {
-                synchronized(AudioService::class.java) {
+                synchronized(MediaPlayerService::class.java) {
                     if (INSTANCE == null) {
-                        INSTANCE = AudioService()
+                        INSTANCE = MediaPlayerService()
                     }
                 }
             }

@@ -2,10 +2,12 @@ package com.example.hmi.audio
 
 import android.app.Application
 import com.example.hmi.audio.fabstraction.AudioFAbstraction
-import com.example.hmi.audio.repository.AssetDataProvider
-import com.example.hmi.audio.repository.MediaSourceRepository
-import com.example.hmi.audio.repository.MediaSourceRepositoryImpl
-import com.example.hmi.audio.repository.USBDataProvider
+import com.example.hmi.audio.repository.audio.AudioRepository
+import com.example.hmi.audio.repository.audio.AudioRepositoryImpl
+import com.example.hmi.audio.repository.mediasource.dataprovider.AssetDataProvider
+import com.example.hmi.audio.repository.mediasource.MediaSourceRepository
+import com.example.hmi.audio.repository.mediasource.MediaSourceRepositoryImpl
+import com.example.hmi.audio.repository.mediasource.dataprovider.USBDataProvider
 import com.example.hmi.audio.usecase.*
 import com.example.hmi.audio.viewmodel.MediaViewModel
 import org.koin.android.ext.android.startKoin
@@ -33,7 +35,7 @@ class AudioApplication : Application() {
     }
 
     private val useCaseModule = module {
-        factory { PlayingSongObserveTask(get()) }
+        factory { InitDataObserveTask(get(), get()) }
         factory { GetSongListTask(get()) }
         factory { SongOperationTask(get()) }
         factory { SongToPlaySetTask(get()) }
@@ -44,6 +46,7 @@ class AudioApplication : Application() {
     }
 
     private val repositoryModule = module {
+        single<AudioRepository> { AudioRepositoryImpl.getInstance() }
         single<MediaSourceRepository> { MediaSourceRepositoryImpl.getInstance(get(), get()) }
         single { AssetDataProvider.getInstance(androidContext()) }
         single { USBDataProvider.getInstance() }

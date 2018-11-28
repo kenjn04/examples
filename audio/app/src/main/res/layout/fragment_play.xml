@@ -43,6 +43,7 @@
                 android:layout_marginTop="10dp"
                 android:max="@{viewModel.duration}"
                 android:progress="@{viewModel.progress}"
+                android:onProgressChanged="@{viewModel.songProgressChanged}"
             />
 
             <RelativeLayout

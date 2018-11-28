@@ -6,6 +6,7 @@ import android.arch.lifecycle.AndroidViewModel
 import android.databinding.*
 import android.util.Log
 import android.view.View
+import android.widget.SeekBar
 import androidx.navigation.Navigation
 import com.example.hmi.audio.R
 import com.example.hmi.audio.common.MediaOperation
@@ -21,7 +22,7 @@ class MediaViewModel(
     private val getSongListTask: GetSongListTask,
 
     private val songOperationTask: SongOperationTask,
-    private val playingSongObserveTask: PlayingSongObserveTask,
+    private val initDataObserveTask: InitDataObserveTask,
     private val songToPlaySetTask: SongToPlaySetTask
 ) : AndroidViewModel(application)
 {
@@ -35,26 +36,27 @@ class MediaViewModel(
 
     init {
         getSongList()
-        observePlayingSong()
+        observeInitData()
     }
 
     private fun setSongData(playingSongData: PlayingSongData) {
         val playingSong: Song = playingSongData.playingSong
         title.set(playingSong.title)
-        duration.set(playingSong.duration!!.toInt())
+//        duration.set(playingSong.duration!!.toInt())
+        duration.set(playingSongData.duration)
         progress.set(playingSongData.progress)
         isPlaying.set(playingSongData.isPlaying)
-        Log.d("aaaaa", playingSongData.isPlaying.toString() )
+        Log.d("aaaaa", playingSongData.isPlaying.toString() + " " + playingSongData.duration + " " + playingSongData.progress)
     }
 
     @SuppressLint("CheckResult")
-    private fun observePlayingSong() {
-        playingSongObserveTask.execute()
+    private fun observeInitData() {
+        initDataObserveTask.execute()
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
                 {
-                    it.observeForever {
+                    it.playingSongData.observeForever {
                         setSongData(it!!)
                     }
                 },
@@ -63,8 +65,8 @@ class MediaViewModel(
     }
 
     @SuppressLint("CheckResult")
-    fun operateSong(operation: MediaOperation) {
-        songOperationTask.execute(operation)
+    private fun operateSong(operation: MediaOperation, progress: Int) {
+        songOperationTask.execute(operation, progress)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
@@ -73,9 +75,20 @@ class MediaViewModel(
             )
     }
 
+    fun operateSong(operation: MediaOperation) {
+        operateSong(operation, -1)
+    }
+
+    fun songProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
+        if (fromUser) {
+            Log.d("aaaaaaab", progress.toString())
+            operateSong(MediaOperation.SEEK, progress)
+        }
+    }
+
     @SuppressLint("CheckResult")
     private fun getSongList() {
-        getSongListTask.getSongList().subscribeOn(Schedulers.io())
+        getSongListTask.execute().subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
                 { songList.addAll(it) },

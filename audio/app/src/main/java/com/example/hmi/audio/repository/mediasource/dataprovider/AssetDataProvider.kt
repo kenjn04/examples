@@ -1,16 +1,15 @@
-package com.example.hmi.audio.repository
+package com.example.hmi.audio.repository.mediasource.dataprovider
 
 import android.content.Context
 import android.content.res.AssetFileDescriptor
-import android.media.MediaMetadataRetriever
 import com.example.hmi.audio.common.Song
 
 import java.io.IOException
 import kotlin.collections.ArrayList
 
-class AssetDataProvider(context: Context) : MediaDataProvider {
+class AssetDataProvider private constructor(context: Context) : MediaDataProvider {
 
-    private var songList: ArrayList<Song>? = null
+    override var songList: ArrayList<Song>? = null
 
     init {
         songList = fetchSongList(context)
@@ -41,10 +40,6 @@ class AssetDataProvider(context: Context) : MediaDataProvider {
         return fetchingSongList
     }
 
-    override fun getSongList(): ArrayList<Song>? {
-        return songList
-    }
-
     companion object {
 
         @Volatile
@@ -53,7 +48,8 @@ class AssetDataProvider(context: Context) : MediaDataProvider {
             if (INSTANCE == null) {
                 synchronized(AssetDataProvider::class.java) {
                     if (INSTANCE == null) {
-                        INSTANCE = AssetDataProvider(context)
+                        INSTANCE =
+                                AssetDataProvider(context)
                     }
                 }
             }

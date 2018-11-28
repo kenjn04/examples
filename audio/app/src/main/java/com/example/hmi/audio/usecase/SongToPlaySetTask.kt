@@ -5,13 +5,13 @@ import com.example.hmi.audio.fabstraction.AudioFAbstraction
 import io.reactivex.Completable
 
 class SongToPlaySetTask(
-        private val audioService: AudioFAbstraction
+        private val audioFAbstraction: AudioFAbstraction
 ) {
 
     fun execute(song: Song): Completable {
         return Completable.fromAction {
-            audioService.song = song
-            audioService.play()
+            audioFAbstraction.song = song
+            audioFAbstraction.play()
         }
     }
 }

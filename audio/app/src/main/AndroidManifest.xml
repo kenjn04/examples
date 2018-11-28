@@ -18,7 +18,7 @@
             </intent-filter>
         </activity>
         <service
-                android:name=".fabstraction.AudioService"
+                android:name=".fabstraction.MediaPlayerService"
         >
         </service>
     </application>

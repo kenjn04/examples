@@ -1,12 +1,10 @@
-package com.example.hmi.audio.repository
+package com.example.hmi.audio.repository.mediasource.dataprovider
 
 import com.example.hmi.audio.common.Song
 
-class USBDataProvider : MediaDataProvider {
+class USBDataProvider private constructor(): MediaDataProvider {
 
-    override fun getSongList(): ArrayList<Song>? {
-        return null
-    }
+    override var songList: ArrayList<Song>? = null
 
     companion object {
 
@@ -16,7 +14,8 @@ class USBDataProvider : MediaDataProvider {
             if (INSTANCE == null) {
                 synchronized(USBDataProvider::class.java) {
                     if (INSTANCE == null) {
-                        INSTANCE = USBDataProvider()
+                        INSTANCE =
+                                USBDataProvider()
                     }
                 }
             }
