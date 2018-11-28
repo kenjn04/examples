@@ -20,10 +20,10 @@ import io.reactivex.schedulers.Schedulers
 class MediaViewModel(
     application: Application,
     private val getSongListTask: GetSongListTask,
-
     private val songOperationTask: SongOperationTask,
     private val initDataObserveTask: InitDataObserveTask,
-    private val songToPlaySetTask: SongToPlaySetTask
+    private val songToPlaySetTask: SongToPlaySetTask,
+    private val incrementRepeatModeTask: IncrementRepeatModeTask
 ) : AndroidViewModel(application)
 {
 
@@ -33,6 +33,8 @@ class MediaViewModel(
     val progress = ObservableInt()
     val duration = ObservableInt()
     val isPlaying = ObservableBoolean()
+
+    val repeatMode = ObservableField<String>()
 
     init {
         getSongList()
@@ -58,6 +60,9 @@ class MediaViewModel(
                 {
                     it.playingSongData.observeForever {
                         setSongData(it!!)
+                    }
+                    it.repeatMode.observeForever {
+                        repeatMode.set(it!!.toString())
                     }
                 },
                 { error -> Log.d("onError", error.toString()) }
@@ -87,6 +92,18 @@ class MediaViewModel(
     }
 
     @SuppressLint("CheckResult")
+    fun incrementRepeatMode() {
+        incrementRepeatModeTask.execute()
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(
+                {},
+                { error -> Log.d("onError", error.toString()) }
+            )
+
+    }
+
+    @SuppressLint("CheckResult")
     private fun getSongList() {
         getSongListTask.execute().subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
@@ -99,11 +116,11 @@ class MediaViewModel(
     @SuppressLint("CheckResult")
     fun songSelected(view: View, position: Int) {
         songToPlaySetTask.execute(songList.get(position)).subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                        { Navigation.findNavController(view).navigate(R.id.song_selected) },
-                        { error -> Log.d("onError", error.toString()) }
-                )
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(
+                    { Navigation.findNavController(view).navigate(R.id.song_selected) },
+                    { error -> Log.d("onError", error.toString()) }
+            )
     }
 
     fun goToMenu(view: View) {

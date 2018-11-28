@@ -6,7 +6,11 @@ enum class MediaOperation{
 
     STOP,
 
-    SEEK
+    SEEK,
+
+    PREVIOUS_SONG,
+
+    NEXT_SONG
 
 }
 

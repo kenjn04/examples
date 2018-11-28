@@ -1,4 +1,4 @@
-package com.example.hmi.audio.view
+package com.example.hmi.audio.view.adapter
 
 import android.databinding.BindingAdapter
 import android.databinding.DataBindingUtil

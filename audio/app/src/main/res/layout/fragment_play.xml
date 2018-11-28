@@ -43,34 +43,59 @@
                 android:layout_marginTop="10dp"
                 android:max="@{viewModel.duration}"
                 android:progress="@{viewModel.progress}"
-                android:onProgressChanged="@{viewModel.songProgressChanged}"
+                android:onProgressChanged="@{viewModel::songProgressChanged}"
             />
 
+            <LinearLayout
+                    android:orientation="horizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+                <Button
+                        android:id="@+id/previousSongButton"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="10dp"
+                        android:layout_marginTop="10dp"
+                        android:onClick="@{() -> viewModel.operateSong(MediaOperation.PREVIOUS_SONG)}"
+                        android:text="PREVISOUS SONG"
+                        android:layout_weight="1"
+                />
+                <Button
+                        android:id="@+id/nextSongButton"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="10dp"
+                        android:layout_marginTop="10dp"
+                        android:onClick="@{() -> viewModel.operateSong(MediaOperation.NEXT_SONG)}"
+                        android:text="NEXT SONG"
+                        android:layout_weight="1"
+                />
+            </LinearLayout>
             <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
             >
 
                 <Button
-                    android:id="@+id/startButton"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="10dp"
-                    android:layout_marginTop="10dp"
-                    android:onClick="@{() -> viewModel.operateSong(MediaOperation.PLAY)}"
-                    android:text="PLAY"
-                    android:visibility="@{viewModel.isPlaying ? View.GONE : View.VISIBLE}"
+                        android:id="@+id/startButton"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="10dp"
+                        android:layout_marginTop="10dp"
+                        android:onClick="@{() -> viewModel.operateSong(MediaOperation.PLAY)}"
+                        android:text="PLAY"
+                        android:visibility="@{viewModel.isPlaying ? View.GONE : View.VISIBLE}"
                 />
 
                 <Button
-                    android:id="@+id/stopButton"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="10dp"
-                    android:layout_marginTop="10dp"
-                    android:onClick="@{() -> viewModel.operateSong(MediaOperation.STOP)}"
-                    android:text="STOP"
-                    android:visibility="@{viewModel.isPlaying ? View.VISIBLE : View.GONE}"
+                        android:id="@+id/stopButton"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="10dp"
+                        android:layout_marginTop="10dp"
+                        android:onClick="@{() -> viewModel.operateSong(MediaOperation.STOP)}"
+                        android:text="STOP"
+                        android:visibility="@{viewModel.isPlaying ? View.VISIBLE : View.GONE}"
                 />
 
             </RelativeLayout>
@@ -78,11 +103,18 @@
         </LinearLayout>
 
         <Button
-            android:id="@+id/btn_next"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="back"
-            android:onClick="@{(view) -> viewModel.goToMenu(view)}"
+                android:id="@+id/repeat_mode"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@{viewModel.repeatMode}"
+                android:onClick="@{(view) -> viewModel.incrementRepeatMode()}"
+        />
+        <Button
+                android:id="@+id/btn_next"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="back"
+                android:onClick="@{(view) -> viewModel.goToMenu(view)}"
         />
 
     </LinearLayout>

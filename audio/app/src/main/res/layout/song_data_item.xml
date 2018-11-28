@@ -11,7 +11,7 @@
         />
         <variable
             name="listener"
-            type="com.example.hmi.audio.view.SongListAdapter.SongSelectedListener"
+            type="com.example.hmi.audio.view.adapter.SongListAdapter.SongSelectedListener"
         />
     </data>
 
