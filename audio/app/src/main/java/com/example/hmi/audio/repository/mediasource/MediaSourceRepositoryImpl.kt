@@ -17,7 +17,7 @@ class MediaSourceRepositoryImpl private constructor(
         dataProvider = assetDataProvider
     }
 
-    override val songList: ArrayList<Song>? = dataProvider.songList
+    override val songList: MutableList<Song>? = dataProvider.songList
 
     override fun switchDataProvider(source: MediaSource) {
         dataProvider =

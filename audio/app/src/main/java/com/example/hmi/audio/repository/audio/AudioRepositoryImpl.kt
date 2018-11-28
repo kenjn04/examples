@@ -10,7 +10,7 @@ class AudioRepositoryImpl private constructor() : AudioRepository {
 
     init {
         // TODO: read from pesistent data
-        repeatMode.postValue(RepeatMode.NONE)
+        repeatMode.postValue(RepeatMode.REPEAT)
     }
 
     override fun incrementRepeatMode() {

@@ -35,7 +35,7 @@ class AudioApplication : Application() {
     }
 
     private val useCaseModule = module {
-        factory { InitDataObserveTask(get(), get()) }
+        factory { InitDataObserveTask(get(), get(), get()) }
         factory { GetSongListTask(get()) }
         factory { SongOperationTask(get()) }
         factory { SongToPlaySetTask(get()) }

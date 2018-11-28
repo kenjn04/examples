@@ -5,7 +5,7 @@ import com.example.hmi.audio.common.Song
 
 interface MediaSourceRepository{
 
-    val songList: ArrayList<Song>?
+    val songList: MutableList<Song>?
 
     fun switchDataProvider(source: MediaSource)
 

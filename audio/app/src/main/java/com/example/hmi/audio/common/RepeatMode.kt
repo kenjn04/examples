@@ -7,6 +7,10 @@ enum class RepeatMode {
     },
 
     REPEAT_ONE {
+        override fun increment() = RepeatMode.REPEAT
+    },
+
+    REPEAT {
         override fun increment() = RepeatMode.NONE
     };
 

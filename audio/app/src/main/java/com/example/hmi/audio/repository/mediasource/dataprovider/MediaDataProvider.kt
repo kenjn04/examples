@@ -4,5 +4,5 @@ import com.example.hmi.audio.common.Song
 
 interface MediaDataProvider {
 
-    var songList: ArrayList<Song>?
+    var songList: MutableList<Song>?
 }

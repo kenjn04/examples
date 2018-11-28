@@ -5,18 +5,17 @@ import android.content.res.AssetFileDescriptor
 import com.example.hmi.audio.common.Song
 
 import java.io.IOException
-import kotlin.collections.ArrayList
 
 class AssetDataProvider private constructor(context: Context) : MediaDataProvider {
 
-    override var songList: ArrayList<Song>? = null
+    override var songList: MutableList<Song>? = null
 
     init {
         songList = fetchSongList(context)
     }
 
-    private fun fetchSongList(context: Context): ArrayList<Song> {
-        val fetchingSongList = ArrayList<Song>()
+    private fun fetchSongList(context: Context): MutableList<Song> {
+        val fetchingSongList = mutableListOf<Song>()
 
         var fileList: Array<String>? = null
         try {

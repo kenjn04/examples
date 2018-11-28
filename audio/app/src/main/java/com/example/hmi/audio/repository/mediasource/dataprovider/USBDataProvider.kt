@@ -4,7 +4,7 @@ import com.example.hmi.audio.common.Song
 
 class USBDataProvider private constructor(): MediaDataProvider {
 
-    override var songList: ArrayList<Song>? = null
+    override var songList: MutableList<Song>? = null
 
     companion object {
 

@@ -98,7 +98,6 @@ class MediaViewModel(
 
     @SuppressLint("CheckResult")
     fun songSelected(view: View, position: Int) {
-        val a = songList.get(position)
         songToPlaySetTask.execute(songList.get(position)).subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
