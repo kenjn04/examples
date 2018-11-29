@@ -4,6 +4,8 @@ import android.annotation.SuppressLint
 import android.app.Application
 import android.arch.lifecycle.AndroidViewModel
 import android.databinding.*
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.os.Handler
 import android.os.HandlerThread
 import android.util.Log
@@ -21,7 +23,6 @@ import io.reactivex.schedulers.Schedulers
 import java.lang.Thread.sleep
 import kotlin.math.abs
 import kotlin.math.max
-import kotlin.math.min
 
 class MediaViewModel(
     application: Application,
@@ -33,12 +34,20 @@ class MediaViewModel(
 ) : AndroidViewModel(application)
 {
 
-    private val SONG_SPEED_CHANGE_WAITTIME_MS: Long = 300
-    private val SONG_SPEED_CHANGE_INTERVAL_MS: Long = 100
+    private val SONG_SPEED_CHANGE_WAITTIME_MS = 300L
+    private val SONG_SPEED_CHANGE_INTERVAL_MS = 100L
+
+    // This should be more than METADATA_UPDATE_INTERNVAL_MS in MediaPlayerService.
+    private val SONG_SPEED_CHANGE_CANCEL_ENDEDGE_MS = 500L
 
     val songList: ObservableList<Song> = ObservableArrayList()
 
     val title = ObservableField<String>()
+    val artists = ObservableField<String>()
+    val albumTitle = ObservableField<String>()
+    val genre = ObservableField<String>()
+
+    val albumArt = ObservableField<Bitmap>()
     val progress = ObservableInt()
     val duration = ObservableInt()
     val elapseTime = ObservableField<String>()
@@ -57,15 +66,32 @@ class MediaViewModel(
         handler = Handler(handlerThread.looper)
     }
 
+    private var song: Song? = null
+
     private fun setSongData(playingSongData: PlayingSongData) {
         val playingSong: Song = playingSongData.playingSong
-        title.set(playingSong.title)
-//        duration.set(playingSong.duration!!.toInt())
-        duration.set(playingSongData.duration)
+
+        if (playingSong != song) {
+            song = playingSong
+
+            title.set(playingSong.title)
+            artists.set(playingSong.artists)
+            albumTitle.set(playingSong.albumTitle)
+            genre.set(playingSong.genre)
+
+            duration.set(playingSongData.duration)
+//          duration.set(playingSong.duration!!.toInt())
+
+            val albumArtByte = playingSong.albumArt
+            if (albumArtByte != null) {
+                albumArt.set(BitmapFactory.decodeByteArray(albumArtByte, 0, albumArtByte.size))
+            } else {
+                albumArt.set(null)
+            }
+        }
         progress.set(playingSongData.progress)
         isPlaying.set(playingSongData.isPlaying)
         elapseTime.set(formatEpalseTimeToDisplay(progress.get() / 1000, duration.get() / 1000))
-        Log.d("aaaaa", playingSongData.isPlaying.toString() + " " + playingSongData.duration + " " + playingSongData.progress)
     }
 
     private fun formatEpalseTimeToDisplay(progress: Int, duration: Int): String {
@@ -123,17 +149,21 @@ class MediaViewModel(
     fun startSongSpeedChange(speed: Int) {
         underSpeedChange = true
         speedChangeInitiated = false
-        // TODO: consider to seek in end of the song.
         handler.postDelayed ({
             while (underSpeedChange) {
                 speedChangeInitiated = true
                 var progress = progress.get()
                 val duration = duration.get()
-                progress += speed / abs(speed) * abs(speed - 1) * SONG_SPEED_CHANGE_INTERVAL_MS.toInt()
-                progress = max(min(progress, duration), 0)
-                operateSong(MediaOperation.SEEK, progress)
-                sleep(SONG_SPEED_CHANGE_INTERVAL_MS)
+                if (progress > (duration - SONG_SPEED_CHANGE_CANCEL_ENDEDGE_MS)) {
+                    break
+                } else {
+                    progress += speed / abs(speed) * abs(speed - 1) * SONG_SPEED_CHANGE_INTERVAL_MS.toInt()
+                    progress = max(progress, 0)
+                    operateSong(MediaOperation.SEEK, progress)
+                    sleep(SONG_SPEED_CHANGE_INTERVAL_MS)
+                }
             }
+            underSpeedChange = false
         }, SONG_SPEED_CHANGE_WAITTIME_MS)
     }
 

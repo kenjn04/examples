@@ -1,12 +1,10 @@
 package com.example.hmi.audio.view.adapter
 
-import android.databinding.BindingAdapter
 import android.databinding.DataBindingUtil
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.BaseAdapter
-import android.widget.ListView
 import com.example.hmi.audio.common.Song
 import com.example.hmi.audio.databinding.SongDataItemBinding
 import com.example.hmi.audio.viewmodel.MediaViewModel
@@ -49,14 +47,5 @@ class SongListAdapter(
 
     interface SongSelectedListener {
         fun onSongSelected(view: View, position: Int)
-    }
-
-    companion object {
-        @JvmStatic
-        @BindingAdapter("items")
-        fun setItems(listView: ListView, list: List<Song>) {
-            val adapter = listView.adapter as SongListAdapter
-            adapter.songList = list
-        }
     }
 }

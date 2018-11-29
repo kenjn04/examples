@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    >
+        xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto"
+>
 
     <data>
         <import type="android.view.View" />
@@ -25,27 +25,59 @@
             android:orientation="vertical"
         >
 
-            <TextView
-                    android:id="@+id/trackName"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="10dp"
-                    android:layout_marginTop="100dp"
-                    android:gravity="center"
-                    android:text="@{viewModel.title}"
+            <ImageView
+                android:id="@+id/album_art"
+                android:layout_width="150dp"
+                android:layout_height="200dp"
+                android:layout_marginTop="30dp"
+                android:layout_marginBottom="5dp"
+                android:layout_gravity="center"
+                app:imageBitmap="@{viewModel.albumArt}"
             />
 
             <TextView
-                android:id="@+id/elapseTime"
+                android:id="@+id/track_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="@{viewModel.title}"
+            />
+
+            <TextView
+                android:id="@+id/artists_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="@{viewModel.artists}"
+            />
+
+            <TextView
+                android:id="@+id/album_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="@{viewModel.albumTitle}"
+            />
+
+            <TextView
+                android:id="@+id/genre_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="@{viewModel.genre}"
+            />
+
+            <TextView
+                android:id="@+id/elapse_time"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="10dp"
                 android:gravity="center"
+                android:layout_marginTop="10dp"
                 android:text="@{viewModel.elapseTime}"
             />
 
             <SeekBar
-                android:id="@+id/progressBar"
+                android:id="@+id/progress_bar"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="10dp"
@@ -56,75 +88,82 @@
             />
 
             <LinearLayout
-                    android:orientation="horizontal"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
-                <Button
-                        android:id="@+id/previousSongButton"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginBottom="10dp"
-                        android:layout_marginTop="10dp"
-                        android:onClick="@{() -> viewModel.operateSong(MediaOperation.PREVIOUS_SONG)}"
-                        android:text="PREVISOUS SONG"
-                        android:layout_weight="1"
-                />
-                <Button
-                        android:id="@+id/nextSongButton"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginBottom="10dp"
-                        android:layout_marginTop="10dp"
-                        android:onClick="@{() -> viewModel.operateSong(MediaOperation.NEXT_SONG)}"
-                        android:text="NEXT SONG"
-                        android:layout_weight="1"
-                />
-            </LinearLayout>
-            <RelativeLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
             >
 
                 <Button
-                        android:id="@+id/startButton"
+                    android:id="@+id/previous_song_button"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:onClick="@{() -> viewModel.operateSong(MediaOperation.PREVIOUS_SONG)}"
+                    android:text="PREVISOUS"
+                    android:layout_weight="1"
+                />
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                >
+
+                    <Button
+                        android:id="@+id/start_button"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginBottom="10dp"
-                        android:layout_marginTop="10dp"
                         android:onClick="@{() -> viewModel.operateSong(MediaOperation.PLAY)}"
                         android:text="PLAY"
                         android:visibility="@{viewModel.isPlaying ? View.GONE : View.VISIBLE}"
-                />
+                    />
 
-                <Button
-                        android:id="@+id/stopButton"
+                    <Button
+                        android:id="@+id/stop_button"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginBottom="10dp"
-                        android:layout_marginTop="10dp"
                         android:onClick="@{() -> viewModel.operateSong(MediaOperation.STOP)}"
                         android:text="STOP"
                         android:visibility="@{viewModel.isPlaying ? View.VISIBLE : View.GONE}"
+                    />
+
+                </RelativeLayout>
+
+                <Button
+                        android:id="@+id/next_song_button"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:onClick="@{() -> viewModel.operateSong(MediaOperation.NEXT_SONG)}"
+                        android:text="NEXT"
+                        android:layout_weight="1"
                 />
 
-            </RelativeLayout>
+            </LinearLayout>
 
         </LinearLayout>
 
-        <Button
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+        >
+            <Button
                 android:id="@+id/repeat_mode"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@{viewModel.repeatMode}"
                 android:onClick="@{(view) -> viewModel.incrementRepeatMode()}"
-        />
-        <Button
-                android:id="@+id/btn_next"
-                android:layout_width="match_parent"
+                android:layout_weight="1"
+            />
+            <Button
+                android:id="@+id/next_button"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="back"
+                android:text="BROWS"
                 android:onClick="@{(view) -> viewModel.goToMenu(view)}"
-        />
+                android:layout_weight="1"
+            />
+
+        </LinearLayout>
 
     </LinearLayout>
 

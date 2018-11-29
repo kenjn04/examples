@@ -35,11 +35,11 @@ class PlayFragment : Fragment() {
 
     private fun setup() {
 
-        nextSongButton.apply {
-            setOnTouchListener(SongSpeedChangeListener(4))
-        }
-        previousSongButton.apply {
+        previous_song_button.apply {
             setOnTouchListener(SongSpeedChangeListener(-4))
+        }
+        next_song_button.apply {
+            setOnTouchListener(SongSpeedChangeListener(4))
         }
     }
 

@@ -11,6 +11,8 @@ import java.io.IOException
 
 class MediaPlayerService : Service() {
 
+    private val METADATA_UPDATE_INTERNVAL_MS = 300L
+
     private val mediaPlayer = android.media.MediaPlayer()
 
     private val handler: Handler
@@ -58,7 +60,7 @@ class MediaPlayerService : Service() {
     private fun periodicalMetadataUpdate() {
         if (mediaPlayer.isPlaying) {
             onMetadataUpdate()
-            handler.postDelayed({ periodicalMetadataUpdate() }, 500)
+            handler.postDelayed({ periodicalMetadataUpdate() }, METADATA_UPDATE_INTERNVAL_MS)
         } else {
             periodicalUpdateStarted = false
         }

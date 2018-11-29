@@ -20,7 +20,7 @@ class MediaPlayerCompletionListener(
 
         when (repeatMode) {
             RepeatMode.NONE -> {
-                // Nothing to do
+                audioFAbstraction.seek(0)
             }
             RepeatMode.REPEAT_ONE -> {
                 audioFAbstraction.play()
