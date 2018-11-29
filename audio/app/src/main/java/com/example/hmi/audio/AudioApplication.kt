@@ -35,11 +35,11 @@ class AudioApplication : Application() {
     }
 
     private val useCaseModule = module {
-        factory { InitDataObserveTask(get(), get(), get()) }
-        factory { GetSongListTask(get()) }
+        factory { InitialDataObserveTask(get(), get(), get()) }
+        factory { SongListObtainTask(get()) }
         factory { SongOperationTask(get(), get(), get()) }
         factory { SongToPlaySetTask(get()) }
-        factory { IncrementRepeatModeTask(get()) }
+        factory { RepeatModeIncrementTask(get()) }
     }
 
     private val FAModule = module {

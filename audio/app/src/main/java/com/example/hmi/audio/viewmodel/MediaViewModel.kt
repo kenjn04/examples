@@ -25,11 +25,11 @@ import kotlin.math.min
 
 class MediaViewModel(
     application: Application,
-    private val getSongListTask: GetSongListTask,
+    private val songListObtainTask: SongListObtainTask,
     private val songOperationTask: SongOperationTask,
-    private val initDataObserveTask: InitDataObserveTask,
+    private val initialDataObserveTask: InitialDataObserveTask,
     private val songToPlaySetTask: SongToPlaySetTask,
-    private val incrementRepeatModeTask: IncrementRepeatModeTask
+    private val repeatModeIncrementTask: RepeatModeIncrementTask
 ) : AndroidViewModel(application)
 {
 
@@ -41,6 +41,7 @@ class MediaViewModel(
     val title = ObservableField<String>()
     val progress = ObservableInt()
     val duration = ObservableInt()
+    val elapseTime = ObservableField<String>()
     val isPlaying = ObservableBoolean()
 
     val repeatMode = ObservableField<String>()
@@ -63,12 +64,23 @@ class MediaViewModel(
         duration.set(playingSongData.duration)
         progress.set(playingSongData.progress)
         isPlaying.set(playingSongData.isPlaying)
+        elapseTime.set(formatEpalseTimeToDisplay(progress.get() / 1000, duration.get() / 1000))
         Log.d("aaaaa", playingSongData.isPlaying.toString() + " " + playingSongData.duration + " " + playingSongData.progress)
+    }
+
+    private fun formatEpalseTimeToDisplay(progress: Int, duration: Int): String {
+        return getApplication<Application>().applicationContext
+            .getString(R.string.media_elapse_format,
+                progress / 60,
+                progress % 60,
+                duration / 60,
+                duration % 60
+            )
     }
 
     @SuppressLint("CheckResult")
     private fun observeInitData() {
-        initDataObserveTask.execute()
+        initialDataObserveTask.execute()
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
@@ -108,9 +120,10 @@ class MediaViewModel(
     private var underSpeedChange = false
     private var speedChangeInitiated = false
 
-    fun startChangeSongSpeed(speed: Int) {
+    fun startSongSpeedChange(speed: Int) {
         underSpeedChange = true
         speedChangeInitiated = false
+        // TODO: consider to seek in end of the song.
         handler.postDelayed ({
             while (underSpeedChange) {
                 speedChangeInitiated = true
@@ -124,14 +137,14 @@ class MediaViewModel(
         }, SONG_SPEED_CHANGE_WAITTIME_MS)
     }
 
-    fun revertSongSpeed(): Boolean {
+    fun cancelSongSpeedChange(): Boolean {
         underSpeedChange = false
         return speedChangeInitiated
     }
 
     @SuppressLint("CheckResult")
     fun incrementRepeatMode() {
-        incrementRepeatModeTask.execute()
+        repeatModeIncrementTask.execute()
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
@@ -142,7 +155,7 @@ class MediaViewModel(
 
     @SuppressLint("CheckResult")
     private fun getSongList() {
-        getSongListTask.execute().subscribeOn(Schedulers.io())
+        songListObtainTask.execute().subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
                 { songList.addAll(it) },

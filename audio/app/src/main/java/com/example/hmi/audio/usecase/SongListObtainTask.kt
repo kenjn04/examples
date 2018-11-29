@@ -5,7 +5,7 @@ import com.example.hmi.audio.repository.mediasource.MediaSourceRepository
 
 import io.reactivex.Single
 
-class GetSongListTask(
+class SongListObtainTask(
         private val mediaSourceRepository: MediaSourceRepository
 ) {
 

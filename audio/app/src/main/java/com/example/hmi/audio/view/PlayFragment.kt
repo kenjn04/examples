@@ -47,10 +47,10 @@ class PlayFragment : Fragment() {
         override fun onTouch(v: View?, event: MotionEvent?): Boolean {
             when (event!!.action) {
                 MotionEvent.ACTION_DOWN -> {
-                    mediaViewModel.startChangeSongSpeed(speed)
+                    mediaViewModel.startSongSpeedChange(speed)
                 }
                 MotionEvent.ACTION_UP -> {
-                    return mediaViewModel.revertSongSpeed()
+                    return mediaViewModel.cancelSongSpeedChange()
                 }
             }
             return false

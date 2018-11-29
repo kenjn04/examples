@@ -12,7 +12,7 @@ import com.example.hmi.audio.usecase.listener.MediaPlayerCompletionListener
 
 import io.reactivex.Single
 
-class InitDataObserveTask(
+class InitialDataObserveTask(
         private val audioFAbstraction: AudioFAbstraction,
         private val audioRepository: AudioRepository,
         private val mediaSourceRepository: MediaSourceRepository
