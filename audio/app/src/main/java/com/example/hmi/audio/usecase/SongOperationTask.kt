@@ -30,7 +30,6 @@ class SongOperationTask(
                 MediaOperation.NEXT_SONG, MediaOperation.PREVIOUS_SONG -> {
                     val song = audioFAbstraction.song!!
                     val repeatMode = audioRepository.repeatMode.value!!
-
                     if (repeatMode != RepeatMode.NONE) {
                         var nextSong: Song? = null
                         when (operation) {

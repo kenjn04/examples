@@ -4,6 +4,8 @@ import android.annotation.SuppressLint
 import android.app.Application
 import android.arch.lifecycle.AndroidViewModel
 import android.databinding.*
+import android.os.Handler
+import android.os.HandlerThread
 import android.util.Log
 import android.view.View
 import android.widget.SeekBar
@@ -16,6 +18,10 @@ import com.example.hmi.audio.usecase.*
 
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
+import java.lang.Thread.sleep
+import kotlin.math.abs
+import kotlin.math.max
+import kotlin.math.min
 
 class MediaViewModel(
     application: Application,
@@ -27,6 +33,9 @@ class MediaViewModel(
 ) : AndroidViewModel(application)
 {
 
+    private val SONG_SPEED_CHANGE_WAITTIME_MS: Long = 300
+    private val SONG_SPEED_CHANGE_INTERVAL_MS: Long = 100
+
     val songList: ObservableList<Song> = ObservableArrayList()
 
     val title = ObservableField<String>()
@@ -36,9 +45,15 @@ class MediaViewModel(
 
     val repeatMode = ObservableField<String>()
 
+    private val handlerThread = HandlerThread("")
+
+    private val handler: Handler
+
     init {
         getSongList()
         observeInitData()
+        handlerThread.start()
+        handler = Handler(handlerThread.looper)
     }
 
     private fun setSongData(playingSongData: PlayingSongData) {
@@ -86,9 +101,32 @@ class MediaViewModel(
 
     fun songProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
         if (fromUser) {
-            Log.d("aaaaaaab", progress.toString())
             operateSong(MediaOperation.SEEK, progress)
         }
+    }
+
+    private var underSpeedChange = false
+    private var speedChangeInitiated = false
+
+    fun startChangeSongSpeed(speed: Int) {
+        underSpeedChange = true
+        speedChangeInitiated = false
+        handler.postDelayed ({
+            while (underSpeedChange) {
+                speedChangeInitiated = true
+                var progress = progress.get()
+                val duration = duration.get()
+                progress += speed / abs(speed) * abs(speed - 1) * SONG_SPEED_CHANGE_INTERVAL_MS.toInt()
+                progress = max(min(progress, duration), 0)
+                operateSong(MediaOperation.SEEK, progress)
+                sleep(SONG_SPEED_CHANGE_INTERVAL_MS)
+            }
+        }, SONG_SPEED_CHANGE_WAITTIME_MS)
+    }
+
+    fun revertSongSpeed(): Boolean {
+        underSpeedChange = false
+        return speedChangeInitiated
     }
 
     @SuppressLint("CheckResult")
@@ -100,7 +138,6 @@ class MediaViewModel(
                 {},
                 { error -> Log.d("onError", error.toString()) }
             )
-
     }
 
     @SuppressLint("CheckResult")

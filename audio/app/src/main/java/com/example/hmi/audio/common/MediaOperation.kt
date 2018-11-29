@@ -11,6 +11,5 @@ enum class MediaOperation{
     PREVIOUS_SONG,
 
     NEXT_SONG
-
 }
 

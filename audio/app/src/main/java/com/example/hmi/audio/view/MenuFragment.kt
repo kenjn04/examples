@@ -13,7 +13,7 @@ import org.koin.android.viewmodel.ext.android.sharedViewModel
 
 class MenuFragment : Fragment() {
 
-    lateinit var fragmentMenuBinding: FragmentMenuBinding
+    private lateinit var fragmentMenuBinding: FragmentMenuBinding
 
     private val mediaViewModel by sharedViewModel<MediaViewModel>()
 
