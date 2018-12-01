@@ -5,23 +5,24 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.BaseAdapter
-import com.example.hmi.audio.common.Song
+import com.example.hmi.audio.common.Element
+import com.example.hmi.audio.common.Track
 import com.example.hmi.audio.databinding.SongDataItemBinding
 import com.example.hmi.audio.viewmodel.MediaViewModel
 
-class SongListAdapter(
+class ElementListAdapter(
         private val mediaViewModel: MediaViewModel
 ) : BaseAdapter() {
 
-    var songList: List<Song>? = null
+    var elementList: MutableList<Element>? = null
         set(value) {
             field = value
             notifyDataSetChanged()
         }
 
-    override fun getCount() = if (songList != null) songList!!.size else 0
+    override fun getCount() = if (elementList != null) elementList!!.size else 0
 
-    override fun getItem(position: Int) = songList!![position]
+    override fun getItem(position: Int) = elementList!![position]
 
     override fun getItemId(position: Int) = position.toLong()
 
@@ -34,18 +35,18 @@ class SongListAdapter(
         }
 
         binding.apply {
-            this.song = songList!![position]
+            this.element = elementList!![position]
             this.position = position
-            this.listener = object: SongSelectedListener {
-                override fun onSongSelected(view: View, position: Int) {
-                    mediaViewModel.songSelected(view, position)
+            this.listener = object: ElementSelectedListener {
+                override fun onElementSelected(view: View, position: Int) {
+                    mediaViewModel.elementSelected(view, position)
                 }
             }
         }
         return binding.root
     }
 
-    interface SongSelectedListener {
-        fun onSongSelected(view: View, position: Int)
+    interface ElementSelectedListener {
+        fun onElementSelected(view: View, position: Int)
     }
 }

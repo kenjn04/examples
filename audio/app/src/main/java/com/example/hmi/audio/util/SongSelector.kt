@@ -1,44 +1,45 @@
 package com.example.hmi.audio.util
 
+import com.example.hmi.audio.common.Element
 import com.example.hmi.audio.common.RepeatMode
-import com.example.hmi.audio.common.Song
+import com.example.hmi.audio.common.Track
 import com.example.hmi.audio.repository.mediasource.MediaSourceRepository
 
 object SongSelector {
 
     fun selectPreviousSong(
-        currentSong: Song,
+        currentTrack: Track,
         repeatMode: RepeatMode,
         mediaSourceRepository: MediaSourceRepository
-    ): Song? = selectSong(currentSong, repeatMode, mediaSourceRepository, -1)
+    ): Track? = selectSong(currentTrack, repeatMode, mediaSourceRepository, -1)
 
     fun selectNextSong(
-        currentSong: Song,
+        currentTrack: Track,
         repeatMode: RepeatMode,
         mediaSourceRepository: MediaSourceRepository
-    ): Song? = selectSong(currentSong, repeatMode, mediaSourceRepository, +1)
+    ): Track? = selectSong(currentTrack, repeatMode, mediaSourceRepository, +1)
 
     private fun selectSong(
-        currentSong: Song,
+        currentTrack: Track,
         repeatMode: RepeatMode,
         mediaSourceRepository: MediaSourceRepository,
         increment: Int
-    ): Song? {
+    ): Track? {
         when (repeatMode) {
             RepeatMode.NONE -> {
                 return null
             }
             RepeatMode.REPEAT_ONE -> {
-                return currentSong
+                return currentTrack
             }
             RepeatMode.REPEAT -> {
-                val songList = mediaSourceRepository.songList!!
+                val songList = mediaSourceRepository.getSpecifiedList(Element.Type.TRACK_LIST)!!
                 val num = songList.size
                 for (i in 0..(num - 1)) {
-                    val song = songList.get(i)
-                    if (song == currentSong) return songList.get((num + i + increment) % num)
+                    val song = songList.get(i) as Track
+                    if (song == currentTrack) return songList.get((num + i + increment) % num) as Track
                 }
-                return currentSong
+                return currentTrack
             }
         }
 

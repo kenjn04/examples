@@ -38,7 +38,7 @@ class AudioApplication : Application() {
         factory { InitialDataObserveTask(get(), get(), get()) }
         factory { SongListObtainTask(get()) }
         factory { SongOperationTask(get(), get(), get()) }
-        factory { SongToPlaySetTask(get()) }
+        factory { SongToPlaySetTask(get(), get()) }
         factory { RepeatModeIncrementTask(get()) }
     }
 

@@ -1,12 +1,15 @@
 package com.example.hmi.audio.repository.audio
 
 import android.arch.lifecycle.MutableLiveData
+import com.example.hmi.audio.common.Element
 import com.example.hmi.audio.common.PlayingSongData
 import com.example.hmi.audio.common.RepeatMode
 
 class AudioRepositoryImpl private constructor() : AudioRepository {
 
     override val repeatMode = MutableLiveData<RepeatMode>()
+
+    override var activeType = Element.Type.TRACK_LIST
 
     init {
         // TODO: read from pesistent data

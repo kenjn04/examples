@@ -2,20 +2,24 @@ package com.example.hmi.audio.repository.mediasource.dataprovider
 
 import android.content.Context
 import android.content.res.AssetFileDescriptor
-import com.example.hmi.audio.common.Song
+import com.example.hmi.audio.common.*
 
 import java.io.IOException
 
-class AssetDataProvider private constructor(context: Context) : MediaDataProvider {
+class AssetDataProvider private constructor(context: Context) : MediaDataProvider() {
 
-    override var songList: MutableList<Song>? = null
+    override var trackList   = TrackList("whole track")
+    override var albumList   = TrackListGroup(Element.Type.ALBUM)
+    override var artistsList = TrackListGroup(Element.Type.ARTISTS)
+    override var genreList   = TrackListGroup(Element.Type.GENRE)
 
     init {
-        songList = fetchSongList(context)
+        createTrackList(context)
+        createListsOtherThanWholeTrack()
+        sortEachList()
     }
 
-    private fun fetchSongList(context: Context): MutableList<Song> {
-        val fetchingSongList = mutableListOf<Song>()
+    private fun createTrackList(context: Context) {
 
         var fileList: Array<String>? = null
         try {
@@ -32,11 +36,10 @@ class AssetDataProvider private constructor(context: Context) : MediaDataProvide
                 } catch (e: IOException) {
                     e.printStackTrace()
                 }
-                val song = Song(file, afd!!)
-                fetchingSongList.add(song)
+                val track = Track(file, afd!!)
+                trackList.add(track)
             }
         }
-        return fetchingSongList
     }
 
     companion object {

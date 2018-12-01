@@ -6,12 +6,12 @@
     <data>
         <variable name="position" type="int" />
         <variable
-            name="song"
-            type="com.example.hmi.audio.common.Song"
+            name="element"
+            type="com.example.hmi.audio.common.Element"
         />
         <variable
             name="listener"
-            type="com.example.hmi.audio.view.adapter.SongListAdapter.SongSelectedListener"
+            type="com.example.hmi.audio.view.adapter.ElementListAdapter.ElementSelectedListener"
         />
     </data>
 
@@ -26,9 +26,9 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="left"
-            android:text="@{song.title}"
+            android:text="@{element.title}"
             android:textSize="24sp"
-            android:onClick="@{(view) -> listener.onSongSelected(view, position)}"
+            android:onClick="@{(view) -> listener.onElementSelected(view, position)}"
         />
 
     </LinearLayout>

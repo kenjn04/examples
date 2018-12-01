@@ -2,7 +2,7 @@ package com.example.hmi.audio.usecase.listener
 
 import android.media.MediaPlayer
 import com.example.hmi.audio.common.RepeatMode
-import com.example.hmi.audio.common.Song
+import com.example.hmi.audio.common.Track
 import com.example.hmi.audio.fabstraction.AudioFAbstraction
 import com.example.hmi.audio.repository.audio.AudioRepository
 import com.example.hmi.audio.repository.mediasource.MediaSourceRepository
@@ -15,7 +15,7 @@ class MediaPlayerCompletionListener(
 ): MediaPlayer.OnCompletionListener {
 
     override fun onCompletion(mp: MediaPlayer?) {
-        val song = audioFAbstraction.song!!
+        val song = audioFAbstraction.track!!
         val repeatMode: RepeatMode = audioRepository.repeatMode.value!!
 
         when (repeatMode) {
@@ -26,19 +26,19 @@ class MediaPlayerCompletionListener(
                 audioFAbstraction.play()
             }
             RepeatMode.REPEAT -> {
-                audioFAbstraction.song =
+                audioFAbstraction.track =
                         SongSelector.selectNextSong(song, repeatMode, mediaSourceRepository)
                 audioFAbstraction.play()
             }
         }
     }
 
-    private fun getNextSong(currentSong: Song, songList: MutableList<Song>): Song {
-        val num = songList.size
+    private fun getNextSong(currentTrack: Track, trackList: MutableList<Track>): Track {
+        val num = trackList.size
         for (i in 0..(num - 1)) {
-            val song = songList.get(i)
-            if (song == currentSong) return songList.get((i + 1) % num)
+            val song = trackList.get(i)
+            if (song == currentTrack) return trackList.get((i + 1) % num)
         }
-        return currentSong
+        return currentTrack
     }
 }

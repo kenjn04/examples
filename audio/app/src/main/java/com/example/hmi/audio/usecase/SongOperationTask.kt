@@ -2,7 +2,7 @@ package com.example.hmi.audio.usecase
 
 import com.example.hmi.audio.common.MediaOperation
 import com.example.hmi.audio.common.RepeatMode
-import com.example.hmi.audio.common.Song
+import com.example.hmi.audio.common.Track
 import com.example.hmi.audio.fabstraction.AudioFAbstraction
 import com.example.hmi.audio.repository.audio.AudioRepository
 import com.example.hmi.audio.repository.mediasource.MediaSourceRepository
@@ -28,19 +28,22 @@ class SongOperationTask(
                     audioFAbstraction.seek(seekPosition)
                 }
                 MediaOperation.NEXT_SONG, MediaOperation.PREVIOUS_SONG -> {
-                    val song = audioFAbstraction.song!!
+                    val song = audioFAbstraction.track!!
                     val repeatMode = audioRepository.repeatMode.value!!
                     if (repeatMode != RepeatMode.NONE) {
-                        var nextSong: Song? = null
+                        var nextTrack: Track? = null
                         when (operation) {
+                            MediaOperation.PLAY, MediaOperation.STOP, MediaOperation.SEEK -> {
+                                // Never Reach Here
+                            }
                             MediaOperation.PREVIOUS_SONG -> {
-                                nextSong = SongSelector.selectPreviousSong(song, repeatMode, mediaSourceRepository)
+                                nextTrack = SongSelector.selectPreviousSong(song, repeatMode, mediaSourceRepository)
                             }
                             MediaOperation.NEXT_SONG -> {
-                                nextSong = SongSelector.selectNextSong(song, repeatMode, mediaSourceRepository)
+                                nextTrack = SongSelector.selectNextSong(song, repeatMode, mediaSourceRepository)
                             }
                         }
-                        audioFAbstraction.song = nextSong
+                        audioFAbstraction.track = nextTrack
                         audioFAbstraction.play()
                     }
                 }

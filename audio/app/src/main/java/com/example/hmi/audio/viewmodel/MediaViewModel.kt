@@ -13,14 +13,15 @@ import android.view.View
 import android.widget.SeekBar
 import androidx.navigation.Navigation
 import com.example.hmi.audio.R
-import com.example.hmi.audio.common.MediaOperation
-import com.example.hmi.audio.common.Song
-import com.example.hmi.audio.common.PlayingSongData
+import com.example.hmi.audio.common.*
 import com.example.hmi.audio.usecase.*
+import com.example.hmi.audio.view.adapter.ElementListAdapter
 
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import java.lang.Thread.sleep
+import java.lang.annotation.ElementType
+import kotlin.math.E
 import kotlin.math.abs
 import kotlin.math.max
 
@@ -40,7 +41,8 @@ class MediaViewModel(
     // This should be more than METADATA_UPDATE_INTERNVAL_MS in MediaPlayerService.
     private val SONG_SPEED_CHANGE_CANCEL_ENDEDGE_MS = 500L
 
-    val songList: ObservableList<Song> = ObservableArrayList()
+    val trackList = ObservableField<TrackList>()
+    private var sourceElementType: Element.Type = Element.Type.TRACK_LIST
 
     val title = ObservableField<String>()
     val artists = ObservableField<String>()
@@ -60,29 +62,29 @@ class MediaViewModel(
     private val handler: Handler
 
     init {
-        getSongList()
+        getSongList(Element.Type.TRACK_LIST)
         observeInitData()
         handlerThread.start()
         handler = Handler(handlerThread.looper)
     }
 
-    private var song: Song? = null
+    private var track: Track? = null
 
     private fun setSongData(playingSongData: PlayingSongData) {
-        val playingSong: Song = playingSongData.playingSong
+        val playingTrack: Track = playingSongData.playingTrack
 
-        if (playingSong != song) {
-            song = playingSong
+        if (playingTrack != track) {
+            track = playingTrack
 
-            title.set(playingSong.title)
-            artists.set(playingSong.artists)
-            albumTitle.set(playingSong.albumTitle)
-            genre.set(playingSong.genre)
+            title.set(playingTrack.title)
+            artists.set(playingTrack.artists)
+            albumTitle.set(playingTrack.albumTitle)
+            genre.set(playingTrack.genre)
 
             duration.set(playingSongData.duration)
-//          duration.set(playingSong.duration!!.toInt())
+//          duration.set(playingTrack.duration!!.toInt())
 
-            val albumArtByte = playingSong.albumArt
+            val albumArtByte = playingTrack.albumArt
             if (albumArtByte != null) {
                 albumArt.set(BitmapFactory.decodeByteArray(albumArtByte, 0, albumArtByte.size))
             } else {
@@ -184,23 +186,52 @@ class MediaViewModel(
     }
 
     @SuppressLint("CheckResult")
-    private fun getSongList() {
-        songListObtainTask.execute().subscribeOn(Schedulers.io())
+    fun getSongList(type: Element.Type) {
+        songListObtainTask.execute(type).subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
-                { songList.addAll(it) },
+                {
+                    sourceElementType = Element.Type.TRACK_LIST
+                    trackList.set(it)
+                },
                 { error -> Log.d("onError", error.toString()) }
             )
     }
 
     @SuppressLint("CheckResult")
-    fun songSelected(view: View, position: Int) {
-        songToPlaySetTask.execute(songList.get(position)).subscribeOn(Schedulers.io())
+    fun songSelected(view: View, track: Track) {
+        songToPlaySetTask.execute(track, sourceElementType).subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
                     { Navigation.findNavController(view).navigate(R.id.song_selected) },
                     { error -> Log.d("onError", error.toString()) }
             )
+    }
+
+    fun elementSelected(view: View, position: Int) {
+        val elementList = trackList.get()!!
+        val element = elementList.get(position)
+        val type = elementList.type
+        when (type) {
+            Element.Type.TRACK -> {
+                // Never Reach Here
+            }
+            Element.Type.TRACK_LIST -> {
+                songSelected(view, element as Track)
+            }
+            Element.Type.ALBUM -> {
+                sourceElementType = Element.Type.ALBUM
+                trackList.set(element as TrackList)
+            }
+            Element.Type.ARTISTS -> {
+                sourceElementType = Element.Type.ARTISTS
+                trackList.set(element as TrackList)
+            }
+            Element.Type.GENRE -> {
+                sourceElementType = Element.Type.GENRE
+                trackList.set(element as TrackList)
+            }
+        }
     }
 
     fun goToMenu(view: View) {

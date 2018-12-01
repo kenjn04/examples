@@ -1,10 +1,13 @@
 package com.example.hmi.audio.repository.mediasource.dataprovider
 
-import com.example.hmi.audio.common.Song
+import com.example.hmi.audio.common.*
 
-class USBDataProvider private constructor(): MediaDataProvider {
+class USBDataProvider private constructor(): MediaDataProvider() {
 
-    override var songList: MutableList<Song>? = null
+    override var trackList   = TrackList("whole track")
+    override var albumList   = TrackListGroup(Element.Type.ALBUM)
+    override var artistsList = TrackListGroup(Element.Type.ARTISTS)
+    override var genreList   = TrackListGroup(Element.Type.GENRE)
 
     companion object {
 

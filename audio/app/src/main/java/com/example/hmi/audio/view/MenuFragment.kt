@@ -8,7 +8,7 @@ import android.view.ViewGroup
 import com.example.hmi.audio.viewmodel.MediaViewModel
 
 import com.example.hmi.audio.databinding.FragmentMenuBinding
-import com.example.hmi.audio.view.adapter.SongListAdapter
+import com.example.hmi.audio.view.adapter.ElementListAdapter
 import org.koin.android.viewmodel.ext.android.sharedViewModel
 
 class MenuFragment : Fragment() {
@@ -28,7 +28,7 @@ class MenuFragment : Fragment() {
 
         fragmentMenuBinding.apply {
             this.viewModel = mediaViewModel
-            this.songList.adapter = SongListAdapter(mediaViewModel)
+            this.trackList.adapter = ElementListAdapter(mediaViewModel)
         }
     }
 }
