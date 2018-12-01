@@ -37,10 +37,10 @@ class SongOperationTask(
                                 // Never Reach Here
                             }
                             MediaOperation.PREVIOUS_SONG -> {
-                                nextTrack = SongSelector.selectPreviousSong(song, repeatMode, mediaSourceRepository)
+                                nextTrack = SongSelector.selectPreviousSong(song, repeatMode, audioRepository, mediaSourceRepository)
                             }
                             MediaOperation.NEXT_SONG -> {
-                                nextTrack = SongSelector.selectNextSong(song, repeatMode, mediaSourceRepository)
+                                nextTrack = SongSelector.selectNextSong(song, repeatMode, audioRepository, mediaSourceRepository)
                             }
                         }
                         audioFAbstraction.track = nextTrack

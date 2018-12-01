@@ -27,7 +27,7 @@ class MediaPlayerCompletionListener(
             }
             RepeatMode.REPEAT -> {
                 audioFAbstraction.track =
-                        SongSelector.selectNextSong(song, repeatMode, mediaSourceRepository)
+                        SongSelector.selectNextSong(song, repeatMode, audioRepository, mediaSourceRepository)
                 audioFAbstraction.play()
             }
         }

@@ -3,6 +3,7 @@ package com.example.hmi.audio.util
 import com.example.hmi.audio.common.Element
 import com.example.hmi.audio.common.RepeatMode
 import com.example.hmi.audio.common.Track
+import com.example.hmi.audio.repository.audio.AudioRepository
 import com.example.hmi.audio.repository.mediasource.MediaSourceRepository
 
 object SongSelector {
@@ -10,18 +11,21 @@ object SongSelector {
     fun selectPreviousSong(
         currentTrack: Track,
         repeatMode: RepeatMode,
+        audioRepository: AudioRepository,
         mediaSourceRepository: MediaSourceRepository
-    ): Track? = selectSong(currentTrack, repeatMode, mediaSourceRepository, -1)
+    ): Track? = selectSong(currentTrack, repeatMode, audioRepository, mediaSourceRepository, -1)
 
     fun selectNextSong(
         currentTrack: Track,
         repeatMode: RepeatMode,
+        audioRepository: AudioRepository,
         mediaSourceRepository: MediaSourceRepository
-    ): Track? = selectSong(currentTrack, repeatMode, mediaSourceRepository, +1)
+    ): Track? = selectSong(currentTrack, repeatMode, audioRepository, mediaSourceRepository, +1)
 
     private fun selectSong(
         currentTrack: Track,
         repeatMode: RepeatMode,
+        audioRepository: AudioRepository,
         mediaSourceRepository: MediaSourceRepository,
         increment: Int
     ): Track? {
