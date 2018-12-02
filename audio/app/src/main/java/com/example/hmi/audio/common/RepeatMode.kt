@@ -11,6 +11,10 @@ enum class RepeatMode {
     },
 
     REPEAT {
+        override fun increment() = RepeatMode.REPEAT_ALL
+    },
+
+    REPEAT_ALL {
         override fun increment() = RepeatMode.NONE
     };
 

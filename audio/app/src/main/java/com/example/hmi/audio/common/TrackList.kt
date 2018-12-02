@@ -4,6 +4,12 @@ open class TrackList(override val title: String) : _TrackList(mutableListOf()) {
 
     override val type = Element.Type.TRACK_LIST
 
+    constructor(source: TrackList) : this(source.title) {
+        for (song in source) {
+            add(song as Track)
+        }
+    }
+
     fun add(track: Track): Boolean = add(track, true)
 
     override fun add(element: Element): Boolean = add(element, false)
