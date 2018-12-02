@@ -5,24 +5,23 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.BaseAdapter
-import com.example.hmi.audio.common.Element
-import com.example.hmi.audio.common.Track
+import com.example.hmi.audio.common.SongGroupEntry
 import com.example.hmi.audio.databinding.SongDataItemBinding
 import com.example.hmi.audio.viewmodel.MediaViewModel
 
-class ElementListAdapter(
+class SongGroupAdapter(
         private val mediaViewModel: MediaViewModel
 ) : BaseAdapter() {
 
-    var elementList: MutableList<Element>? = null
+    var songGroupEntryList: MutableList<SongGroupEntry>? = null
         set(value) {
             field = value
             notifyDataSetChanged()
         }
 
-    override fun getCount() = if (elementList != null) elementList!!.size else 0
+    override fun getCount() = if (songGroupEntryList != null) songGroupEntryList!!.size else 0
 
-    override fun getItem(position: Int) = elementList!![position]
+    override fun getItem(position: Int) = songGroupEntryList!![position]
 
     override fun getItemId(position: Int) = position.toLong()
 
@@ -35,18 +34,18 @@ class ElementListAdapter(
         }
 
         binding.apply {
-            this.element = elementList!![position]
+            this.entry = songGroupEntryList!![position]
             this.position = position
-            this.listener = object: ElementSelectedListener {
-                override fun onElementSelected(view: View, position: Int) {
-                    mediaViewModel.elementSelected(view, position)
+            this.listener = object: OnSongGroupEntrySelectedListener {
+                override fun onSongGroupEntrySelected(view: View, position: Int) {
+                    mediaViewModel.songGroupEntrySelected(view, position)
                 }
             }
         }
         return binding.root
     }
 
-    interface ElementSelectedListener {
-        fun onElementSelected(view: View, position: Int)
+    interface OnSongGroupEntrySelectedListener {
+        fun onSongGroupEntrySelected(view: View, position: Int)
     }
 }

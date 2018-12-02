@@ -7,7 +7,7 @@ import android.content.Intent
 import android.content.ServiceConnection
 import android.media.MediaPlayer
 import android.os.IBinder
-import com.example.hmi.audio.common.Track
+import com.example.hmi.audio.common.Song
 import com.example.hmi.audio.common.PlayingSongData
 
 class AudioFAbstraction private constructor(
@@ -20,13 +20,13 @@ class AudioFAbstraction private constructor(
 
     val playingSongData = MutableLiveData<PlayingSongData>()
 
-    var track: Track?
+    var song: Song?
         set(song) {
-            mediaPlayerService.track = song
+            mediaPlayerService.song = song
         }
         get() {
             return if (bound) {
-                mediaPlayerService.track
+                mediaPlayerService.song
             } else
                 null
         }

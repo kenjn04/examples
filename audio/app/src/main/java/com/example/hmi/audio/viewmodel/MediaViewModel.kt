@@ -15,13 +15,10 @@ import androidx.navigation.Navigation
 import com.example.hmi.audio.R
 import com.example.hmi.audio.common.*
 import com.example.hmi.audio.usecase.*
-import com.example.hmi.audio.view.adapter.ElementListAdapter
 
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import java.lang.Thread.sleep
-import java.lang.annotation.ElementType
-import kotlin.math.E
 import kotlin.math.abs
 import kotlin.math.max
 
@@ -32,73 +29,94 @@ class MediaViewModel(
     private val initialDataObserveTask: InitialDataObserveTask,
     private val songToPlaySetTask: SongToPlaySetTask,
     private val repeatModeIncrementTask: RepeatModeIncrementTask
-) : AndroidViewModel(application)
-{
-
+) : AndroidViewModel(application) {
+    /**
+     * Intervals for song speed change (fast forward, rewind)
+     */
     private val SONG_SPEED_CHANGE_WAITTIME_MS = 300L
     private val SONG_SPEED_CHANGE_INTERVAL_MS = 100L
-
-    // This should be more than METADATA_UPDATE_INTERNVAL_MS in MediaPlayerService.
+    // The below should be more than METADATA_UPDATE_INTERNVAL_MS in MediaPlayerService.
     private val SONG_SPEED_CHANGE_CANCEL_ENDEDGE_MS = 500L
+    /**
+     * Thread for song speed change (fast forward, rewind)
+     */
+    private val handlerThread = HandlerThread("")
+    private val handler: Handler
+    /**
+     * Current status for speed change (fast forward, rewind)
+     */
+    private var underSpeedChange = false
+    private var speedChangeInitiated = false
 
-    val trackList = ObservableField<TrackList>()
-    private var sourceElementType: Element.Type = Element.Type.TRACK_LIST
 
+    /**
+     * SongGroup information
+     */
+    // Current displayed SongGroup (song list, ablum list, artist list and genre list)
+    val songGroup = ObservableField<SongList>()
+    // From where the song is selected to play
+    private var sourceSongGroupEntryType = LibraryType.SONGS
+
+    /**
+     * Current playing song information
+     */
+    private var song: Song? = null
+    // playing song metadata
     val title = ObservableField<String>()
     val artists = ObservableField<String>()
     val albumTitle = ObservableField<String>()
     val genre = ObservableField<String>()
-
     val albumArt = ObservableField<Bitmap>()
     val progress = ObservableInt()
     val duration = ObservableInt()
     val elapseTime = ObservableField<String>()
+
     val isPlaying = ObservableBoolean()
 
+    /**
+     * Current repeat mode
+     */
     val repeatMode = ObservableField<String>()
 
-    private val handlerThread = HandlerThread("")
-
-    private val handler: Handler
-
     init {
-        getSongList(Element.Type.TRACK_LIST)
+        getSongList(LibraryType.SONGS)
         observeInitData()
         handlerThread.start()
         handler = Handler(handlerThread.looper)
     }
 
-    private var track: Track? = null
-
     private fun setSongData(playingSongData: PlayingSongData) {
-        val playingTrack: Track = playingSongData.playingTrack
+        val playingSong: Song = playingSongData.playingSong
 
-        if (playingTrack != track) {
-            track = playingTrack
+        // When playing song is changed
+        if (playingSong != song) {
+            song = playingSong
 
-            title.set(playingTrack.title)
-            artists.set(playingTrack.artists)
-            albumTitle.set(playingTrack.albumTitle)
-            genre.set(playingTrack.genre)
+            title.set(playingSong.title)
+            artists.set(playingSong.artists)
+            albumTitle.set(playingSong.albumTitle)
+            genre.set(playingSong.genre)
 
             duration.set(playingSongData.duration)
-//          duration.set(playingTrack.duration!!.toInt())
+//          duration.set(playingSong.duration!!.toInt())
 
-            val albumArtByte = playingTrack.albumArt
+            val albumArtByte = playingSong.albumArt
             if (albumArtByte != null) {
                 albumArt.set(BitmapFactory.decodeByteArray(albumArtByte, 0, albumArtByte.size))
             } else {
                 albumArt.set(null)
             }
         }
+
         progress.set(playingSongData.progress)
         isPlaying.set(playingSongData.isPlaying)
-        elapseTime.set(formatEpalseTimeToDisplay(progress.get() / 1000, duration.get() / 1000))
+        elapseTime.set(formatElapseTimeToDisplay(progress.get() / 1000, duration.get() / 1000))
     }
 
-    private fun formatEpalseTimeToDisplay(progress: Int, duration: Int): String {
+    private fun formatElapseTimeToDisplay(progress: Int, duration: Int): String {
         return getApplication<Application>().applicationContext
-            .getString(R.string.media_elapse_format,
+            .getString(
+                R.string.media_elapse_format,
                 progress / 60,
                 progress % 60,
                 duration / 60,
@@ -106,6 +124,9 @@ class MediaViewModel(
             )
     }
 
+    /**
+     * Observe required data for this ViewModel
+     */
     @SuppressLint("CheckResult")
     private fun observeInitData() {
         initialDataObserveTask.execute()
@@ -145,13 +166,13 @@ class MediaViewModel(
         }
     }
 
-    private var underSpeedChange = false
-    private var speedChangeInitiated = false
-
+    /**
+     * For fast forward and rewind
+     */
     fun startSongSpeedChange(speed: Int) {
         underSpeedChange = true
         speedChangeInitiated = false
-        handler.postDelayed ({
+        handler.postDelayed({
             while (underSpeedChange) {
                 speedChangeInitiated = true
                 var progress = progress.get()
@@ -186,50 +207,39 @@ class MediaViewModel(
     }
 
     @SuppressLint("CheckResult")
-    fun getSongList(type: Element.Type) {
+    fun getSongList(type: LibraryType) {
         songListObtainTask.execute(type).subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
                 {
-                    sourceElementType = Element.Type.TRACK_LIST
-                    trackList.set(it)
+                    sourceSongGroupEntryType = LibraryType.SONGS
+                    songGroup.set(it)
                 },
                 { error -> Log.d("onError", error.toString()) }
             )
     }
 
     @SuppressLint("CheckResult")
-    fun songSelected(view: View, track: Track) {
-        songToPlaySetTask.execute(track, sourceElementType).subscribeOn(Schedulers.io())
+    fun songSelected(view: View, song: Song) {
+        songToPlaySetTask.execute(song, sourceSongGroupEntryType).subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
-                    { Navigation.findNavController(view).navigate(R.id.song_selected) },
-                    { error -> Log.d("onError", error.toString()) }
+                { Navigation.findNavController(view).navigate(R.id.song_selected) },
+                { error -> Log.d("onError", error.toString()) }
             )
     }
 
-    fun elementSelected(view: View, position: Int) {
-        val elementList = trackList.get()!!
-        val element = elementList.get(position)
-        val type = elementList.type
+    fun songGroupEntrySelected(view: View, position: Int) {
+        val songGroup = this.songGroup.get()!!
+        val entry = songGroup.get(position)
+        val type = songGroup.type
         when (type) {
-            Element.Type.TRACK -> {
-                // Never Reach Here
+            LibraryType.SONGS -> {
+                songSelected(view, entry as Song)
             }
-            Element.Type.TRACK_LIST -> {
-                songSelected(view, element as Track)
-            }
-            Element.Type.ALBUM -> {
-                sourceElementType = Element.Type.ALBUM
-                trackList.set(element as TrackList)
-            }
-            Element.Type.ARTISTS -> {
-                sourceElementType = Element.Type.ARTISTS
-                trackList.set(element as TrackList)
-            }
-            Element.Type.GENRE -> {
-                sourceElementType = Element.Type.GENRE
-                trackList.set(element as TrackList)
+            LibraryType.ALBUMS, LibraryType.ARTISTS, LibraryType.GENRES -> {
+                sourceSongGroupEntryType = type
+                this.songGroup.set(entry as SongList)
             }
         }
     }

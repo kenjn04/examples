@@ -4,9 +4,10 @@ import android.content.res.AssetFileDescriptor
 import android.media.MediaMetadataRetriever
 import java.io.FileDescriptor
 
-class Track private constructor() : Element {
-
-    override val type = Element.Type.TRACK
+/**
+ * This contains metadatas of the song.
+ */
+class Song private constructor() : SongGroupEntry {
 
     override var title: String = "No Title"
     var artists       : String = "Unknown Artist"
@@ -32,9 +33,9 @@ class Track private constructor() : Element {
         retrieveMetadata(retriever)
     }
 
-    constructor(track: String, fileDescriptor: AssetFileDescriptor): this(fileDescriptor) {
-        if (title == "No Title") {
-            title = track
+    constructor(title: String, fileDescriptor: AssetFileDescriptor): this(fileDescriptor) {
+        if (this.title == "No Title") {
+            this.title = title
         }
     }
 
@@ -71,6 +72,6 @@ class Track private constructor() : Element {
                 ", Genre: " + this.genre +
                 ", AlbumList Title: " + this.albumTitle +
                 ", AlbumList Artist: " + this.albumArtist +
-                ", Track Number: " + this.trackNumber
+                ", Song Number: " + this.trackNumber
     }
 }

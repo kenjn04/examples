@@ -4,67 +4,67 @@ import com.example.hmi.audio.common.*
 
 abstract class MediaDataProvider {
 
-    abstract var trackList   : TrackList
-    abstract var albumList   : TrackListGroup
-    abstract var artistsList : TrackListGroup
-    abstract var genreList   : TrackListGroup
+    abstract var songList : SongList
+    abstract var albums   : SongGroup
+    abstract var artists  : SongGroup
+    abstract var genres   : SongGroup
 
-    open fun createListsOtherThanWholeTrack() {
+    open fun createListsOtherThanWholeSongs() {
         createAlbumList()
         createArtistsList()
         createGenreList()
     }
 
     open fun createAlbumList() {
-        for (track in trackList) {
-            track as Track
+        for (song in songList) {
+            song as Song
             var found = false
-            for (album in albumList) {
-                album as TrackList
-                if (track.albumTitle.equals(album.title)) {
+            for (album in albums) {
+                album as SongList
+                if (song.albumTitle.equals(album.title)) {
                     found = true
-                    album.add(track)
+                    album.add(song)
                     break
                 }
             }
-            if (!found) albumList.add(TrackList(track.albumTitle).apply {
-                add(track)
+            if (!found) albums.add(SongList(song.albumTitle).apply {
+                add(song)
             })
         }
     }
 
     open fun createArtistsList() {
-        for (track in trackList) {
-            track as Track
+        for (song in songList) {
+            song as Song
             var found = false
-            for (artists in artistsList) {
-                artists as TrackList
-                if (track.artists.equals(artists.title)) {
+            for (artists in artists) {
+                artists as SongList
+                if (song.artists.equals(artists.title)) {
                     found = true
-                    artists.add(track)
+                    artists.add(song)
                     break
                 }
             }
-            if (!found) artistsList.add(TrackList(track.artists).apply {
-                add(track)
+            if (!found) artists.add(SongList(song.artists).apply {
+                add(song)
             })
         }
     }
 
     open fun createGenreList() {
-        for (track in trackList) {
-            track as Track
+        for (song in songList) {
+            song as Song
             var found = false
-            for (genre in genreList) {
-                genre as TrackList
-                if (track.genre.equals(genre.title)) {
+            for (genre in genres) {
+                genre as SongList
+                if (song.genre.equals(genre.title)) {
                     found = true
-                    genre.add(track)
+                    genre.add(song)
                     break
                 }
             }
-            if (!found) genreList.add(TrackList(track.genre).apply {
-                add(track)
+            if (!found) genres.add(SongList(song.genre).apply {
+                add(song)
             })
         }
     }

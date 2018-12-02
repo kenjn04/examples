@@ -7,45 +7,42 @@ import com.example.hmi.audio.repository.mediasource.MediaSourceRepository
 object SongSelector {
 
     fun selectPreviousSong(
-        currentTrack: Track,
+        currentSong: Song,
         repeatMode: RepeatMode,
         audioRepository: AudioRepository,
         mediaSourceRepository: MediaSourceRepository
-    ): Track? = selectSong(currentTrack, repeatMode, audioRepository, mediaSourceRepository, -1)
+    ): Song? = selectSong(currentSong, repeatMode, audioRepository, mediaSourceRepository, -1)
 
     fun selectNextSong(
-        currentTrack: Track,
+        currentSong: Song,
         repeatMode: RepeatMode,
         audioRepository: AudioRepository,
         mediaSourceRepository: MediaSourceRepository
-    ): Track? = selectSong(currentTrack, repeatMode, audioRepository, mediaSourceRepository, +1)
+    ): Song? = selectSong(currentSong, repeatMode, audioRepository, mediaSourceRepository, +1)
 
     private fun selectSong(
-        currentTrack: Track,
+        currentSong: Song,
         repeatMode: RepeatMode,
         audioRepository: AudioRepository,
         mediaSourceRepository: MediaSourceRepository,
         increment: Int
-    ): Track? {
+    ): Song? {
         when (repeatMode) {
             RepeatMode.NONE -> {
                 return null
             }
             RepeatMode.REPEAT_ONE -> {
-                return currentTrack
+                return currentSong
             }
             RepeatMode.REPEAT, RepeatMode.REPEAT_ALL -> {
-                val type = audioRepository.activeType
-                val songGroup = mediaSourceRepository.getSpecifiedList(type)!!
-
                 val songList =
-                    createSongListToExtractTrack(currentTrack, repeatMode, audioRepository, mediaSourceRepository)
+                    createSongListToExtractSong(currentSong, repeatMode, audioRepository, mediaSourceRepository)
 
                 if (songList != null) {
                     for (i in 1..(songList.size - 2)) {
                         val song = songList.get(i)
-                        if (currentTrack.title.equals(song.title)) {
-                            return songList.get(i + increment) as Track
+                        if (currentSong.title.equals(song.title)) {
+                            return songList.get(i + increment) as Song
                         }
                     }
                 }
@@ -54,47 +51,44 @@ object SongSelector {
         }
     }
 
-    private fun createSongListToExtractTrack(
-        currentSong: Track,
+    private fun createSongListToExtractSong(
+        currentSong: Song,
         repeatMode: RepeatMode,
         audioRepository: AudioRepository,
         mediaSourceRepository: MediaSourceRepository
-    ): TrackList? {
+    ): SongList? {
         val type = audioRepository.activeType
         val songGroup = mediaSourceRepository.getSpecifiedList(type)!!
         return when (type) {
-            Element.Type.TRACK -> {
-                null
-            }
-            Element.Type.TRACK_LIST -> {
-                val songList = TrackList(songGroup as TrackList)
-                val songBeginToInsert = songList.get(songGroup.size - 1) as Track
-                val songEndToInsert = songList.get(0) as Track
+            LibraryType.SONGS -> {
+                val songList = SongList(songGroup)
+                val songBeginToInsert = songList.get(songGroup.size - 1) as Song
+                val songEndToInsert = songList.get(0) as Song
                 songList.add(0, songBeginToInsert)
                 songList.add(songEndToInsert)
                 songList
             }
-            Element.Type.ALBUM, Element.Type.ARTISTS, Element.Type.GENRE -> {
-                var songList: TrackList? = null
-                songGroup as TrackListGroup
+            LibraryType.ALBUMS, LibraryType.ARTISTS, LibraryType.GENRES -> {
+                var songList: SongList? = null
+                songGroup as SongGroup
                 val listNum = songGroup.size
                 for (i in 0..(listNum - 1)) {
-                    songList = TrackList(songGroup.get(i) as TrackList)
+                    songList = SongList(songGroup.get(i) as SongList)
                     if (
-                        ((type == Element.Type.ALBUM)   && (currentSong.albumTitle.equals(songList.title))) or
-                        ((type == Element.Type.ARTISTS) && (currentSong.artists.equals(songList.title))) or
-                        ((type == Element.Type.GENRE)   && (currentSong.genre.equals(songList.title)))
+                        ((type == LibraryType.ALBUMS)  && (currentSong.albumTitle.equals(songList.title))) or
+                        ((type == LibraryType.ARTISTS) && (currentSong.artists.equals(songList.title))) or
+                        ((type == LibraryType.GENRES)  && (currentSong.genre.equals(songList.title)))
                     ) {
                         if (repeatMode == RepeatMode.REPEAT) {
-                            val songBeginToInsert = songList.get(songList.size - 1) as Track
-                            val songEndToInsert = songList.get(0) as Track
+                            val songBeginToInsert = songList.get(songList.size - 1) as Song
+                            val songEndToInsert = songList.get(0) as Song
                             songList.add(0, songBeginToInsert)
                             songList.add(songEndToInsert)
                         } else if (repeatMode == RepeatMode.REPEAT_ALL) {
-                            val previousSongList = songGroup.get((i + listNum - 1) % listNum) as TrackList
-                            val nextSongList = songGroup.get((i + 1) % listNum) as TrackList
-                            val songBeginToInsert = previousSongList.get(previousSongList.size - 1) as Track
-                            val songEndToInsert = nextSongList.get(0) as Track
+                            val previousSongList = songGroup.get((i + listNum - 1) % listNum) as SongList
+                            val nextSongList = songGroup.get((i + 1) % listNum) as SongList
+                            val songBeginToInsert = previousSongList.get(previousSongList.size - 1) as Song
+                            val songEndToInsert = nextSongList.get(0) as Song
                             songList.add(0, songBeginToInsert)
                             songList.add(songEndToInsert)
                         }

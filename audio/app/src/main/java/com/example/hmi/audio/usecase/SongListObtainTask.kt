@@ -1,8 +1,8 @@
 package com.example.hmi.audio.usecase
 
-import com.example.hmi.audio.common.Element
-import com.example.hmi.audio.common.Track
-import com.example.hmi.audio.common.TrackList
+import com.example.hmi.audio.common.LibraryType
+import com.example.hmi.audio.common.SongGroupEntry
+import com.example.hmi.audio.common.SongList
 import com.example.hmi.audio.repository.mediasource.MediaSourceRepository
 
 import io.reactivex.Single
@@ -11,7 +11,7 @@ class SongListObtainTask(
         private val mediaSourceRepository: MediaSourceRepository
 ) {
 
-    fun execute(type: Element.Type): Single<TrackList> {
+    fun execute(type: LibraryType): Single<SongList> {
         return Single.fromCallable {
             mediaSourceRepository.getSpecifiedList(type)
         }

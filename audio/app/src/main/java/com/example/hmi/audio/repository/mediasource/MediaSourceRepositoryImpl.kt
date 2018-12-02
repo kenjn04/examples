@@ -1,8 +1,9 @@
 package com.example.hmi.audio.repository.mediasource
 
-import com.example.hmi.audio.common.Element
+import com.example.hmi.audio.common.LibraryType
+import com.example.hmi.audio.common.SongGroupEntry
 import com.example.hmi.audio.common.MediaSource
-import com.example.hmi.audio.common.TrackList
+import com.example.hmi.audio.common.SongList
 import com.example.hmi.audio.repository.mediasource.dataprovider.AssetDataProvider
 import com.example.hmi.audio.repository.mediasource.dataprovider.MediaDataProvider
 import com.example.hmi.audio.repository.mediasource.dataprovider.USBDataProvider
@@ -18,13 +19,12 @@ class MediaSourceRepositoryImpl private constructor(
         dataProvider = assetDataProvider
     }
 
-    override fun getSpecifiedList(type: Element.Type): TrackList? {
+    override fun getSpecifiedList(type: LibraryType): SongList? {
         return when (type) {
-            Element.Type.TRACK      -> null
-            Element.Type.TRACK_LIST -> dataProvider.trackList
-            Element.Type.ALBUM      -> dataProvider.albumList
-            Element.Type.ARTISTS    -> dataProvider.artistsList
-            Element.Type.GENRE      -> dataProvider.genreList
+            LibraryType.SONGS   -> dataProvider.songList
+            LibraryType.ALBUMS  -> dataProvider.albums
+            LibraryType.ARTISTS -> dataProvider.artists
+            LibraryType.GENRES  -> dataProvider.genres
         }
     }
 

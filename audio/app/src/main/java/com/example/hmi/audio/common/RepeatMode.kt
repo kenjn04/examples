@@ -1,5 +1,8 @@
 package com.example.hmi.audio.common
 
+/**
+ * The mode of repeat for playing song
+ */
 enum class RepeatMode {
 
     NONE {

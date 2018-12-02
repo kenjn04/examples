@@ -6,7 +6,7 @@
 
     <data>
         <import type="android.view.View" />
-        <import type="com.example.hmi.audio.common.Element" />
+        <import type="com.example.hmi.audio.common.LibraryType" />
         <variable
             name="viewModel"
             type="com.example.hmi.audio.viewmodel.MediaViewModel"
@@ -30,7 +30,7 @@
                 android:text="TRACK"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:onClick="@{() -> viewModel.getSongList(Element.Type.TRACK_LIST)}"
+                android:onClick="@{() -> viewModel.getSongList(LibraryType.SONGS)}"
                 android:layout_weight="1"
             />
 
@@ -39,7 +39,7 @@
                 android:text="ALBUM"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:onClick="@{() -> viewModel.getSongList(Element.Type.ALBUM)}"
+                android:onClick="@{() -> viewModel.getSongList(LibraryType.ALBUMS)}"
                 android:layout_weight="1"
             />
 
@@ -48,7 +48,7 @@
                 android:text="ARTISTS"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:onClick="@{() -> viewModel.getSongList(Element.Type.ARTISTS)}"
+                android:onClick="@{() -> viewModel.getSongList(LibraryType.ARTISTS)}"
                 android:layout_weight="1"
             />
 
@@ -57,17 +57,17 @@
                 android:text="GENRE"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:onClick="@{() -> viewModel.getSongList(Element.Type.GENRE)}"
+                android:onClick="@{() -> viewModel.getSongList(LibraryType.GENRES)}"
                 android:layout_weight="1"
             />
 
         </LinearLayout>
         <ListView
-            android:id="@+id/trackList"
+            android:id="@+id/songGroup"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            app:items="@{viewModel.trackList}"
+            app:items="@{viewModel.songGroup}"
         />
 
     </LinearLayout>

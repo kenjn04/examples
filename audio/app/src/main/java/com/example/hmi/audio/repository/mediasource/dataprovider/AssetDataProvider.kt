@@ -8,18 +8,18 @@ import java.io.IOException
 
 class AssetDataProvider private constructor(context: Context) : MediaDataProvider() {
 
-    override var trackList   = TrackList("whole track")
-    override var albumList   = TrackListGroup(Element.Type.ALBUM)
-    override var artistsList = TrackListGroup(Element.Type.ARTISTS)
-    override var genreList   = TrackListGroup(Element.Type.GENRE)
+    override var songList = SongList("Whole Songs")
+    override var albums   = SongGroup(LibraryType.ALBUMS)
+    override var artists  = SongGroup(LibraryType.ARTISTS)
+    override var genres   = SongGroup(LibraryType.GENRES)
 
     init {
-        createTrackList(context)
-        createListsOtherThanWholeTrack()
+        createSongList(context)
+        createListsOtherThanWholeSongs()
         sortEachList()
     }
 
-    private fun createTrackList(context: Context) {
+    private fun createSongList(context: Context) {
 
         var fileList: Array<String>? = null
         try {
@@ -36,8 +36,8 @@ class AssetDataProvider private constructor(context: Context) : MediaDataProvide
                 } catch (e: IOException) {
                     e.printStackTrace()
                 }
-                val track = Track(file, afd!!)
-                trackList.add(track)
+                val song = Song(file, afd!!)
+                songList.add(song)
             }
         }
     }

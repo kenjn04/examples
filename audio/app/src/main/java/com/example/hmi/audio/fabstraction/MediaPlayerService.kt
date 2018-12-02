@@ -5,7 +5,7 @@ import android.content.Intent
 import android.media.MediaPlayer
 import android.os.*
 import com.example.hmi.audio.common.PlayingSongData
-import com.example.hmi.audio.common.Track
+import com.example.hmi.audio.common.Song
 
 import java.io.IOException
 
@@ -31,7 +31,7 @@ class MediaPlayerService : Service() {
         return binder
     }
 
-    var track: Track? = null
+    var song: Song? = null
         set(song) {
             field = song
             initializeMediaPlayer()
@@ -47,9 +47,9 @@ class MediaPlayerService : Service() {
         mediaPlayer.reset()
         try {
             mediaPlayer.setDataSource(
-                track!!.fileDescriptor,
-                track!!.aFileDescriptor.startOffset,
-                track!!.aFileDescriptor.length
+                song!!.fileDescriptor,
+                song!!.aFileDescriptor.startOffset,
+                song!!.aFileDescriptor.length
             )
             mediaPlayer.prepare()
         } catch (e: IOException) {
@@ -97,11 +97,11 @@ class MediaPlayerService : Service() {
     }
 
     private fun onMetadataUpdate() {
-        if (track != null) {
+        if (song != null) {
             for (client in clients) {
                 client.onMetadataUpdate(
                     PlayingSongData(
-                        track!!,
+                        song!!,
                         mediaPlayer.currentPosition,
                         mediaPlayer.duration,
                         mediaPlayer.isPlaying

@@ -4,10 +4,10 @@ import com.example.hmi.audio.common.*
 
 class USBDataProvider private constructor(): MediaDataProvider() {
 
-    override var trackList   = TrackList("whole track")
-    override var albumList   = TrackListGroup(Element.Type.ALBUM)
-    override var artistsList = TrackListGroup(Element.Type.ARTISTS)
-    override var genreList   = TrackListGroup(Element.Type.GENRE)
+    override var songList = SongList("Whole Songs")
+    override var albums   = SongGroup(LibraryType.ALBUMS)
+    override var artists  = SongGroup(LibraryType.ARTISTS)
+    override var genres   = SongGroup(LibraryType.GENRES)
 
     companion object {
 
