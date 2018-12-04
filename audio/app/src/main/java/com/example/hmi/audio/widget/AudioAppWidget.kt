@@ -8,6 +8,7 @@ import android.content.Intent
 import android.graphics.BitmapFactory
 import android.widget.RemoteViews
 import com.example.hmi.audio.R
+import com.example.hmi.audio.common.MediaOperation
 import com.example.hmi.audio.common.Song
 
 /**
@@ -15,14 +16,14 @@ import com.example.hmi.audio.common.Song
  */
 class AudioAppWidget : AppWidgetProvider() {
 
-    private val audioAppWidgetPresenter: AudioAppWidgetPresenter = AudioAppWidgetPresenter(this)
+    private val audioWidgetPresenter: AudioWidgetPresenter = AudioWidgetPresenter(this)
 
     private val REQUEST_TO_PREVIOUS_SONG = "REQUEST_TO_PREVIOUS_SONG"
     private val REQUEST_TO_NEXT_SONG     = "REQUEST_TO_NEXT_SONG"
 
     override fun onUpdate(context: Context, appWidgetManager: AppWidgetManager, appWidgetIds: IntArray) {
         // There may be multiple widgets active, so update all of them
-        audioAppWidgetPresenter.requestUpdate(context, appWidgetManager, appWidgetIds)
+        audioWidgetPresenter.requestUpdate(context, appWidgetManager, appWidgetIds)
     }
 
     override fun onEnabled(context: Context) {
@@ -42,10 +43,10 @@ class AudioAppWidget : AppWidgetProvider() {
         if ((intent != null) and (appWidgetId != AppWidgetManager.INVALID_APPWIDGET_ID)) {
             when (intent!!.action) {
                 REQUEST_TO_PREVIOUS_SONG -> {
-                    audioAppWidgetPresenter.requestPreviousSong(context!!, appWidgetId!!)
+                    audioWidgetPresenter.operateSong(MediaOperation.PREVIOUS_SONG)
                 }
                 REQUEST_TO_NEXT_SONG -> {
-                    audioAppWidgetPresenter.requestNextSong(context!!, appWidgetId!!)
+                    audioWidgetPresenter.operateSong(MediaOperation.NEXT_SONG)
                 }
             }
         }
