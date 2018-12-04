@@ -61,5 +61,7 @@ class MediaSourceRepositoryImpl private constructor(
             }
             return INSTANCE!!
         }
+
+        fun getInstance() = INSTANCE
     }
 }

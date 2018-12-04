@@ -7,6 +7,7 @@ import android.content.Intent
 import android.content.ServiceConnection
 import android.media.MediaPlayer
 import android.os.IBinder
+import android.provider.MediaStore
 import com.example.hmi.audio.common.Song
 import com.example.hmi.audio.common.PlayingSongData
 
@@ -94,5 +95,7 @@ class AudioFAbstraction private constructor(
             }
             return INSTANCE!!
         }
+
+        fun getInstance() = INSTANCE
     }
 }

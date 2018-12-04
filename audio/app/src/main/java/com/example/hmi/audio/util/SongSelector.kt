@@ -8,25 +8,23 @@ object SongSelector {
 
     fun selectPreviousSong(
         currentSong: Song,
-        repeatMode: RepeatMode,
         audioRepository: AudioRepository,
         mediaSourceRepository: MediaSourceRepository
-    ): Song? = selectSong(currentSong, repeatMode, audioRepository, mediaSourceRepository, -1)
+    ): Song? = selectSong(currentSong, audioRepository, mediaSourceRepository, -1)
 
     fun selectNextSong(
         currentSong: Song,
-        repeatMode: RepeatMode,
         audioRepository: AudioRepository,
         mediaSourceRepository: MediaSourceRepository
-    ): Song? = selectSong(currentSong, repeatMode, audioRepository, mediaSourceRepository, +1)
+    ): Song? = selectSong(currentSong, audioRepository, mediaSourceRepository, +1)
 
     private fun selectSong(
         currentSong: Song,
-        repeatMode: RepeatMode,
         audioRepository: AudioRepository,
         mediaSourceRepository: MediaSourceRepository,
         increment: Int
     ): Song? {
+        val repeatMode = audioRepository.repeatMode.value!!
         when (repeatMode) {
             RepeatMode.NONE -> {
                 return null
