@@ -1,6 +1,8 @@
 package com.example.hmi.audio
 
 import android.app.Application
+import android.appwidget.AppWidgetManager
+import android.content.Intent
 import com.example.hmi.audio.fabstraction.AudioFAbstraction
 import com.example.hmi.audio.repository.audio.AudioRepository
 import com.example.hmi.audio.repository.audio.AudioRepositoryImpl
@@ -10,6 +12,7 @@ import com.example.hmi.audio.repository.mediasource.MediaSourceRepositoryImpl
 import com.example.hmi.audio.repository.mediasource.dataprovider.USBDataProvider
 import com.example.hmi.audio.usecase.*
 import com.example.hmi.audio.viewmodel.MediaViewModel
+import com.example.hmi.audio.widget.AudioAppWidget
 import org.koin.android.ext.android.startKoin
 import org.koin.android.ext.koin.androidApplication
 import org.koin.android.ext.koin.androidContext
@@ -27,6 +30,16 @@ class AudioApplication : Application() {
                 this.FAModule,
                 this.repositoryModule
         ))
+
+        requestUpdateWidget()
+
+    }
+
+    fun requestUpdateWidget() {
+        val intent = Intent(baseContext, AudioAppWidget::class.java).apply {
+            action = AppWidgetManager.ACTION_APPWIDGET_UPDATE
+        }
+        sendBroadcast(intent)
     }
 
     // Koin dependency injection

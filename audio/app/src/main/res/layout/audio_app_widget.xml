@@ -25,6 +25,13 @@
         android:layout_height="wrap_content"
         android:gravity="center"
     />
+    <ProgressBar
+            android:id="@+id/progress_bar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:progressTint="#cc0022"
+            style="?android:attr/progressBarStyleHorizontal"
+    />
     <LinearLayout
         android:orientation="horizontal"
         android:layout_width="match_parent"
