@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.example.hmi.home;
+package com.example.hmi.home.selectwidget;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
@@ -30,6 +30,7 @@ import com.android.launcher3.model.WidgetItem;
 import com.android.launcher3.util.LabelComparator;
 import com.android.launcher3.util.MultiHashMap;
 import com.android.launcher3.util.PackageUserKey;
+import com.example.hmi.home.R;
 
 import java.util.*;
 

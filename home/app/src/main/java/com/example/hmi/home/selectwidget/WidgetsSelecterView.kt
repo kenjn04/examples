@@ -1,4 +1,4 @@
-package com.example.hmi.home
+package com.example.hmi.home.selectwidget
 
 import android.content.Context
 import android.graphics.Point
@@ -8,6 +8,8 @@ import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import com.example.hmi.home.Launcher
+import com.example.hmi.home.R
 
 /**
  * The widgets list view container.

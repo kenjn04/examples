@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.example.hmi.home;
+package com.example.hmi.home.selectwidget;
 
 import android.content.Context;
 import android.graphics.Canvas;
@@ -22,6 +22,7 @@ import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.ViewGroup;
+import com.example.hmi.home.R;
 
 
 /**

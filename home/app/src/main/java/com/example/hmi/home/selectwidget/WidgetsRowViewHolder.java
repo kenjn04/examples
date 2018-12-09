@@ -13,21 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.example.hmi.home;
+package com.example.hmi.home.selectwidget;
 
 import android.support.v7.widget.RecyclerView.ViewHolder;
 import android.view.ViewGroup;
-import com.android.launcher3.BubbleTextView;
+import android.widget.TextView;
+import com.example.hmi.home.R;
 
 public class WidgetsRowViewHolder extends ViewHolder {
 
     public final ViewGroup cellContainer;
-    public final BubbleTextView title;
+
+    public final TextView title;
+
+    // TODO: What is BubbleTextView?
+//    public final BubbleTextView title;
 
     public WidgetsRowViewHolder(ViewGroup v) {
         super(v);
 
         cellContainer = (ViewGroup) v.findViewById(R.id.widgets_cell_list);
-        title = (BubbleTextView) v.findViewById(R.id.section);
+        title = (TextView) v.findViewById(R.id.section);
     }
 }
