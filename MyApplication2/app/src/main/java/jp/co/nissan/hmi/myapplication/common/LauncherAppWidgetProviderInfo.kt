@@ -2,14 +2,11 @@ package jp.co.nissan.hmi.myapplication.common
 
 import android.appwidget.AppWidgetProviderInfo
 import android.content.Context
-import android.content.pm.PackageManager
 import android.os.Parcel
 
 class LauncherAppWidgetProviderInfo private constructor(parcel: Parcel)
     : AppWidgetProviderInfo(parcel)
 {
-
-    fun getLabel(packageManager: PackageManager) = super.loadLabel(packageManager)
 
     companion object {
         fun fromProviderInfo(context: Context, info: AppWidgetProviderInfo)

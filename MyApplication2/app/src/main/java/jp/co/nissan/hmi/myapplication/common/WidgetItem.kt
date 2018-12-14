@@ -1,21 +1,11 @@
 package jp.co.nissan.hmi.myapplication.common
 
 import android.content.ComponentName
-import android.content.pm.PackageManager
 import android.os.UserHandle
 import android.util.Log
 import jp.co.nissan.hmi.myapplication.common.LauncherAppWidgetProviderInfo
 
-class WidgetItem(
-    val widgetInfo: LauncherAppWidgetProviderInfo,
-    packageManager: PackageManager
-) {
-
-    val label: String = widgetInfo.getLabel(packageManager)
-
-    // TODO: To be updated
-    val spanX:Int = 3
-    val spanY:Int = 5
+class WidgetItem(val widgetInfo: LauncherAppWidgetProviderInfo) {
 
     val componentName: ComponentName
         get() = widgetInfo.provider
@@ -25,6 +15,5 @@ class WidgetItem(
 
     val userHandle: UserHandle
         get() = widgetInfo.profile
-
 
 }
