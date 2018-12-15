@@ -7,7 +7,7 @@ apply plugin: 'kotlin-android-extensions'
 android {
     compileSdkVersion 28
     defaultConfig {
-        applicationId "jp.co.nissan.hmi.myapplication"
+        applicationId "com.example.hmi.myapplication2"
         minSdkVersion 28
         targetSdkVersion 28
         versionCode 1
@@ -31,5 +31,5 @@ dependencies {
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
 
-    implementation 'com.android.support:recyclerview-v7:28.0.0'
+    implementation 'com.android.support:gridlayout-v7:28.0.0'
 }

@@ -1,4 +1,4 @@
-package jp.co.nissan.hmi.myapplication
+package com.example.hmi.myapplication2
 
 import org.junit.Test
 

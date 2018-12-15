@@ -1,4 +1,4 @@
-package jp.co.nissan.hmi.myapplication
+package com.example.hmi.myapplication2
 
 import android.support.test.InstrumentationRegistry
 import android.support.test.runner.AndroidJUnit4
@@ -19,6 +19,6 @@ class ExampleInstrumentedTest {
     fun useAppContext() {
         // Context of the app under test.
         val appContext = InstrumentationRegistry.getTargetContext()
-        assertEquals("jp.co.nissan.hmi.myapplication", appContext.packageName)
+        assertEquals("com.example.hmi.myapplication2", appContext.packageName)
     }
 }
