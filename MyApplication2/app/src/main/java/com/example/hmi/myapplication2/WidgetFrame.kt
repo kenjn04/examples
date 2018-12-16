@@ -1,15 +1,9 @@
 package com.example.hmi.myapplication2
 
-import android.content.ClipData
 import android.content.Context
-import android.text.method.Touch
 import android.util.AttributeSet
-import android.util.Log
 import android.view.MotionEvent
-import android.view.View
-import android.view.ViewGroup
 import android.widget.FrameLayout
-import android.widget.GridLayout
 
 class WidgetFrame(
     context: Context,
@@ -17,18 +11,17 @@ class WidgetFrame(
     defStyle: Int
 ): FrameLayout(context, attrs, defStyle) {
 
-    var spanX: Int = 2
+    var spanX: Int = 1
     var spanY: Int = 1
 
     private var launcher: Launcher = context as Launcher
 
     private var widgetContainer: WidgetContainerView
 
-    private var layoutParams: FrameLayout.LayoutParams? = null
-
-    private var originalLayoutParams: FrameLayout.LayoutParams? = null
-
     private var originalTouchPosition: TouchPosition? = null
+
+    private var originalTranslationX: Float? = null
+    private var originalTranslationY: Float? = null
 
     constructor(context: Context) : this(context, null, 0)
     constructor(context: Context, attrs: AttributeSet) : this(context, attrs, 0)
@@ -40,11 +33,6 @@ class WidgetFrame(
 
     init {
         widgetContainer = launcher.widgetContainer
-    }
-
-    override fun setLayoutParams(params: ViewGroup.LayoutParams?) {
-        layoutParams = params as LayoutParams
-        super.setLayoutParams(params)
     }
 
     override fun onTouchEvent(event: MotionEvent?): Boolean {
@@ -65,37 +53,36 @@ class WidgetFrame(
 
     private fun movePositionByDrag(currentTouchPosition: TouchPosition) {
         val touchPositionDiff = currentTouchPosition - originalTouchPosition!!
-        val newLayoutParams = FrameLayout.LayoutParams(originalLayoutParams).apply {
-            leftMargin += touchPositionDiff.left.toInt()
-            topMargin += touchPositionDiff.top.toInt()
-        }
-        super.setLayoutParams(newLayoutParams)
+        translationX += touchPositionDiff.x
+        translationY += touchPositionDiff.y
     }
 
     private fun startDrag(x: Float, y: Float) {
         originalTouchPosition = TouchPosition(x, y)
-        originalLayoutParams = layoutParams
+        originalTranslationX = translationX
+        originalTranslationY = translationY
 
         /** To move the widget most front */
         widgetContainer.removeView(this)
         widgetContainer.addView(this)
 
-        /** notify WidgetContainer to start drag with which widget */
+        /** notify WidgetContainer to start drag with this view */
         widgetContainer.startWidgetDrag(this)
     }
 
     private fun endDrag() {
         if (!widgetContainer.endWidgetDrag()) {
-            layoutParams = originalLayoutParams
-            super.setLayoutParams(layoutParams)
+            translationX = originalTranslationX!!
+            translationY = originalTranslationY!!
         }
         originalTouchPosition = null
-        originalLayoutParams = null
+        originalTranslationX = null
+        originalTranslationY = null
     }
 
-    class TouchPosition(val left: Float, val top: Float) {
+    class TouchPosition(val x: Float, val y: Float) {
         operator fun minus(position: TouchPosition): TouchPosition {
-            return TouchPosition(left - position.left, top - position.top)
+            return TouchPosition(x - position.x, y - position.y)
         }
     }
 }
