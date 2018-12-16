@@ -102,6 +102,11 @@ class WidgetContainerView(
         val draggingWidget = draggingWidget!!
         this.draggingWidget = null
 
+        return rearrangeWidgetIfRequired(draggingWidget, true)
+    }
+
+    private fun rearrangeWidgetIfRequired(draggingWidget: WidgetFrame, includeDragWidget: Boolean): Boolean {
+
         var positionX = draggingWidget.translationX + (draggingWidget.spanX * widgetFrameWidth) / 2
         var positionY = draggingWidget.translationY + (draggingWidget.spanY * widgetFrameHeight) / 2
         positionX = minOf(maxOf(positionX, 0F), (widgetFrameWidth * numX - 1).toFloat())
@@ -114,10 +119,8 @@ class WidgetContainerView(
 
         val toX = (positionX / widgetFrameWidth).toInt()
         val toY = (positionY / widgetFrameHeight).toInt()
-        if (rearrangeWidgets(draggingWidget, toX, toY, true)) {
-            return true
-        }
-        return false
+
+        return rearrangeWidgets(draggingWidget, toX, toY, includeDragWidget)
     }
 
     private fun isWidgetRearrangeRequired(widget: WidgetFrame, positionX: Float, positionY: Float): Boolean {
@@ -126,29 +129,36 @@ class WidgetContainerView(
 
     data class WidgetRearrangeInfo(val widget: WidgetFrame, val x: Int, val y: Int, val move: Boolean)
 
-    private fun rearrangeWidgets(widget: WidgetFrame, x: Int, y: Int, includeDragWidget: Boolean): Boolean {
+    private fun rearrangeWidgets(draggingWidget: WidgetFrame, x: Int, y: Int, includeDragWidget: Boolean): Boolean {
 
         val moveWidgetsQueue = Queue<WidgetRearrangeInfo>()
-        moveWidgetsQueue.push(WidgetRearrangeInfo(widget, x, y, includeDragWidget))
+        moveWidgetsQueue.push(WidgetRearrangeInfo(draggingWidget, x, y, includeDragWidget))
 
         val widgetRearrangeAnimators = mutableListOf<Animator>()
         while (!moveWidgetsQueue.isEmpty()) {
-            val moveWidget = moveWidgetsQueue.peek().widget
+            val widget = moveWidgetsQueue.peek().widget
             val toX = moveWidgetsQueue.peek().x
             val toY = moveWidgetsQueue.peek().y
+            val move = moveWidgetsQueue.peek().move
             moveWidgetsQueue.pop()
 
             if (!isWidgetMovable(widget, toX, toY)) {
                 return false
             }
-            widgetRearrangeAnimators.add(createWidgetRearrangeAnimator(widget, x, y))
+            if (move) {
+                widgetRearrangeAnimators.add(createWidgetRearrangeAnimator(widget, x, y))
+            }
 
             removeWidgetFromList(widget)
             val replacedWidgetList = addWidgetToList(widget, x, y)
             for (replacedWidget in replacedWidgetList) {
                 // TODO: Confirm how to move the widget
+                widgetRearrangeAnimators.add(createWidgetRearrangeAnimator(replacedWidget, 0, 1))
+break
             }
+break
         }
+        Log.d("zzzzzz", widgetRearrangeAnimators.size.toString())
 
         AnimatorSet().apply {
             playTogether(widgetRearrangeAnimators)
@@ -187,7 +197,7 @@ class WidgetContainerView(
     override fun onInterceptTouchEvent(ev: MotionEvent?): Boolean {
         when (ev!!.action) {
             MotionEvent.ACTION_MOVE -> {
-                Log.d("aaaaa2", ev.x.toString() + ev.y.toString())
+                rearrangeWidgetIfRequired(draggingWidget!!, false)
             }
             MotionEvent.ACTION_DOWN -> {
             }
