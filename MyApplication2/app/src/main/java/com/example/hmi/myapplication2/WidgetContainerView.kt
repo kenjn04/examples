@@ -5,11 +5,13 @@ import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
 import android.animation.PropertyValuesHolder
 import android.content.Context
+import android.graphics.Color
 import android.util.AttributeSet
 import android.util.Log
 import android.widget.FrameLayout
 import android.view.Gravity
 import android.view.MotionEvent
+import android.view.View
 
 class WidgetContainerView(
     context: Context,
@@ -29,11 +31,17 @@ class WidgetContainerView(
 
     private var draggingWidget: WidgetFrame? = null
 
+    private val shadowFrame: FrameLayout = FrameLayout(context)
+
     constructor(context: Context) : this(context, null, 0)
     constructor(context: Context, attrs: AttributeSet) : this(context, attrs, 0)
 
     init {
         initializeWidgetList()
+
+        shadowFrame.visibility = View.GONE
+        shadowFrame.setBackgroundColor(Color.GRAY)
+        addView(shadowFrame)
     }
 
     private fun initializeWidgetList() {
@@ -93,8 +101,66 @@ class WidgetContainerView(
         addView(widget)
     }
 
+    private fun enableShadowFrame() {
+
+        shadowFrame.layoutParams.apply {
+            width = draggingWidget!!.spanX * widgetFrameWidth
+            height = draggingWidget!!.spanY * widgetFrameHeight
+        }
+        moveShadowFrame()
+        shadowFrame.visibility = View.VISIBLE
+    }
+
+    private fun moveShadowFrame() {
+
+        val widget = draggingWidget!!
+        val positionLeft = widget.translationX
+        val positionRight = positionLeft + widgetFrameWidth * widget.spanX
+        val positionTop = widget.translationY
+        val positionBottom = positionTop + widgetFrameHeight * widget.spanY
+
+        var toX: Int = -1
+        var toY: Int = -1
+        var maxSize: Float = 0F
+        for (x in 0..(numX - widget.spanX)) {
+            for (y in 0..(numY - widget.spanY)) {
+                val shadowLeft = x * widgetFrameWidth
+                val shadowRight = shadowLeft + widgetFrameWidth * widget.spanX
+                val shadowTop = y * widgetFrameHeight
+                val shadowBottom = shadowTop + widgetFrameHeight * widget.spanY
+
+                var width: Float = 0F
+                var height: Float = 0F
+                if ((shadowLeft <= positionLeft) and (positionLeft < shadowRight)) {
+                    width = shadowRight - positionLeft
+                } else if ((positionLeft <= shadowLeft) and (shadowLeft < positionRight)) {
+                    width = positionRight - shadowLeft
+                }
+                if ((shadowTop <= positionTop) and (positionTop < shadowBottom)) {
+                    height = shadowBottom - positionTop
+                } else if ((positionTop <= shadowTop) and (shadowTop < positionBottom)) {
+                    height = positionBottom - shadowTop
+                }
+                val size = width * height
+                if (size > maxSize) {
+                    maxSize = size
+                    toX = x
+                    toY = y
+                }
+            }
+        }
+        if (maxSize == 0F) {
+            return
+        }
+        shadowFrame.apply {
+            translationX = (toX * widgetFrameWidth).toFloat()
+            translationY = (toY * widgetFrameHeight).toFloat()
+        }
+    }
+
     fun startWidgetDrag(widget: WidgetFrame) {
         draggingWidget = widget
+        enableShadowFrame()
     }
 
     fun endWidgetDrag(): Boolean {
@@ -102,29 +168,17 @@ class WidgetContainerView(
         val draggingWidget = draggingWidget!!
         this.draggingWidget = null
 
+        shadowFrame.visibility = View.GONE
+
         return rearrangeWidgetIfRequired(draggingWidget, true)
     }
 
     private fun rearrangeWidgetIfRequired(draggingWidget: WidgetFrame, includeDragWidget: Boolean): Boolean {
 
-        var positionX = draggingWidget.translationX + (draggingWidget.spanX * widgetFrameWidth) / 2
-        var positionY = draggingWidget.translationY + (draggingWidget.spanY * widgetFrameHeight) / 2
-        positionX = minOf(maxOf(positionX, 0F), (widgetFrameWidth * numX - 1).toFloat())
-        positionY = minOf(maxOf(positionY, 0F), (widgetFrameHeight * numY - 1).toFloat())
-
-        if (!isWidgetRearrangeRequired(draggingWidget, positionX, positionY)) {
-            // Nothing to do
-            return true
-        }
-
-        val toX = (positionX / widgetFrameWidth).toInt()
-        val toY = (positionY / widgetFrameHeight).toInt()
+        val toX = (shadowFrame.translationX / widgetFrameWidth).toInt()
+        val toY = (shadowFrame.translationY / widgetFrameHeight).toInt()
 
         return rearrangeWidgets(draggingWidget, toX, toY, includeDragWidget)
-    }
-
-    private fun isWidgetRearrangeRequired(widget: WidgetFrame, positionX: Float, positionY: Float): Boolean {
-        return true
     }
 
     data class WidgetRearrangeInfo(val widget: WidgetFrame, val x: Int, val y: Int, val move: Boolean)
@@ -158,7 +212,6 @@ break
             }
 break
         }
-        Log.d("zzzzzz", widgetRearrangeAnimators.size.toString())
 
         AnimatorSet().apply {
             playTogether(widgetRearrangeAnimators)
@@ -197,6 +250,7 @@ break
     override fun onInterceptTouchEvent(ev: MotionEvent?): Boolean {
         when (ev!!.action) {
             MotionEvent.ACTION_MOVE -> {
+                moveShadowFrame()
                 rearrangeWidgetIfRequired(draggingWidget!!, false)
             }
             MotionEvent.ACTION_DOWN -> {
