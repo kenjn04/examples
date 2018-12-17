@@ -13,7 +13,7 @@ import android.view.Gravity
 import android.view.MotionEvent
 import android.view.View
 
-class WidgetContainerView(
+class WidgetContainer(
     context: Context,
     attrs: AttributeSet?,
     defStyle: Int

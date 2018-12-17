@@ -16,7 +16,7 @@ class WidgetFrame(
 
     private var launcher: Launcher = context as Launcher
 
-    private var widgetContainer: WidgetContainerView
+    private lateinit var widgetContainer: WidgetContainer
 
     private var originalTouchPosition: TouchPosition? = null
 
@@ -32,7 +32,7 @@ class WidgetFrame(
     }
 
     init {
-        widgetContainer = launcher.widgetContainer
+//        widgetContainer = launcher.widgetContainer
     }
 
     override fun onTouchEvent(event: MotionEvent?): Boolean {

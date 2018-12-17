@@ -7,21 +7,13 @@
         android:layout_height="match_parent"
         tools:context=".Launcher">
 
-    <FrameLayout
-        android:id="@+id/drag_layer"
+    <android.support.v4.view.ViewPager
+        android:id="@+id/workspace"
         android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
     >
-        <com.example.hmi.myapplication2.WidgetContainerView
-                android:id="@+id/widget_container"
-                android:layout_width="@dimen/grid_layout_widget_width_x4"
-                android:layout_height="@dimen/grid_layout_widget_height_x2"
-                android:layout_gravity="center"
-                tools:layout_editor_absoluteY="8dp"
-                tools:layout_editor_absoluteX="8dp"
-        />
-    </FrameLayout>
+    </android.support.v4.view.ViewPager>
 
 </FrameLayout>
 

@@ -3,17 +3,21 @@ package com.example.hmi.myapplication2
 import android.graphics.Color
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.support.v4.view.ViewPager
 import android.util.Log
 import android.widget.FrameLayout
 
 class Launcher : AppCompatActivity() {
 
+    lateinit var workspace: ViewPager
     lateinit var dragLayer: FrameLayout
-    lateinit var widgetContainer: WidgetContainerView
+    lateinit var widgetContainer: WidgetContainer
     private lateinit var frame1: WidgetFrame
     private lateinit var frame2: WidgetFrame
     private lateinit var frame3: WidgetFrame
     private lateinit var frame4: WidgetFrame
+
+    val a = mutableListOf<WidgetContainerFragment>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -24,9 +28,17 @@ class Launcher : AppCompatActivity() {
     }
 
     private fun setViews() {
-        dragLayer = findViewById(R.id.drag_layer)
-        widgetContainer = findViewById(R.id.widget_container)
 
+        workspace = findViewById(R.id.workspace)
+        for (i in 0..4) {
+            a.add(WidgetContainerFragment())
+        }
+        val adapter = WidgetContainerAdapter(supportFragmentManager, a)
+        workspace.adapter = adapter
+    }
+
+    override fun onStart() {
+        super.onStart()
         frame1 = WidgetFrame(this, 1, 1)
         frame2 = WidgetFrame(this, 1, 1)
         frame3 = WidgetFrame(this, 2, 2)
@@ -37,10 +49,13 @@ class Launcher : AppCompatActivity() {
         frame3.setBackgroundColor(Color.BLUE)
         frame4.setBackgroundColor(Color.BLACK)
 
+        /*
         widgetContainer.addWidget(frame1, 0, 0)
         widgetContainer.addWidget(frame2, 1, 0)
         widgetContainer.addWidget(frame3, 2, 0)
         widgetContainer.addWidget(frame4, 0, 1)
+        */
+        a[0].addWidget(frame1, 0, 0)
     }
 
     private fun testQueue() {
