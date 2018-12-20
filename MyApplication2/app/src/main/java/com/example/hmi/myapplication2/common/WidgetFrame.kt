@@ -1,4 +1,4 @@
-package com.example.hmi.myapplication2
+package com.example.hmi.myapplication2.common
 
 import android.content.Context
 import android.util.AttributeSet
@@ -6,7 +6,8 @@ import android.util.Log
 import android.view.MotionEvent
 import android.view.View
 import android.widget.FrameLayout
-import com.example.hmi.myapplication2.common.LauncherMode
+import com.example.hmi.myapplication2.Launcher
+import com.example.hmi.myapplication2.WidgetContainerView
 import com.example.hmi.myapplication2.util.DraggingHelper
 
 class WidgetFrame(
@@ -46,7 +47,7 @@ class WidgetFrame(
                 launcher.transitMode(LauncherMode.REARRANGE)
             }
             LauncherMode.REARRANGE -> {
-                launcher.workspace.widgetDragging = true
+                launcher.workspace.containerConnector.widgetDragging = true
                 dragEnabled = true
             }
         }
@@ -91,11 +92,13 @@ class WidgetFrame(
             }
             MotionEvent.ACTION_DOWN -> {
                 Log.d("aaabbdddd " + TAG, "ACTION_DOWN " + translationX + " " + translationY)
+                Log.d("aaabbdddd " + TAG, "ACTION_DOWN " + widgetContainerView.childCount)
                 widgetContainerView.removeView(this)
-                translationX += 60
-                translationY += 0
-                launcher.launcherFrame.addView(this)
-                Log.d("aaabbdddd " + TAG, "ACTION_DOWN " + translationX + " " + translationY)
+                Log.d("aaabbdddd " + TAG, "ACTION_DOWN " + widgetContainerView.childCount)
+                translationX += widgetContainerView.relativeTranslationX
+                translationY += widgetContainerView.translationY
+                launcher.workspace.addView(this)
+                Log.d("aaabbdddd " + TAG, "ACTION_DOWN " + translationX + " " + widgetContainerView.translationX)
                 if (dragEnabled) {
                     startDragging()
                     return draggingHelper.startDragging(event.x, event.y)
@@ -105,7 +108,7 @@ class WidgetFrame(
                 Log.d("aaabbd " + TAG, "ACTION_UP")
                 draggingHelper.endDragging(false)
                 dragEnabled = false
-                launcher.workspace.widgetDragging = false
+//                launcher.workspace.widgetDragging = false
                 if (draggingHelper.dragStarted) {
                     widgetContainerView.endWidgetDrag()
                 }
@@ -121,7 +124,7 @@ class WidgetFrame(
 //        widgetContainerView.addView(this)
 
         /** notify WidgetContainerView to start drag with this view */
-        launcher.workspace.startWidgetDrag(this)
+//        launcher.widgetContainerConnector.startWidgetDrag(this)
     }
 
     private val SWIPE_MIN_DISTANCE = 120

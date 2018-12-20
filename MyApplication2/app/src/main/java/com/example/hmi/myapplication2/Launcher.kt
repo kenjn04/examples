@@ -5,18 +5,15 @@ import android.animation.PropertyValuesHolder
 import android.graphics.Color
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import android.view.Gravity
 import android.widget.FrameLayout
 import com.example.hmi.myapplication2.common.LauncherMode
 import com.example.hmi.myapplication2.common.LauncherParams
-import com.example.hmi.myapplication2.util.Queue
+import com.example.hmi.myapplication2.common.WidgetFrame
 
 class Launcher : AppCompatActivity() {
 
-    lateinit var launcherFrame: LauncherFrame
     lateinit var workspace: Workspace
-    var widgetContainers = mutableListOf<WidgetContainerView>()
 
     var mode = LauncherMode.DISPLAY
 
@@ -34,13 +31,9 @@ class Launcher : AppCompatActivity() {
 
     private fun setViews() {
 
-//        widgetContainerView = findViewById(R.id.widet_container)
-//        pagerFrame = findViewById(R.id.pager_frame)
-
-//        pagerLayer = findViewById(R.id.pager_view)
-
-        launcherFrame = findViewById(R.id.launcherFrame)
         workspace = findViewById(R.id.workspace)
+
+        var widgetContainers = mutableListOf<WidgetContainerView>()
 
         val colors = listOf(
             Color.RED,
@@ -54,12 +47,12 @@ class Launcher : AppCompatActivity() {
         for (i in 1..params.widgetContainerNum) {
             val widgetContainer = WidgetContainerView(this)
             val layoutParam = FrameLayout.LayoutParams(
-                params.widgetFrameWidth * params.widgetNumInContainerX,
-                params.widgetFrameHeight * params.widgetNumInContainerY
+                params.displaySize.x, params.displaySize.y
             ).apply {
                 gravity = Gravity.TOP or Gravity.LEFT
             }
             widgetContainer.layoutParams = layoutParam
+            widgetContainer.setBackgroundColor(Color.GRAY)
 
             val frame1 = WidgetFrame(this, 1, 1)
             val frame2 = WidgetFrame(this, 1, 1)
@@ -78,47 +71,16 @@ class Launcher : AppCompatActivity() {
 
             widgetContainers.add(widgetContainer)
         }
-        workspace.widgetContainerViews = widgetContainers
+        workspace.setWidgetContainers(widgetContainers)
     }
 
     fun transitMode(nextMode: LauncherMode) {
         when (nextMode) {
             LauncherMode.REARRANGE -> {
-                createTransitRearrangeModeAnimator().start()
-                workspace.scale = 0.8F
+                workspace.shrink()
                 mode = LauncherMode.REARRANGE
             }
         }
     }
 
-    private fun createTransitRearrangeModeAnimator(): ObjectAnimator {
-
-        var holderX = PropertyValuesHolder.ofFloat("scaleX", 0.8F)
-        var holderY = PropertyValuesHolder.ofFloat("scaleY", 0.8F)
-        var objectAnimator = ObjectAnimator.ofPropertyValuesHolder(workspace, holderX, holderY)
-        objectAnimator.duration = 100
-
-        return objectAnimator
-    }
-
-    private fun testQueue() {
-        val queue = Queue<Int>()
-        queue.push(1)
-        queue.push(2)
-        queue.push(3)
-        queue.push(4)
-        queue.push(5)
-        queue.push(6)
-        Log.d("qqqqq", queue.size.toString())
-        while (!queue.isEmpty()) {
-            Log.d("qqqqq", queue.peek().toString())
-            Log.d("qqqqq", queue.pop().toString())
-        }
-        queue.push(7)
-        Log.d("qqqqqq", queue.contains(7).toString())
-        Log.d("qqqqqq", queue.contains(6).toString())
-        Log.d("qqqqqq", queue.containsSoFar(5).toString())
-        Log.d("qqqqqq", queue.pushIfNotPushedBefore(5).toString())
-        Log.d("qqqqqq", queue.pushIfNotPushedBefore(8).toString())
-    }
 }

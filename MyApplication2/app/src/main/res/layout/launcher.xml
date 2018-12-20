@@ -1,27 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.example.hmi.myapplication2.LauncherFrame
+<FrameLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools"
-        android:id="@+id/launcherFrame"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         tools:context=".Launcher">
 
     <com.example.hmi.myapplication2.Workspace
             android:id="@+id/workspace"
-            android:layout_width="5400dp"
+            android:layout_width="3840dp"
             android:layout_height="match_parent"
     >
-        <!--
-        <com.example.hmi.myapplication2.WidgetContainerViewView
-                android:id="@+id/widet_container"
-                android:orientation="horizontal"
-                android:layout_width="match_parent"
+        <com.example.hmi.myapplication2.WidgetContainerConnector
+                android:id="@+id/widget_container_connector"
+                android:layout_width="7680dp"
                 android:layout_height="match_parent"
         >
-        </com.example.hmi.myapplication2.WidgetContainerViewView>
-        -->
+        </com.example.hmi.myapplication2.WidgetContainerConnector>
     </com.example.hmi.myapplication2.Workspace>
 
-</com.example.hmi.myapplication2.LauncherFrame>
+</FrameLayout>
 

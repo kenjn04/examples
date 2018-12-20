@@ -12,6 +12,7 @@ import android.widget.FrameLayout
 import android.view.Gravity
 import android.view.MotionEvent
 import android.view.View
+import com.example.hmi.myapplication2.common.WidgetFrame
 import com.example.hmi.myapplication2.util.DraggingHelper
 import com.example.hmi.myapplication2.util.Queue
 
@@ -39,14 +40,17 @@ class WidgetContainerView(
 
     private val draggingHelper = DraggingHelper(this)
 
+    var relativeTranslationX: Float = 0F
+
     private val shadowFrame: FrameLayout = FrameLayout(context)
 
     constructor(context: Context) : this(context, null, 0)
     constructor(context: Context, attrs: AttributeSet) : this(context, attrs, 0)
 
+    val params = launcher.params
+
     init {
         // set parameters
-        val params = launcher.params
         numX = params.widgetNumInContainerX
         numY = params.widgetNumInContainerY
         widgetFrameWidth = params.widgetFrameWidth
@@ -54,7 +58,7 @@ class WidgetContainerView(
 
         // set shadow frame
         shadowFrame.visibility = View.GONE
-        shadowFrame.setBackgroundColor(Color.GRAY)
+        shadowFrame.setBackgroundColor(Color.CYAN)
         addView(shadowFrame)
 
         initializeWidgetList()
@@ -109,8 +113,10 @@ class WidgetContainerView(
         layoutParams.gravity = Gravity.TOP or Gravity.LEFT
         widget.layoutParams = layoutParams
 
-        widget.translationX = (x * widgetFrameWidth).toFloat()
-        widget.translationY = (y * widgetFrameHeight).toFloat()
+        val shiftX = (this.params.displaySize.x - this.params.widgetNumInContainerX * this.params.widgetFrameWidth).toFloat() / 2
+        val shiftY = (this.params.displaySize.y - this.params.widgetNumInContainerY * this.params.widgetFrameHeight).toFloat() / 2
+        widget.translationX = x * widgetFrameWidth + shiftX
+        widget.translationY = y * widgetFrameHeight+ shiftY
 
         widget.widgetContainerView = this
 
@@ -273,7 +279,7 @@ break
                     moveShadowFrame()
                 }
                 if (ev.x < 0) {
-//                    launcher.workspace.transitContainerHolder(false, null)
+//                    launcher.widgetContainerConnector.transitContainerHolder(false, null)
                 }
             }
             MotionEvent.ACTION_DOWN -> {
