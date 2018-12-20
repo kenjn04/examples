@@ -1,14 +1,3 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Grid Layout -->
-    <dimen name="grid_layout_widget_width">400dp</dimen>
-    <dimen name="grid_layout_widget_width_x2">800dp</dimen>
-    <dimen name="grid_layout_widget_width_x3">1200dp</dimen>
-    <dimen name="grid_layout_widget_width_x4">1600dp</dimen>
-    <dimen name="grid_layout_widget_height">280dp</dimen>
-    <dimen name="grid_layout_widget_height_x2">560dp</dimen>
-
-    <dimen name="widget_frame_width">400dp</dimen>
-    <dimen name="widget_frame_height">280dp</dimen>
-
 </resources>

@@ -1,19 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout
+<com.example.hmi.myapplication2.LauncherFrame
         xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/launcherFrame"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         tools:context=".Launcher">
 
-    <android.support.v4.view.ViewPager
-        android:id="@+id/workspace"
-        android:orientation="horizontal"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
+    <com.example.hmi.myapplication2.Workspace
+            android:id="@+id/workspace"
+            android:layout_width="5400dp"
+            android:layout_height="match_parent"
     >
-    </android.support.v4.view.ViewPager>
+        <!--
+        <com.example.hmi.myapplication2.WidgetContainerViewView
+                android:id="@+id/widet_container"
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+        >
+        </com.example.hmi.myapplication2.WidgetContainerViewView>
+        -->
+    </com.example.hmi.myapplication2.Workspace>
 
-</FrameLayout>
+</com.example.hmi.myapplication2.LauncherFrame>
 

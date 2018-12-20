@@ -12,24 +12,32 @@ import android.widget.FrameLayout
 import android.view.Gravity
 import android.view.MotionEvent
 import android.view.View
+import com.example.hmi.myapplication2.util.DraggingHelper
+import com.example.hmi.myapplication2.util.Queue
 
-class WidgetContainer(
+class WidgetContainerView(
     context: Context,
     attrs: AttributeSet?,
     defStyle: Int
 ): FrameLayout(context, attrs, defStyle) {
 
+    /** Parameters */
     private val WIDGET_REARRANGE_ANIMATION_DURATION_MS = 500L
 
-    private val widgetFrameWidth: Int = resources.getDimensionPixelSize(R.dimen.widget_frame_width)
-    private val widgetFrameHeight: Int = resources.getDimensionPixelSize(R.dimen.widget_frame_height)
+    private val numX: Int
+    private val numY: Int
 
-    private val numX: Int = 4
-    private val numY: Int = 2
+    private val widgetFrameWidth: Int
+    private val widgetFrameHeight: Int
 
+    /** */
     private val widgetList = mutableListOf<WidgetFrame?>()
 
+    private val launcher: Launcher = context as Launcher
+
     private var draggingWidget: WidgetFrame? = null
+
+    private val draggingHelper = DraggingHelper(this)
 
     private val shadowFrame: FrameLayout = FrameLayout(context)
 
@@ -37,11 +45,19 @@ class WidgetContainer(
     constructor(context: Context, attrs: AttributeSet) : this(context, attrs, 0)
 
     init {
-        initializeWidgetList()
+        // set parameters
+        val params = launcher.params
+        numX = params.widgetNumInContainerX
+        numY = params.widgetNumInContainerY
+        widgetFrameWidth = params.widgetFrameWidth
+        widgetFrameHeight = params.widgetFrameHeight
 
+        // set shadow frame
         shadowFrame.visibility = View.GONE
         shadowFrame.setBackgroundColor(Color.GRAY)
         addView(shadowFrame)
+
+        initializeWidgetList()
     }
 
     private fun initializeWidgetList() {
@@ -93,9 +109,10 @@ class WidgetContainer(
         layoutParams.gravity = Gravity.TOP or Gravity.LEFT
         widget.layoutParams = layoutParams
 
-        /** Layout is managed by translationX and translationY because of animation */
         widget.translationX = (x * widgetFrameWidth).toFloat()
         widget.translationY = (y * widgetFrameHeight).toFloat()
+
+        widget.widgetContainerView = this
 
         addWidgetToList(widget, x, y)
         addView(widget)
@@ -114,9 +131,9 @@ class WidgetContainer(
     private fun moveShadowFrame() {
 
         val widget = draggingWidget!!
-        val positionLeft = widget.translationX
+        val positionLeft = widget.translationX - translationX - launcher.params.displaySize.x
         val positionRight = positionLeft + widgetFrameWidth * widget.spanX
-        val positionTop = widget.translationY
+        val positionTop = widget.translationY - translationY
         val positionBottom = positionTop + widgetFrameHeight * widget.spanY
 
         var toX: Int = -1
@@ -247,19 +264,46 @@ break
         return objectAnimator
     }
 
+    private val TAG = "WidgetContainerView"
     override fun onInterceptTouchEvent(ev: MotionEvent?): Boolean {
         when (ev!!.action) {
             MotionEvent.ACTION_MOVE -> {
-                moveShadowFrame()
-                rearrangeWidgetIfRequired(draggingWidget!!, false)
+                Log.d("aaabbb " + TAG, "ACTION_MOVE " + ev.x)
+                if (draggingWidget != null) {
+                    moveShadowFrame()
+                }
+                if (ev.x < 0) {
+//                    launcher.workspace.transitContainerHolder(false, null)
+                }
             }
             MotionEvent.ACTION_DOWN -> {
+                Log.d("aaabbb " + TAG, "ACTION_DOWN")
             }
             MotionEvent.ACTION_UP -> {
+                Log.d("aaabbb " + TAG, "ACTION_UP")
             }
             MotionEvent.ACTION_CANCEL -> {
+                Log.d("aaabbb " + TAG, "ACTION_CANCEL")
             }
         }
-        return super.onInterceptTouchEvent(ev)
+        return false
+    }
+
+    override fun onTouchEvent(event: MotionEvent?): Boolean {
+        when (event!!.action) {
+            MotionEvent.ACTION_MOVE -> {
+                Log.d("aaabbc " + TAG, "ACTION_MOVE")
+            }
+            MotionEvent.ACTION_DOWN -> {
+                Log.d("aaabbc " + TAG, "ACTION_DOWN")
+            }
+            MotionEvent.ACTION_UP -> {
+                Log.d("aaabbc " + TAG, "ACTION_UP")
+            }
+            MotionEvent.ACTION_CANCEL -> {
+                Log.d("aaabbc " + TAG, "ACTION_CANCEL")
+            }
+        }
+        return false
     }
 }

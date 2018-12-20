@@ -1,61 +1,104 @@
 package com.example.hmi.myapplication2
 
+import android.animation.ObjectAnimator
+import android.animation.PropertyValuesHolder
 import android.graphics.Color
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
-import android.support.v4.view.ViewPager
 import android.util.Log
+import android.view.Gravity
 import android.widget.FrameLayout
+import com.example.hmi.myapplication2.common.LauncherMode
+import com.example.hmi.myapplication2.common.LauncherParams
+import com.example.hmi.myapplication2.util.Queue
 
 class Launcher : AppCompatActivity() {
 
-    lateinit var workspace: ViewPager
-    lateinit var dragLayer: FrameLayout
-    lateinit var widgetContainer: WidgetContainer
-    private lateinit var frame1: WidgetFrame
-    private lateinit var frame2: WidgetFrame
-    private lateinit var frame3: WidgetFrame
-    private lateinit var frame4: WidgetFrame
+    lateinit var launcherFrame: LauncherFrame
+    lateinit var workspace: Workspace
+    var widgetContainers = mutableListOf<WidgetContainerView>()
 
-    val a = mutableListOf<WidgetContainerFragment>()
+    var mode = LauncherMode.DISPLAY
+
+    lateinit var params: LauncherParams
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        params = LauncherParams(this)
         setContentView(R.layout.launcher)
 
         setViews()
-        testQueue()
+//        testQueue()
     }
 
     private fun setViews() {
 
+//        widgetContainerView = findViewById(R.id.widet_container)
+//        pagerFrame = findViewById(R.id.pager_frame)
+
+//        pagerLayer = findViewById(R.id.pager_view)
+
+        launcherFrame = findViewById(R.id.launcherFrame)
         workspace = findViewById(R.id.workspace)
-        for (i in 0..4) {
-            a.add(WidgetContainerFragment())
+
+        val colors = listOf(
+            Color.RED,
+            Color.BLUE,
+            Color.GREEN,
+            Color.YELLOW,
+            Color.BLACK
+        )
+
+        var j: Int = 0
+        for (i in 1..params.widgetContainerNum) {
+            val widgetContainer = WidgetContainerView(this)
+            val layoutParam = FrameLayout.LayoutParams(
+                params.widgetFrameWidth * params.widgetNumInContainerX,
+                params.widgetFrameHeight * params.widgetNumInContainerY
+            ).apply {
+                gravity = Gravity.TOP or Gravity.LEFT
+            }
+            widgetContainer.layoutParams = layoutParam
+
+            val frame1 = WidgetFrame(this, 1, 1)
+            val frame2 = WidgetFrame(this, 1, 1)
+            val frame3 = WidgetFrame(this, 2, 2)
+            val frame4 = WidgetFrame(this, 2, 1)
+
+//            frame1.setBackgroundColor(colors[j++ % colors.size])
+            frame2.setBackgroundColor(colors[j++ % colors.size])
+//            frame3.setBackgroundColor(colors[j++ % colors.size])
+//            frame4.setBackgroundColor(colors[j++ % colors.size])
+
+//            widgetContainerView.addWidget(frame1, 0, 0)
+            widgetContainer.addWidget(frame2, 1, 0)
+//            widgetContainerView.addWidget(frame3, 2, 0)
+//            widgetContainerView.addWidget(frame4, 0, 1)
+
+            widgetContainers.add(widgetContainer)
         }
-        val adapter = WidgetContainerAdapter(supportFragmentManager, a)
-        workspace.adapter = adapter
+        workspace.widgetContainerViews = widgetContainers
     }
 
-    override fun onStart() {
-        super.onStart()
-        frame1 = WidgetFrame(this, 1, 1)
-        frame2 = WidgetFrame(this, 1, 1)
-        frame3 = WidgetFrame(this, 2, 2)
-        frame4 = WidgetFrame(this, 2, 1)
+    fun transitMode(nextMode: LauncherMode) {
+        when (nextMode) {
+            LauncherMode.REARRANGE -> {
+                createTransitRearrangeModeAnimator().start()
+                workspace.scale = 0.8F
+                mode = LauncherMode.REARRANGE
+            }
+        }
+    }
 
-        frame1.setBackgroundColor(Color.RED)
-        frame2.setBackgroundColor(Color.GREEN)
-        frame3.setBackgroundColor(Color.BLUE)
-        frame4.setBackgroundColor(Color.BLACK)
+    private fun createTransitRearrangeModeAnimator(): ObjectAnimator {
 
-        /*
-        widgetContainer.addWidget(frame1, 0, 0)
-        widgetContainer.addWidget(frame2, 1, 0)
-        widgetContainer.addWidget(frame3, 2, 0)
-        widgetContainer.addWidget(frame4, 0, 1)
-        */
-        a[0].addWidget(frame1, 0, 0)
+        var holderX = PropertyValuesHolder.ofFloat("scaleX", 0.8F)
+        var holderY = PropertyValuesHolder.ofFloat("scaleY", 0.8F)
+        var objectAnimator = ObjectAnimator.ofPropertyValuesHolder(workspace, holderX, holderY)
+        objectAnimator.duration = 100
+
+        return objectAnimator
     }
 
     private fun testQueue() {

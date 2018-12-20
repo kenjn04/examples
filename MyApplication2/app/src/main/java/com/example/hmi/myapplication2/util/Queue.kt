@@ -1,4 +1,4 @@
-package com.example.hmi.myapplication2
+package com.example.hmi.myapplication2.util
 
 class Queue<T> {
 
