@@ -1,0 +1,29 @@
+2018-12-23 11:45:30.367 25279-25279/com.example.hmi.myapplication2 D/aaabbb WidgetContainerConnector: ACTION_MOVE 2878.8428 false
+2018-12-23 11:45:30.367 25279-25279/com.example.hmi.myapplication2 D/aaabbb WidgetContainerView: ACTION_MOVE -1.1572266
+2018-12-23 11:45:30.368 25279-25279/com.example.hmi.myapplication2 D/aaabbb WidgetFrame: ACTION_MOVE -777.44727 -967.90137 776.29004
+2018-12-23 11:45:30.421 25279-25279/com.example.hmi.myapplication2 D/aaabbb WidgetContainerConnector: ACTION_MOVE 2882.4858 true
+2018-12-23 11:45:30.421 25279-25279/com.example.hmi.myapplication2 D/aaabbb WidgetContainerView: ACTION_MOVE 2.4858398
+2018-12-23 11:45:30.424 25279-25279/com.example.hmi.myapplication2 D/aaabbb WidgetFrame: ACTION_MOVE -771.31396 -961.76807 773.7998
+2018-12-23 11:45:30.495 25279-25279/com.example.hmi.myapplication2 D/aaabbb WidgetContainerConnector: ACTION_MOVE 2927.592 true
+2018-12-23 11:45:30.495 25279-25279/com.example.hmi.myapplication2 D/aaabbb WidgetContainerView: ACTION_MOVE 47.59204
+2018-12-23 11:45:30.496 25279-25279/com.example.hmi.myapplication2 D/aaabbb WidgetFrame: ACTION_MOVE -729.8508 -920.30493 777.4429
+2018-12-23 11:45:30.567 25279-25279/com.example.hmi.myapplication2 D/aaabbb WidgetContainerConnector: ACTION_MOVE 3020.3772 true
+2018-12-23 11:45:30.567 25279-25279/com.example.hmi.myapplication2 D/aaabbb WidgetContainerView: ACTION_MOVE 140.3772
+2018-12-23 11:45:30.568 25279-25279/com.example.hmi.myapplication2 D/aaabbb WidgetFrame: ACTION_MOVE -682.1719 -872.626 822.5491
+2018-12-23 11:45:30.600 25279-25279/com.example.hmi.myapplication2 D/aaabbb WidgetContainerConnector: ACTION_MOVE 3083.3308 true
+2018-12-23 11:45:30.600 25279-25279/com.example.hmi.myapplication2 D/aaabbb WidgetContainerView: ACTION_MOVE 203.33081
+2018-12-23 11:45:30.600 25279-25279/com.example.hmi.myapplication2 D/aaabbb WidgetFrame: ACTION_MOVE -712.0034 -902.4575 915.3342
+2018-12-23 11:45:30.655 25279-25279/com.example.hmi.myapplication2 D/aaabbb WidgetContainerConnector: ACTION_MOVE 3190.6824 true
+2018-12-23 11:45:30.655 25279-25279/com.example.hmi.myapplication2 D/aaabbb WidgetContainerView: ACTION_MOVE 310.68237
+2018-12-23 11:45:30.656 25279-25279/com.example.hmi.myapplication2 D/aaabbb WidgetFrame: ACTION_MOVE -667.60547 -858.0596 978.28784
+2018-12-23 11:45:30.708 25279-25279/com.example.hmi.myapplication2 D/aaabbb WidgetContainerConnector: ACTION_MOVE 3318.2727 true
+2018-12-23 11:45:30.708 25279-25279/com.example.hmi.myapplication2 D/aaabbb WidgetContainerView: ACTION_MOVE 438.2727
+2018-12-23 11:45:30.709 25279-25279/com.example.hmi.myapplication2 D/aaabbb WidgetFrame: ACTION_MOVE -647.3667 -837.8208 1085.6394
+2018-12-23 11:45:35.896 25279-25279/com.example.hmi.myapplication2 D/aaabbb WidgetContainerConnector: ACTION_MOVE 2867.5635 false
+2018-12-23 11:45:35.897 25279-25279/com.example.hmi.myapplication2 D/aaabbb WidgetContainerView: ACTION_MOVE 1907.5635
+2018-12-23 11:45:35.897 25279-25279/com.example.hmi.myapplication2 D/aaabbb WidgetFrame: ACTION_MOVE 694.33374 503.87964 1213.2297
+2018-12-23 11:45:35.965 25279-25279/com.example.hmi.myapplication2 D/aaabbb WidgetContainerConnector: ACTION_MOVE 2870.0537 false
+2018-12-23 11:45:35.965 25279-25279/com.example.hmi.myapplication2 D/aaabbb WidgetContainerView: ACTION_MOVE 1910.0537
+2018-12-23 11:45:35.965 25279-25279/com.example.hmi.myapplication2 D/aaabbb WidgetFrame: ACTION_MOVE -772.4668 -962.9209 2682.5205
+
+

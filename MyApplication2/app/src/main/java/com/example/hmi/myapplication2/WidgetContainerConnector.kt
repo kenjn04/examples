@@ -4,14 +4,12 @@ import android.animation.Animator
 import android.animation.ObjectAnimator
 import android.animation.PropertyValuesHolder
 import android.content.Context
-import android.graphics.Color
 import android.graphics.Point
 import android.util.AttributeSet
 import android.util.Log
 import android.widget.FrameLayout
 import android.view.MotionEvent
 import android.view.View
-import com.example.hmi.myapplication2.common.WidgetFrame
 import com.example.hmi.myapplication2.util.DraggingHelper
 import java.lang.Math.abs
 
@@ -23,15 +21,15 @@ class WidgetContainerConnector(
 
     private val launcher = context as Launcher
 
-    private val displaySize: Point
-    private val shiftX: Float
-    private val relativeTranslationX: Float
+    private val displaySize: Point = launcher.params.displaySize
+    private val shiftX: Float = 1.5F * displaySize.x
+    val relativeTranslationX: Float
 
     private var currentMainContainer = 0
 
-    var widgetDragging = false
-
     private var duringTransition = false
+
+    private var draggingWidget: WidgetFrame? = null
 
     private val draggingHelper = DraggingHelper(this, false)
 
@@ -48,12 +46,8 @@ class WidgetContainerConnector(
     constructor(context: Context, attrs: AttributeSet) : this(context, attrs, 0)
 
     init {
-        // set parameters
-        displaySize = launcher.params.displaySize
-
-        shiftX = 1.5F * displaySize.x
         // TODO:
-        relativeTranslationX = - 1.0F * displaySize.x
+        relativeTranslationX = - 1.0F * displaySize.x // workspace.shiftX - shiftX
     }
 
     private fun initializeWidgetContainers() {
@@ -78,23 +72,23 @@ class WidgetContainerConnector(
                 translationX = shiftX + i * displaySize.x
                 visibility = View.VISIBLE
             }
-            container.relativeTranslationX = container.translationX + relativeTranslationX
+            container.initialize(this)
         }
     }
 
-    private fun transitContainerHolderIfRequired() {
+    private fun transitContainerIfRequired() {
         val translationDiffX = translationX - relativeTranslationX
         if (abs(translationDiffX) < (displaySize.x.toFloat() * 0.5 * scale)) {
             return
         }
         if (translationDiffX < 0) {
-            transitContainerHolder(false, null)
+            transitContainer(false, null)
         } else {
-            transitContainerHolder(true, null)
+            transitContainer(true, null)
         }
     }
 
-    fun transitContainerHolder(right: Boolean, velocity: Float?) {
+    fun transitContainer(right: Boolean, velocity: Float?) {
         if (duringTransition) return
         if (right) {
             duringTransition = true
@@ -132,10 +126,27 @@ class WidgetContainerConnector(
     override fun onAnimationCancel(animation: Animator?) {}
     override fun onAnimationRepeat(animation: Animator?) {}
 
+    fun startWidgetDragging(widget: WidgetFrame) {
+        draggingWidget = widget
+        widgetContainers[currentMainContainer].startWidgetDrag(widget)
+    }
+
+    fun finishWidgetDragging() {
+        draggingWidget = null
+        widgetContainers[currentMainContainer].finishWidgetDrag()
+    }
+
+    fun moveShadowFrame(x: Float, y: Float) {
+        val widget = widgetContainers[currentMainContainer]
+        widget.moveShadowFrame()
+    }
+
+    private val TAG = "WidgetContainerConnector"
     override fun onInterceptTouchEvent(ev: MotionEvent?): Boolean {
         when (ev!!.action) {
             MotionEvent.ACTION_MOVE -> {
-                if (!widgetDragging) {
+                Log.d("aaabbb " + TAG, "ACTION_MOVE " + ev.x + " " + duringTransition)
+                if (draggingWidget == null) {
                     return true
                 }
             }
@@ -144,9 +155,10 @@ class WidgetContainerConnector(
     }
 
     override fun onTouchEvent(event: MotionEvent?): Boolean {
+        Log.d("aaabbc " + TAG, "aaaaaaaa " + event!!.action)
         when (event!!.action) {
             MotionEvent.ACTION_MOVE -> {
-                if (!duringTransition) transitContainerHolderIfRequired()
+                if (!duringTransition) transitContainerIfRequired()
                 if (!draggingHelper.dragStarted) {
                     return draggingHelper.startDragging(event.x, event.y)
                 } else {
@@ -154,15 +166,14 @@ class WidgetContainerConnector(
                 }
             }
             MotionEvent.ACTION_DOWN -> {
-                if (!widgetDragging) {
-                    return draggingHelper.startDragging(event.x, event.y)
-                }
+                Log.d("aaabbc " + TAG, "ACTION_DOWN")
+                return draggingHelper.startDragging(event.x, event.y)
             }
             MotionEvent.ACTION_UP -> {
-                draggingHelper.endDragging(true)
+                draggingHelper.finishDragging(true)
             }
             MotionEvent.ACTION_CANCEL -> {
-                draggingHelper.endDragging(false)
+                draggingHelper.finishDragging(false)
             }
         }
         return super.onTouchEvent(event)

@@ -12,7 +12,6 @@ import android.widget.FrameLayout
 import android.view.Gravity
 import android.view.MotionEvent
 import android.view.View
-import com.example.hmi.myapplication2.common.WidgetFrame
 import com.example.hmi.myapplication2.util.DraggingHelper
 import com.example.hmi.myapplication2.util.Queue
 
@@ -22,32 +21,31 @@ class WidgetContainerView(
     defStyle: Int
 ): FrameLayout(context, attrs, defStyle) {
 
+    private val launcher: Launcher = context as Launcher
+
+    lateinit var containerConnector: WidgetContainerConnector
+
+    private val params = launcher.params
+
     /** Parameters */
     private val WIDGET_REARRANGE_ANIMATION_DURATION_MS = 500L
 
     private val numX: Int
     private val numY: Int
-
     private val widgetFrameWidth: Int
     private val widgetFrameHeight: Int
+
+    var relativeTranslationX: Float = 0F
 
     /** */
     private val widgetList = mutableListOf<WidgetFrame?>()
 
-    private val launcher: Launcher = context as Launcher
-
     private var draggingWidget: WidgetFrame? = null
-
-    private val draggingHelper = DraggingHelper(this)
-
-    var relativeTranslationX: Float = 0F
 
     private val shadowFrame: FrameLayout = FrameLayout(context)
 
     constructor(context: Context) : this(context, null, 0)
     constructor(context: Context, attrs: AttributeSet) : this(context, attrs, 0)
-
-    val params = launcher.params
 
     init {
         // set parameters
@@ -68,6 +66,11 @@ class WidgetContainerView(
         for (x in 0..(numX - 1)) {
             for (y in 0..(numY - 1)) widgetList.add(null)
         }
+    }
+
+    fun initialize(connector: WidgetContainerConnector) {
+        relativeTranslationX = translationX + connector.relativeTranslationX
+        containerConnector = connector
     }
 
     private fun addWidgetToList(widget: WidgetFrame, x: Int, y: Int): MutableList<WidgetFrame> {
@@ -113,10 +116,12 @@ class WidgetContainerView(
         layoutParams.gravity = Gravity.TOP or Gravity.LEFT
         widget.layoutParams = layoutParams
 
-        val shiftX = (this.params.displaySize.x - this.params.widgetNumInContainerX * this.params.widgetFrameWidth).toFloat() / 2
-        val shiftY = (this.params.displaySize.y - this.params.widgetNumInContainerY * this.params.widgetFrameHeight).toFloat() / 2
+        val shiftX =
+            (this.params.displaySize.x - this.params.widgetNumInContainerX * this.params.widgetFrameWidth).toFloat() / 2
+        val shiftY =
+            (this.params.displaySize.y - this.params.widgetNumInContainerY * this.params.widgetFrameHeight).toFloat() / 2
         widget.translationX = x * widgetFrameWidth + shiftX
-        widget.translationY = y * widgetFrameHeight+ shiftY
+        widget.translationY = y * widgetFrameHeight + shiftY
 
         widget.widgetContainerView = this
 
@@ -130,27 +135,39 @@ class WidgetContainerView(
             width = draggingWidget!!.spanX * widgetFrameWidth
             height = draggingWidget!!.spanY * widgetFrameHeight
         }
-        moveShadowFrame()
         shadowFrame.visibility = View.VISIBLE
     }
 
-    private fun moveShadowFrame() {
+    fun moveShadowFrame() {
+
+        if (shadowFrame.visibility != View.VISIBLE) {
+            enableShadowFrame()
+        }
+
+        val shiftX =
+            (this.params.displaySize.x - this.params.widgetNumInContainerX * this.params.widgetFrameWidth).toFloat() / 2
+        val shiftY =
+            (this.params.displaySize.y - this.params.widgetNumInContainerY * this.params.widgetFrameHeight).toFloat() / 2
 
         val widget = draggingWidget!!
-        val positionLeft = widget.translationX - translationX - launcher.params.displaySize.x
+        val positionLeft = widget.translationX - relativeTranslationX
         val positionRight = positionLeft + widgetFrameWidth * widget.spanX
-        val positionTop = widget.translationY - translationY
+        val positionTop = widget.translationY
         val positionBottom = positionTop + widgetFrameHeight * widget.spanY
+
+        Log.d("aaaaa", "" + positionLeft + " " + positionRight + " " + positionTop + " " + positionBottom)
 
         var toX: Int = -1
         var toY: Int = -1
         var maxSize: Float = 0F
         for (x in 0..(numX - widget.spanX)) {
             for (y in 0..(numY - widget.spanY)) {
-                val shadowLeft = x * widgetFrameWidth
+                val shadowLeft = x * widgetFrameWidth + shiftX
                 val shadowRight = shadowLeft + widgetFrameWidth * widget.spanX
-                val shadowTop = y * widgetFrameHeight
+                val shadowTop = y * widgetFrameHeight + shiftY
                 val shadowBottom = shadowTop + widgetFrameHeight * widget.spanY
+
+                Log.d("aaaaa", "" + shadowLeft + " " + shadowRight + " " + shadowTop + " " + shadowBottom)
 
                 var width: Float = 0F
                 var height: Float = 0F
@@ -170,30 +187,32 @@ class WidgetContainerView(
                     toX = x
                     toY = y
                 }
+                Log.d("aaabb", "" + x + " " + y + " " + shadowLeft + " " + shadowRight + " " + positionLeft + " " + positionLeft)
             }
         }
         if (maxSize == 0F) {
             return
         }
         shadowFrame.apply {
-            translationX = (toX * widgetFrameWidth).toFloat()
-            translationY = (toY * widgetFrameHeight).toFloat()
+            translationX = (toX * widgetFrameWidth + shiftX).toFloat()
+            translationY = (toY * widgetFrameHeight + shiftY).toFloat()
         }
     }
 
     fun startWidgetDrag(widget: WidgetFrame) {
         draggingWidget = widget
-        enableShadowFrame()
+//        enableShadowFrame()
     }
 
-    fun endWidgetDrag(): Boolean {
+    //    fun finishWidgetDrag(): Boolean {
+    fun finishWidgetDrag() {
 
         val draggingWidget = draggingWidget!!
         this.draggingWidget = null
 
         shadowFrame.visibility = View.GONE
 
-        return rearrangeWidgetIfRequired(draggingWidget, true)
+//        return rearrangeWidgetIfRequired(draggingWidget, true)
     }
 
     private fun rearrangeWidgetIfRequired(draggingWidget: WidgetFrame, includeDragWidget: Boolean): Boolean {
@@ -231,9 +250,9 @@ class WidgetContainerView(
             for (replacedWidget in replacedWidgetList) {
                 // TODO: Confirm how to move the widget
                 widgetRearrangeAnimators.add(createWidgetRearrangeAnimator(replacedWidget, 0, 1))
-break
+                break
             }
-break
+            break
         }
 
         AnimatorSet().apply {
@@ -272,42 +291,16 @@ break
 
     private val TAG = "WidgetContainerView"
     override fun onInterceptTouchEvent(ev: MotionEvent?): Boolean {
+        Log.d("aaabbb " + TAG, "ACTION_MOVEaaaaa " + ev!!.action)
         when (ev!!.action) {
             MotionEvent.ACTION_MOVE -> {
                 Log.d("aaabbb " + TAG, "ACTION_MOVE " + ev.x)
+                if (ev.x < 0) {
+                    containerConnector.transitContainer(false, null)
+                }
                 if (draggingWidget != null) {
                     moveShadowFrame()
                 }
-                if (ev.x < 0) {
-//                    launcher.widgetContainerConnector.transitContainerHolder(false, null)
-                }
-            }
-            MotionEvent.ACTION_DOWN -> {
-                Log.d("aaabbb " + TAG, "ACTION_DOWN")
-            }
-            MotionEvent.ACTION_UP -> {
-                Log.d("aaabbb " + TAG, "ACTION_UP")
-            }
-            MotionEvent.ACTION_CANCEL -> {
-                Log.d("aaabbb " + TAG, "ACTION_CANCEL")
-            }
-        }
-        return false
-    }
-
-    override fun onTouchEvent(event: MotionEvent?): Boolean {
-        when (event!!.action) {
-            MotionEvent.ACTION_MOVE -> {
-                Log.d("aaabbc " + TAG, "ACTION_MOVE")
-            }
-            MotionEvent.ACTION_DOWN -> {
-                Log.d("aaabbc " + TAG, "ACTION_DOWN")
-            }
-            MotionEvent.ACTION_UP -> {
-                Log.d("aaabbc " + TAG, "ACTION_UP")
-            }
-            MotionEvent.ACTION_CANCEL -> {
-                Log.d("aaabbc " + TAG, "ACTION_CANCEL")
             }
         }
         return false

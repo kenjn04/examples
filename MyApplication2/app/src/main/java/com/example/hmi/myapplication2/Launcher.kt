@@ -1,7 +1,5 @@
 package com.example.hmi.myapplication2
 
-import android.animation.ObjectAnimator
-import android.animation.PropertyValuesHolder
 import android.graphics.Color
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
@@ -9,15 +7,14 @@ import android.view.Gravity
 import android.widget.FrameLayout
 import com.example.hmi.myapplication2.common.LauncherMode
 import com.example.hmi.myapplication2.common.LauncherParams
-import com.example.hmi.myapplication2.common.WidgetFrame
 
 class Launcher : AppCompatActivity() {
 
     lateinit var workspace: Workspace
 
-    var mode = LauncherMode.DISPLAY
-
     lateinit var params: LauncherParams
+
+    var mode = LauncherMode.DISPLAY
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -26,7 +23,6 @@ class Launcher : AppCompatActivity() {
         setContentView(R.layout.launcher)
 
         setViews()
-//        testQueue()
     }
 
     private fun setViews() {
@@ -47,7 +43,7 @@ class Launcher : AppCompatActivity() {
         for (i in 1..params.widgetContainerNum) {
             val widgetContainer = WidgetContainerView(this)
             val layoutParam = FrameLayout.LayoutParams(
-                params.displaySize.x, params.displaySize.y
+                params.displaySize.x - 20, params.displaySize.y
             ).apply {
                 gravity = Gravity.TOP or Gravity.LEFT
             }
@@ -72,6 +68,8 @@ class Launcher : AppCompatActivity() {
             widgetContainers.add(widgetContainer)
         }
         workspace.setWidgetContainers(widgetContainers)
+
+        transitMode(LauncherMode.REARRANGE)
     }
 
     fun transitMode(nextMode: LauncherMode) {

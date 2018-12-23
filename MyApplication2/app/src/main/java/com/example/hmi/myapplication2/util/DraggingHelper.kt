@@ -1,5 +1,6 @@
 package com.example.hmi.myapplication2.util
 
+import android.util.Log
 import android.view.View
 
 class DraggingHelper(val view: View, val dragY: Boolean = true) {
@@ -21,7 +22,7 @@ class DraggingHelper(val view: View, val dragY: Boolean = true) {
         return true
     }
 
-    fun movePositionByDrag(x: Float, y: Float) {
+    fun movePositionByDrag(x: Float, y: Float, relative: Boolean = true) {
 
         if (!dragStarted) {
             // nothing to do
@@ -30,13 +31,22 @@ class DraggingHelper(val view: View, val dragY: Boolean = true) {
 
         val currentTouchPosition = TouchPosition(x, y)
         val touchPositionDiff = currentTouchPosition - originalTouchPosition!!
-        view.translationX += touchPositionDiff.x
+
+        if (relative) {
+            view.translationX += touchPositionDiff.x
+        } else {
+            view.translationX = originalTranslationX!! + touchPositionDiff.x
+        }
         if (dragY) {
-            view.translationY += touchPositionDiff.y
+            if (relative) {
+                view.translationY += touchPositionDiff.y
+            } else {
+                view.translationY = originalTranslationY!! + touchPositionDiff.y
+            }
         }
     }
 
-    fun endDragging(revert: Boolean) {
+    fun finishDragging(revert: Boolean) {
         if (revert) {
             view.translationX = originalTranslationX!!
             view.translationY = originalTranslationY!!
