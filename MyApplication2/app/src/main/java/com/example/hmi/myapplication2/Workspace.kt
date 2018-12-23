@@ -8,7 +8,6 @@ import android.util.Log
 import android.widget.FrameLayout
 import android.view.MotionEvent
 import com.example.hmi.myapplication2.util.SwipeDetector
-import kotlinx.android.synthetic.main.launcher.view.*
 
 class Workspace(
     context: Context,
@@ -17,7 +16,7 @@ class Workspace(
 ): FrameLayout(context, attrs, defStyle) {
 
     private val launcher: Launcher = context as Launcher
-    lateinit var containerConnector: WidgetContainerConnector
+    private lateinit var containerConnector: WidgetContainerConnector
 
     private var shiftX: Float = 0F
     private var shiftY: Float = 0F
@@ -75,12 +74,12 @@ class Workspace(
     private val TAG = "Workspace"
     override fun onInterceptTouchEvent(ev: MotionEvent?): Boolean {
         when (ev!!.action) {
-            MotionEvent.ACTION_DOWN -> {
-                swipeDetector.onTouch(ev.x, ev.y)
-            }
             MotionEvent.ACTION_MOVE -> {
                 Log.d("aaabbb " + TAG, "ACTION_MOVE " + ev.x)
                 if (draggingWidget != null) return true
+            }
+            MotionEvent.ACTION_DOWN -> {
+                swipeDetector.onTouch(ev.x, ev.y)
             }
             MotionEvent.ACTION_UP -> {
                 when (swipeDetector.getSwipeDirectionIfSwiped(ev.x, ev.y)) {
@@ -93,21 +92,35 @@ class Workspace(
                         return true
                     }
                 }
-                draggingWidget?.finishDragging()
             }
         }
         return super.onInterceptTouchEvent(ev)
     }
 
+    private var connectorTransited = false
     override fun onTouchEvent(event: MotionEvent?): Boolean {
         when (event!!.action) {
             MotionEvent.ACTION_MOVE -> {
-                Log.d("aaabbb " + TAG, "ACTION_MOVE " + event.x)
+                Log.d("aaabbb " + TAG, "ACTION_MOVE " + (event.x - shiftX))
                 draggingWidget?.onDragging(event.x, event.y)
-                containerConnector.moveShadowFrame(event.x - shiftX, event.y - shiftY)
+                if ((event.x - shiftX) < 0) {
+                    if (!connectorTransited) {
+                        containerConnector.transitContainer(true, null)
+                        connectorTransited = true
+                    }
+                } else if ((event.x - shiftX) > launcher.params.displaySize.x) {
+                    if (!connectorTransited) {
+                        containerConnector.transitContainer(false, null)
+                        connectorTransited = true
+                    }
+                } else {
+                    connectorTransited = false
+                }
+                containerConnector.moveShadowFrame()
                 return true
             }
             MotionEvent.ACTION_UP -> {
+                draggingWidget?.finishDragging()
                 return true
             }
         }

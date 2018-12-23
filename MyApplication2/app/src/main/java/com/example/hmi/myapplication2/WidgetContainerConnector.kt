@@ -90,6 +90,9 @@ class WidgetContainerConnector(
 
     fun transitContainer(right: Boolean, velocity: Float?) {
         if (duringTransition) return
+        if (draggingWidget != null) {
+            widgetContainers[currentMainContainer].finishWidgetDrag(false)
+        }
         if (right) {
             duringTransition = true
             createTransitAnimator(displaySize.x * scale + relativeTranslationX, velocity).start()
@@ -98,6 +101,9 @@ class WidgetContainerConnector(
             duringTransition = true
             createTransitAnimator(-(displaySize.x * scale - relativeTranslationX), velocity).start()
             currentMainContainer = (currentMainContainer + 1) % widgetContainers.size
+        }
+        if (draggingWidget != null) {
+            widgetContainers[currentMainContainer].startWidgetDrag(draggingWidget!!)
         }
     }
 
@@ -133,10 +139,10 @@ class WidgetContainerConnector(
 
     fun finishWidgetDragging() {
         draggingWidget = null
-        widgetContainers[currentMainContainer].finishWidgetDrag()
+        widgetContainers[currentMainContainer].finishWidgetDrag(true)
     }
 
-    fun moveShadowFrame(x: Float, y: Float) {
+    fun moveShadowFrame() {
         val widget = widgetContainers[currentMainContainer]
         widget.moveShadowFrame()
     }

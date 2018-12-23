@@ -95,24 +95,24 @@ class WidgetFrame(
         when (event!!.action) {
             MotionEvent.ACTION_MOVE -> {
                 Log.d("aaabbb " + TAG, "ACTION_MOVE " + event.x + " " + (event.x - aaa) + " " + translationX)
-                if (dragAllowed and !draggingHelper.dragStarted) {
-                    draggingHelper.startDragging(event.x, event.y)
-                    return true
-                } else {
-                    draggingHelper.movePositionByDrag(event.x, event.y)
-                }
+//                if (dragAllowed and !draggingHelper.dragStarted) {
+//                    draggingHelper.startDragging(event.x, event.y)
+//                    return true
+//                } else {
+//                    draggingHelper.movePositionByDrag(event.x, event.y)
+//                }
             }
             MotionEvent.ACTION_DOWN -> {
                 Log.d("aaabbb " + TAG, "ACTION_DOWN " + event.x + " " + translationX)
-                aaa = event.x
+//                aaa = event.x
 //                prepareDragging()
             }
             MotionEvent.ACTION_UP -> {
                 Log.d("aaabbb " + TAG, "ACTION_UP " + translationX)
-                finishDragging()
-                draggingHelper.finishDragging(false)
-                Log.d("aaabbb " + TAG, "ACTION_UP " + translationX)
-                return true
+//                finishDragging()
+//                draggingHelper.finishDragging(false)
+//                Log.d("aaabbb " + TAG, "ACTION_UP " + translationX)
+//                return true
             }
             MotionEvent.ACTION_CANCEL -> {
                 Log.d("aaabbb " + TAG, "ACTION_CANCEL")

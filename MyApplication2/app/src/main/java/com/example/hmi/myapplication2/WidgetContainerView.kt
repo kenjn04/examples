@@ -187,7 +187,6 @@ class WidgetContainerView(
                     toX = x
                     toY = y
                 }
-                Log.d("aaabb", "" + x + " " + y + " " + shadowLeft + " " + shadowRight + " " + positionLeft + " " + positionLeft)
             }
         }
         if (maxSize == 0F) {
@@ -205,12 +204,17 @@ class WidgetContainerView(
     }
 
     //    fun finishWidgetDrag(): Boolean {
-    fun finishWidgetDrag() {
+    fun finishWidgetDrag(drop: Boolean) {
 
         val draggingWidget = draggingWidget!!
         this.draggingWidget = null
 
         shadowFrame.visibility = View.GONE
+
+        if (drop) {
+            launcher.workspace.removeView(draggingWidget)
+            addWidget(draggingWidget, 0, 1)
+        }
 
 //        return rearrangeWidgetIfRequired(draggingWidget, true)
     }
@@ -287,22 +291,5 @@ class WidgetContainerView(
         objectAnimator.duration = WIDGET_REARRANGE_ANIMATION_DURATION_MS
 
         return objectAnimator
-    }
-
-    private val TAG = "WidgetContainerView"
-    override fun onInterceptTouchEvent(ev: MotionEvent?): Boolean {
-        Log.d("aaabbb " + TAG, "ACTION_MOVEaaaaa " + ev!!.action)
-        when (ev!!.action) {
-            MotionEvent.ACTION_MOVE -> {
-                Log.d("aaabbb " + TAG, "ACTION_MOVE " + ev.x)
-                if (ev.x < 0) {
-                    containerConnector.transitContainer(false, null)
-                }
-                if (draggingWidget != null) {
-                    moveShadowFrame()
-                }
-            }
-        }
-        return false
     }
 }
