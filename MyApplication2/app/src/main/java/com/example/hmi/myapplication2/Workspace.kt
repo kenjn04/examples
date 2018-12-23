@@ -87,7 +87,7 @@ class Workspace(
         } else {
             connectorTransitAlready = false
         }
-        containerConnector.moveShadowFrame()
+        containerConnector.onWidgetDragging()
     }
 
     override fun onInterceptTouchEvent(ev: MotionEvent?): Boolean {

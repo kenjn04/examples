@@ -70,7 +70,7 @@ class Launcher : AppCompatActivity() {
         }
         workspace.setWidgetContainers(widgetContainers)
 
-//        transitMode(LauncherMode.REARRANGE)
+        transitMode(LauncherMode.REARRANGE)
     }
 
     fun transitMode(nextMode: LauncherMode) {

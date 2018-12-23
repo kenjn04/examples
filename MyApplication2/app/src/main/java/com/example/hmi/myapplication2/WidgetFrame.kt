@@ -54,7 +54,7 @@ class WidgetFrame(
     }
 
     private fun startDragging() {
-        widgetContainerView.removeView(this)
+        widgetContainerView.removeWidget(this)
         launcher.workspace.addView(this)
         translationX += widgetContainerView.relativeTranslationX
         translationY += widgetContainerView.translationY

@@ -144,9 +144,9 @@ class WidgetContainerConnector(
         widgetContainers[currentMainContainer].finishWidgetDrag(true)
     }
 
-    fun moveShadowFrame() {
+    fun onWidgetDragging() {
         val container = widgetContainers[currentMainContainer]
-        container.moveShadowFrame()
+        container.onWidgetDragging()
     }
 
     override fun onInterceptTouchEvent(ev: MotionEvent?): Boolean {
