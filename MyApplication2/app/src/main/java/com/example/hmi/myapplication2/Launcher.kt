@@ -40,6 +40,7 @@ class Launcher : AppCompatActivity() {
         )
 
         var j: Int = 0
+        var k: Int = 1
         for (i in 1..params.widgetContainerNum) {
             val widgetContainer = WidgetContainerView(this)
             val layoutParam = FrameLayout.LayoutParams(
@@ -50,10 +51,10 @@ class Launcher : AppCompatActivity() {
             widgetContainer.layoutParams = layoutParam
             widgetContainer.setBackgroundColor(Color.GRAY)
 
-            val frame1 = WidgetFrame(this, 1, 1)
-            val frame2 = WidgetFrame(this, 1, 1)
-            val frame3 = WidgetFrame(this, 2, 2)
-            val frame4 = WidgetFrame(this, 2, 1)
+            val frame1 = WidgetFrame(this, 1, 1, k++)
+            val frame2 = WidgetFrame(this, 1, 1, k++)
+            val frame3 = WidgetFrame(this, 2, 2, k++)
+            val frame4 = WidgetFrame(this, 2, 1, k++)
 
 //            frame1.setBackgroundColor(colors[j++ % colors.size])
             frame2.setBackgroundColor(colors[j++ % colors.size])
@@ -69,7 +70,7 @@ class Launcher : AppCompatActivity() {
         }
         workspace.setWidgetContainers(widgetContainers)
 
-        transitMode(LauncherMode.REARRANGE)
+//        transitMode(LauncherMode.REARRANGE)
     }
 
     fun transitMode(nextMode: LauncherMode) {

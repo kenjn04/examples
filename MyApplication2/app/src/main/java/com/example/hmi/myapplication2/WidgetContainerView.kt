@@ -155,8 +155,6 @@ class WidgetContainerView(
         val positionTop = widget.translationY
         val positionBottom = positionTop + widgetFrameHeight * widget.spanY
 
-        Log.d("aaaaa", "" + positionLeft + " " + positionRight + " " + positionTop + " " + positionBottom)
-
         var toX: Int = -1
         var toY: Int = -1
         var maxSize: Float = 0F
@@ -166,8 +164,6 @@ class WidgetContainerView(
                 val shadowRight = shadowLeft + widgetFrameWidth * widget.spanX
                 val shadowTop = y * widgetFrameHeight + shiftY
                 val shadowBottom = shadowTop + widgetFrameHeight * widget.spanY
-
-                Log.d("aaaaa", "" + shadowLeft + " " + shadowRight + " " + shadowTop + " " + shadowBottom)
 
                 var width: Float = 0F
                 var height: Float = 0F

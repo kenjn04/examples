@@ -93,21 +93,23 @@ class WidgetContainerConnector(
         if (draggingWidget != null) {
             widgetContainers[currentMainContainer].finishWidgetDrag(false)
         }
+
         if (right) {
             duringTransition = true
-            createTransitAnimator(displaySize.x * scale + relativeTranslationX, velocity).start()
+            createTransitContainerAnimator(displaySize.x * scale + relativeTranslationX, velocity).start()
             currentMainContainer = (currentMainContainer + widgetContainers.size - 1) % widgetContainers.size
         } else {
             duringTransition = true
-            createTransitAnimator(-(displaySize.x * scale - relativeTranslationX), velocity).start()
+            createTransitContainerAnimator(-(displaySize.x * scale - relativeTranslationX), velocity).start()
             currentMainContainer = (currentMainContainer + 1) % widgetContainers.size
         }
+
         if (draggingWidget != null) {
             widgetContainers[currentMainContainer].startWidgetDrag(draggingWidget!!)
         }
     }
 
-    private fun createTransitAnimator(toX: Float, velocity: Float?): ObjectAnimator {
+    private fun createTransitContainerAnimator(toX: Float, velocity: Float?): ObjectAnimator {
 
         var holderX = PropertyValuesHolder.ofFloat("translationX", translationX, toX)
         var objectAnimator = ObjectAnimator.ofPropertyValuesHolder(this, holderX)
@@ -143,15 +145,13 @@ class WidgetContainerConnector(
     }
 
     fun moveShadowFrame() {
-        val widget = widgetContainers[currentMainContainer]
-        widget.moveShadowFrame()
+        val container = widgetContainers[currentMainContainer]
+        container.moveShadowFrame()
     }
 
-    private val TAG = "WidgetContainerConnector"
     override fun onInterceptTouchEvent(ev: MotionEvent?): Boolean {
         when (ev!!.action) {
             MotionEvent.ACTION_MOVE -> {
-                Log.d("aaabbb " + TAG, "ACTION_MOVE " + ev.x + " " + duringTransition)
                 if (draggingWidget == null) {
                     return true
                 }
@@ -161,7 +161,6 @@ class WidgetContainerConnector(
     }
 
     override fun onTouchEvent(event: MotionEvent?): Boolean {
-        Log.d("aaabbc " + TAG, "aaaaaaaa " + event!!.action)
         when (event!!.action) {
             MotionEvent.ACTION_MOVE -> {
                 if (!duringTransition) transitContainerIfRequired()
@@ -172,7 +171,6 @@ class WidgetContainerConnector(
                 }
             }
             MotionEvent.ACTION_DOWN -> {
-                Log.d("aaabbc " + TAG, "ACTION_DOWN")
                 return draggingHelper.startDragging(event.x, event.y)
             }
             MotionEvent.ACTION_UP -> {
