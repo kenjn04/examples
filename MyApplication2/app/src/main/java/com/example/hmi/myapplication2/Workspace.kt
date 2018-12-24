@@ -18,7 +18,6 @@ class Workspace(
     private lateinit var containerConnector: WidgetContainerConnector
 
     private var shiftX: Float = 0F
-    private var shiftY: Float = 0F
     private val scale = 0.8F
     private val animationDurationMS = 100L
 
@@ -37,10 +36,6 @@ class Workspace(
 
         shiftX = 0.5F * launcher.params.displaySize.x
         translationX = - shiftX
-    }
-
-    fun setWidgetContainers(containers: MutableList<WidgetContainerView>) {
-        containerConnector.widgetContainers = containers
     }
 
     fun shrink() {

@@ -44,20 +44,20 @@ class Launcher : AppCompatActivity() {
 
         var j: Int = 0
         var k: Int = 1
-        for (i in 1..params.widgetContainerNum) {
+        for (i in 1..(params.widgetContainerNum - 1)) {
             val frame1 = WidgetFrame(this, 1, 1, k++)
             val frame2 = WidgetFrame(this, 1, 1, k++)
-            val frame3 = WidgetFrame(this, 1, 1, k++)
+//            val frame3 = WidgetFrame(this, 1, 1, k++)
             val frame4 = WidgetFrame(this, 2, 2, k++)
 
             frame1.setBackgroundColor(colors[j++ % colors.size])
             frame2.setBackgroundColor(colors[j++ % colors.size])
-            frame3.setBackgroundColor(colors[j++ % colors.size])
+//            frame3.setBackgroundColor(colors[j++ % colors.size])
             frame4.setBackgroundColor(colors[j++ % colors.size])
 
             containerConnector.addWidget(frame1, i - 1, 0, 0)
             containerConnector.addWidget(frame2, i - 1, 1, 0)
-            containerConnector.addWidget(frame3, i - 1, 0, 1)
+//            containerConnector.addWidget(frame3, i - 1, 0, 1)
             containerConnector.addWidget(frame4, i - 1, 2, 0)
         }
         transitMode(LauncherMode.REARRANGE)

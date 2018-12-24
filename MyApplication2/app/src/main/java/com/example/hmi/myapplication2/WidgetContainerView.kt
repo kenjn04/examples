@@ -1,19 +1,11 @@
 package com.example.hmi.myapplication2
 
-import android.animation.Animator
-import android.animation.AnimatorSet
-import android.animation.ObjectAnimator
-import android.animation.PropertyValuesHolder
 import android.content.Context
 import android.graphics.Color
 import android.util.AttributeSet
-import android.util.Log
 import android.widget.FrameLayout
 import android.view.Gravity
-import android.view.MotionEvent
 import android.view.View
-import com.example.hmi.myapplication2.util.DraggingHelper
-import com.example.hmi.myapplication2.util.Queue
 
 class WidgetContainerView(
     context: Context,
@@ -124,11 +116,11 @@ class WidgetContainerView(
         shadowFrame.visibility = View.VISIBLE
     }
 
-    fun onWidgetDragging() {
-        moveShadowFrame()
-    }
-
     fun calculateDraggingWidgetPosition(): Pair<Int, Int> {
+
+        if (shadowFrame.visibility == View.VISIBLE) {
+            shadowFrame.visibility = View.GONE
+        }
 
         val widget = draggingWidget!!
         val positionLeft = widget.translationX - relativeTranslationX
@@ -169,65 +161,25 @@ class WidgetContainerView(
         return Pair(toX, toY)
     }
 
-    private fun moveShadowFrame() {
+    fun showShadowFrame(x: Int, y: Int) {
 
         if (shadowFrame.visibility != View.VISIBLE) {
             enableShadowFrame()
         }
-
-        val widget = draggingWidget!!
-        val positionLeft = widget.translationX - relativeTranslationX
-        val positionRight = positionLeft + widgetFrameWidth * widget.spanX
-        val positionTop = widget.translationY
-        val positionBottom = positionTop + widgetFrameHeight * widget.spanY
-
-//        var toX: Int = -1
-//        var toY: Int = -1
-        var maxSize: Float = 0F
-        for (x in 0..(numX - widget.spanX)) {
-            for (y in 0..(numY - widget.spanY)) {
-                val shadowLeft = widgetPositionX[x]
-                val shadowRight = shadowLeft + widgetFrameWidth * widget.spanX
-                val shadowTop = widgetPositionY[y]
-                val shadowBottom = shadowTop + widgetFrameHeight * widget.spanY
-
-                var width: Float = 0F
-                var height: Float = 0F
-                if ((shadowLeft <= positionLeft) and (positionLeft < shadowRight)) {
-                    width = shadowRight - positionLeft
-                } else if ((positionLeft <= shadowLeft) and (shadowLeft < positionRight)) {
-                    width = positionRight - shadowLeft
-                }
-                if ((shadowTop <= positionTop) and (positionTop < shadowBottom)) {
-                    height = shadowBottom - positionTop
-                } else if ((positionTop <= shadowTop) and (shadowTop < positionBottom)) {
-                    height = positionBottom - shadowTop
-                }
-                val size = width * height
-                if (size > maxSize) {
-                    maxSize = size
-                    shadowX = x
-                    shadowY = y
-                }
-            }
-        }
-        if (maxSize == 0F) {
-            return
-        }
         shadowFrame.apply {
-            translationX = widgetPositionX[shadowX]
-            translationY = widgetPositionY[shadowY]
+            translationX = widgetPositionX[x]
+            translationY = widgetPositionY[y]
         }
+        shadowX = x
+        shadowY = y
     }
 
     fun startWidgetDrag(widget: WidgetFrame) {
         draggingWidget = widget
-//        enableShadowFrame()
         removeView(shadowFrame)
         addView(shadowFrame)
     }
 
-    //    fun finishWidgetDrag(): Boolean {
     fun finishWidgetDrag(drop: Boolean) {
 
         val draggingWidget = draggingWidget!!
@@ -239,144 +191,5 @@ class WidgetContainerView(
             launcher.workspace.removeView(draggingWidget)
             addWidget(draggingWidget, shadowX, shadowY)
         }
-
-//        calculateRearrangeWidgets(draggingWidget, shadowX, shadowY)
-
-//        return rearrangeWidgetIfRequired(draggingWidget, true)
     }
-/*
-    private fun calculateRearrangeWidgets(widget: WidgetFrame, toX: Int, toY: Int) {
-
-        initializeWidgetList(pendingWidgetList)
-        val rearrangeWidgetsQueue = Queue<WidgetRearrangeInfo>()
-        rearrangeWidgetsQueue.push(WidgetRearrangeInfo(widget, toX, toY))
-
-//        val widgetRearrangeAnimators = mutableListOf<Animator>()
-
-        while (!rearrangeWidgetsQueue.isEmpty()) {
-            val widget = rearrangeWidgetsQueue.peek().widget
-            val x = rearrangeWidgetsQueue.peek().x
-            val y = rearrangeWidgetsQueue.peek().y
-//            val move = moveWidgetsQueue.peek().move
-            rearrangeWidgetsQueue.pop()
-
-            for (i in 0..(widget.spanX - 1)) {
-                for (j in 0..(widget.spanY - 1)) {
-                    pendingWidgetList
-                }
-            }
-
-            val a = IntArray(10, {0})
-            val b = a[0]
-
-            if (!isWidgetMovable(widget, toX, toY)) {
-                return false
-            }
-            if (move) {
-                widgetRearrangeAnimators.add(createWidgetRearrangeAnimator(widget.appWidgetId, x, y))
-            }
-
-            removeWidgetFromList(widget.appWidgetId)
-            val replacedWidgetList = addWidgetToList(widget.appWidgetId, x, y)
-            for (replacedWidget in replacedWidgetList) {
-                // TODO: Confirm how to move the widget
-                widgetRearrangeAnimators.add(createWidgetRearrangeAnimator(replacedWidget, 0, 1))
-                break
-            }
-            break
-        }
-
-        AnimatorSet().apply {
-            playTogether(widgetRearrangeAnimators)
-            start()
-        }
-
-
-
-        for (x in 0..(widget.spanX - 1)) {
-            for (y in 0..(widget.spanY - 1)) {
-                pendingWidgetList
-            }
-        }
-    }
-*/
-/*
-    private fun rearrangeWidgetIfRequired(draggingWidget: WidgetFrame, includeDragWidget: Boolean): Boolean {
-
-        val toX = (shadowFrame.translationX / widgetFrameWidth).toInt()
-        val toY = (shadowFrame.translationY / widgetFrameHeight).toInt()
-
-        return rearrangeWidgets(draggingWidget, toX, toY, includeDragWidget)
-    }
-*/
-/*
-    data class WidgetRearrangeInfo(val widget: WidgetFrame, val x: Int, val y: Int, val move: Boolean = true)
-
-    private fun rearrangeWidgets(draggingWidget: WidgetFrame, x: Int, y: Int, includeDragWidget: Boolean): Boolean {
-
-        val moveWidgetsQueue = Queue<WidgetRearrangeInfo>()
-        moveWidgetsQueue.push(WidgetRearrangeInfo(draggingWidget, x, y, includeDragWidget))
-
-        val widgetRearrangeAnimators = mutableListOf<Animator>()
-        while (!moveWidgetsQueue.isEmpty()) {
-            val widget = moveWidgetsQueue.peek().widget
-            val toX = moveWidgetsQueue.peek().x
-            val toY = moveWidgetsQueue.peek().y
-            val move = moveWidgetsQueue.peek().move
-            moveWidgetsQueue.pop()
-
-            if (!isWidgetMovable(widget, toX, toY)) {
-                return false
-            }
-            if (move) {
-                widgetRearrangeAnimators.add(createWidgetRearrangeAnimator(widget.appWidgetId, x, y))
-            }
-
-            removeWidgetFromList(widget.appWidgetId)
-            val replacedWidgetList = addWidgetToList(widget.appWidgetId, x, y)
-            for (replacedWidget in replacedWidgetList) {
-                // TODO: Confirm how to move the widget
-                widgetRearrangeAnimators.add(createWidgetRearrangeAnimator(replacedWidget, 0, 1))
-                break
-            }
-            break
-        }
-
-        AnimatorSet().apply {
-            playTogether(widgetRearrangeAnimators)
-            start()
-        }
-
-        return true
-    }
-    */
-/*
-    private fun isWidgetMovable(widget: WidgetFrame, x: Int, y: Int): Boolean {
-        val spanX = widget.spanX
-        val spanY = widget.spanY
-        for (dx in 0..(spanX - 1)) {
-            for (dy in 0..(spanY - 1)) {
-                if ((x + dx >= numX) or (y + dy >= numY)) {
-                    return false
-                }
-            }
-        }
-        return true
-    }
-
-    private fun createWidgetRearrangeAnimator(id: Int, x: Int, y: Int): ObjectAnimator {
-
-        val widget = widgetMap.get(id)!!
-
-        val toX = x * widgetFrameWidth.toFloat()
-        val toY = y * widgetFrameHeight.toFloat()
-
-        var holderX = PropertyValuesHolder.ofFloat("translationX", widget.translationX, toX)
-        var holderY = PropertyValuesHolder.ofFloat("translationY", widget.translationY, toY)
-        var objectAnimator = ObjectAnimator.ofPropertyValuesHolder(widget, holderX, holderY)
-        objectAnimator.duration = WIDGET_REARRANGE_ANIMATION_DURATION_MS
-
-        return objectAnimator
-    }
-*/
 }
