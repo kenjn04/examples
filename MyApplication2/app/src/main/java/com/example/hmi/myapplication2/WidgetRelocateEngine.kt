@@ -4,7 +4,7 @@ import com.example.hmi.myapplication2.util.Queue
 
 typealias WidgetMap = Array<Array<WidgetFrame?>>
 
-class WidgetRearrangeEngine(
+class WidgetRelocateEngine(
     private val originalWidgetMap: WidgetMap,
     private val widgetContainerNum: Int,
     private val widgetNumInContainerX: Int,
