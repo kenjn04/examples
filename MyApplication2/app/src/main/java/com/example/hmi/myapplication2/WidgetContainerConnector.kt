@@ -4,13 +4,16 @@ import android.animation.Animator
 import android.animation.ObjectAnimator
 import android.animation.PropertyValuesHolder
 import android.content.Context
+import android.graphics.Color
 import android.graphics.Point
 import android.util.AttributeSet
 import android.util.Log
+import android.view.Gravity
 import android.widget.FrameLayout
 import android.view.MotionEvent
 import android.view.View
 import com.example.hmi.myapplication2.util.DraggingHelper
+import com.example.hmi.myapplication2.util.Queue
 import java.lang.Math.abs
 
 class WidgetContainerConnector(
@@ -33,21 +36,57 @@ class WidgetContainerConnector(
 
     private val draggingHelper = DraggingHelper(this, false)
 
+    private val widgetMap = mutableMapOf<Int, WidgetFrame>()
+
+    private val widgetArray: Array<Array<Int>>
+    private var pendingWidgetArray: Array<Array<Int>>
+
     private val scale: Float
         get() = scaleX
 
     var widgetContainers: MutableList<WidgetContainerView> = mutableListOf()
-        set(containers) {
-            field = containers
-            initializeWidgetContainers()
-        }
+//        set(containers) {
+//            field = containers
+//            initializeWidgetContainers()
+//        }
 
     constructor(context: Context) : this(context, null, 0)
     constructor(context: Context, attrs: AttributeSet) : this(context, attrs, 0)
 
     init {
         // TODO:
-        relativeTranslationX = - 1.0F * displaySize.x // workspace.shiftX - shiftX
+        relativeTranslationX = -1.0F * displaySize.x // workspace.shiftX - shiftX
+
+        val totalX = launcher.params.widgetContainerNum * launcher.params.widgetNumInContainerX
+        val totalY = launcher.params.widgetNumInContainerY
+        widgetArray = Array(totalX, { Array(totalY, { 0 }) })
+        pendingWidgetArray = Array(totalX, { Array(totalY, { 0 }) })
+    }
+
+    fun showWidgetArray() {
+        val totalX = launcher.params.widgetContainerNum * launcher.params.widgetNumInContainerX
+        val totalY = launcher.params.widgetNumInContainerY
+        for (i in 1..totalX) {
+            for (j in 1..totalY) {
+                Log.d("abcde", "" + (i - 1) + " " + (j - 1) + " " + widgetArray[i - 1][j - 1])
+            }
+        }
+    }
+
+    override fun onFinishInflate() {
+        super.onFinishInflate()
+        for (i in 1..(launcher.params.widgetContainerNum)) {
+            val widgetContainer = WidgetContainerView(launcher)
+            val layoutParam = FrameLayout.LayoutParams(
+                displaySize.x - 20, displaySize.y
+            ).apply {
+                gravity = Gravity.TOP or Gravity.LEFT
+            }
+            widgetContainer.layoutParams = layoutParam
+            widgetContainer.setBackgroundColor(Color.GRAY)
+            widgetContainers.add(widgetContainer)
+        }
+        initializeWidgetContainers()
     }
 
     private fun initializeWidgetContainers() {
@@ -74,6 +113,117 @@ class WidgetContainerConnector(
             }
             container.initialize(this)
         }
+    }
+
+    fun addWidget(widget: WidgetFrame, containerId: Int, x: Int, y: Int) {
+        widgetMap.put(widget.appWidgetId, widget)
+        for (dx in 0..(widget.spanX - 1)) {
+            for (dy in 0..(widget.spanY - 1)) {
+                val absoluteX = containerId * launcher.params.widgetNumInContainerX + x + dx
+                val absoluteY = y + dy
+                if (widget.appWidgetId == 4) {
+                }
+                widgetArray[absoluteX][absoluteY] = widget.appWidgetId
+            }
+        }
+        widgetContainers[containerId].addWidget(widget, x, y)
+        showWidgetArray()
+    }
+
+    fun startWidgetDragging(widget: WidgetFrame) {
+        draggingWidget = widget
+        widgetContainers[currentMainContainer].startWidgetDrag(widget)
+
+        val totalX = launcher.params.widgetContainerNum * launcher.params.widgetNumInContainerX
+        val totalY = launcher.params.widgetNumInContainerY
+        pendingWidgetArray = Array(totalX, { Array(totalY, { 0 }) })
+    }
+
+    fun finishWidgetDragging() {
+        draggingWidget = null
+        widgetContainers[currentMainContainer].finishWidgetDrag(true)
+    }
+
+    fun onWidgetDragging() {
+        val container = widgetContainers[currentMainContainer]
+        container.onWidgetDragging()
+        val draggingWidgetPosition = container.calculateDraggingWidgetPosition()
+
+        Log.d("aaabbb", "==========================")
+        val a = calculateRearrangeWidget(draggingWidget!!, draggingWidgetPosition.first, draggingWidgetPosition.second)
+        Log.d("aaabbb", "========================== " + a.toString())
+
+    }
+
+    data class WidgetRearrangeInfo(val widget: WidgetFrame, val containerId: Int, val x: Int, val y: Int, val move: Boolean = true)
+
+    private fun calculateRearrangeWidget(widget: WidgetFrame, toX: Int, toY: Int): Boolean {
+
+        val rearrangeWidgetsQueue = Queue<WidgetRearrangeInfo>()
+        rearrangeWidgetsQueue.push(WidgetRearrangeInfo(widget, currentMainContainer, toX, toY))
+        putWidget(widget, currentMainContainer, toX, toY, pendingWidgetArray)
+
+        val rearrangedWidgetId = mutableSetOf<Int>()
+        while (!rearrangeWidgetsQueue.isEmpty()) {
+            val widget = rearrangeWidgetsQueue.peek().widget
+            val x = rearrangeWidgetsQueue.peek().x
+            val y = rearrangeWidgetsQueue.peek().y
+            val id = rearrangeWidgetsQueue.peek().containerId
+            rearrangeWidgetsQueue.pop()
+            Log.d("aaabbb", "" + id + " " + x + " " + y + " " + widget.spanX)
+
+            for (dy in 0..(widget.spanY - 1)) {
+                for (dx in 0..(widget.spanX - 1)) {
+                    val absoluteX = currentMainContainer * launcher.params.widgetNumInContainerX + x + dx
+                    val absoluteY = y + dy
+                    val originalWidgetId = widgetArray[absoluteX][absoluteY]
+                    if (originalWidgetId == 0) continue
+                    if (rearrangedWidgetId.contains(originalWidgetId)) continue
+                    rearrangedWidgetId.add(originalWidgetId)
+
+                    val originalWidget = widgetMap.get(originalWidgetId)!!
+                    var nextX = x + widget.spanX
+                    var nextId = id
+                    while (true) {
+                        if (isWidgetPuttable(originalWidget, nextId, nextX, absoluteY, pendingWidgetArray)) {
+                            putWidget(originalWidget, nextId, nextX, absoluteY, pendingWidgetArray)
+                            rearrangeWidgetsQueue.push(WidgetRearrangeInfo(originalWidget, nextId, nextX, absoluteY))
+                            break
+                        }
+                        nextX++
+                        if (nextX >= launcher.params.widgetNumInContainerX) {
+                            nextX %= launcher.params.widgetNumInContainerX
+                            nextId++
+                            if (nextId >= launcher.params.widgetContainerNum) return false
+                        }
+                    }
+                }
+            }
+        }
+        return true
+    }
+
+    private fun putWidget(widget: WidgetFrame, containerId: Int, x: Int, y: Int, array: Array<Array<Int>>) {
+        for (dx in 0..(widget.spanX - 1)) {
+            for (dy in 0..(widget.spanY - 1)) {
+                val absoluteX = containerId * launcher.params.widgetNumInContainerX + x + dx
+                val absoluteY = y + dy
+                array[absoluteX][absoluteY] = widget.appWidgetId
+            }
+        }
+    }
+
+    private fun isWidgetPuttable(widget: WidgetFrame, containerId: Int, x: Int, y: Int, array: Array<Array<Int>>): Boolean {
+        Log.d("qqqzzz", "" + x + " " + y + " " + widget.spanX + " " + widget.spanY)
+        for (dx in 0..(widget.spanX - 1)) {
+            for (dy in 0..(widget.spanY - 1)) {
+                if ((x + dx) >= launcher.params.widgetNumInContainerX) return false
+                val absoluteX = containerId * launcher.params.widgetNumInContainerX + x + dx
+                val absoluteY = y + dy
+                if (array[absoluteX][absoluteY] != 0) return false
+            }
+        }
+        return true
     }
 
     private fun transitContainerIfRequired() {
@@ -133,21 +283,6 @@ class WidgetContainerConnector(
 
     override fun onAnimationCancel(animation: Animator?) {}
     override fun onAnimationRepeat(animation: Animator?) {}
-
-    fun startWidgetDragging(widget: WidgetFrame) {
-        draggingWidget = widget
-        widgetContainers[currentMainContainer].startWidgetDrag(widget)
-    }
-
-    fun finishWidgetDragging() {
-        draggingWidget = null
-        widgetContainers[currentMainContainer].finishWidgetDrag(true)
-    }
-
-    fun onWidgetDragging() {
-        val container = widgetContainers[currentMainContainer]
-        container.onWidgetDragging()
-    }
 
     override fun onInterceptTouchEvent(ev: MotionEvent?): Boolean {
         when (ev!!.action) {
