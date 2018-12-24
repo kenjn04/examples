@@ -14,7 +14,6 @@ class WidgetFrame(
     defStyle: Int
 ): FrameLayout(context, attrs, defStyle), View.OnLongClickListener {
 
-
     private val launcher: Launcher = context as Launcher
 
     lateinit var widgetContainerView: WidgetContainerView
@@ -79,6 +78,13 @@ class WidgetFrame(
         // disable widget touch
         if (launcher.mode == LauncherMode.REARRANGE) {
             return true
+        }
+        return false
+    }
+
+    override fun equals(other: Any?): Boolean {
+        if (other is WidgetFrame) {
+            if (appWidgetId.equals(other.appWidgetId)) return true
         }
         return false
     }
