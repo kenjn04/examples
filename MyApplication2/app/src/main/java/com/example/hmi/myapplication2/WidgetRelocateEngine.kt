@@ -1,8 +1,8 @@
 package com.example.hmi.myapplication2
 
+import com.example.hmi.myapplication2.common.WidgetInfo
+import com.example.hmi.myapplication2.common.WidgetRelocateInfo
 import com.example.hmi.myapplication2.util.Queue
-
-typealias WidgetMap = Array<Array<WidgetFrame?>>
 
 class WidgetRelocateEngine(
     private val originalWidgetMap: WidgetMap,
@@ -32,21 +32,20 @@ class WidgetRelocateEngine(
         }
     }
 
-    data class WidgetRelocateInfo(val widget: WidgetFrame, val cId: Int, val toX: Int, val toY: Int)
 
     private fun calculateRearrangeWidget(widget: WidgetFrame, cId: Int, toX: Int, toY: Int): Boolean {
 
         val queue = Queue<WidgetRelocateInfo>()
-        queue.push(WidgetRelocateInfo(widget, cId, toX, toY))
+        queue.push(WidgetRelocateInfo(widget, WidgetInfo(), WidgetInfo(cId, toX, toY)))
         addWidgetToMap(widget, cId, toX, toY, pendingWidgetMap)
 
         val relocatedWidget = mutableSetOf<WidgetFrame>()
         relocatedWidget.add(widget)
         while (!queue.isEmpty()) {
             val widget = queue.peek().widget
-            val cId = queue.peek().cId
-            val toX = queue.peek().toX
-            val toY = queue.peek().toY
+            val cId = queue.peek().to.cId
+            val toX = queue.peek().to.x
+            val toY = queue.peek().to.y
             queue.pop()
 
             for (dy in 0..(widget.spanY - 1)) {
@@ -64,7 +63,7 @@ class WidgetRelocateEngine(
                     while (true) {
                         if (isWidgetLocatable(locatedWidget, newId, newX, y, pendingWidgetMap)) {
                             addWidgetToMap(locatedWidget, newId, newX, y, pendingWidgetMap)
-                            val info = WidgetRelocateInfo(locatedWidget, newId, newX, y)
+                            val info = WidgetRelocateInfo(locatedWidget, WidgetInfo(cId, toX + dx, toY + dy), WidgetInfo(newId, newX, y))
                             queue.push(info)
                             widgetsToRelocate!!.add(info)
                             break
@@ -106,5 +105,4 @@ class WidgetRelocateEngine(
             }
         }
     }
-
 }
