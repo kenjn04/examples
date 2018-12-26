@@ -1,5 +1,6 @@
 package com.example.hmi.myapplication2
 
+import android.util.Log
 import com.example.hmi.myapplication2.common.WidgetInfo
 import com.example.hmi.myapplication2.common.WidgetRelocateInfo
 import com.example.hmi.myapplication2.util.Queue
@@ -14,6 +15,8 @@ class WidgetRelocateEngine(
     private lateinit var pendingWidgetMap: WidgetMap
 
     var widgetsToRelocate: MutableList<WidgetRelocateInfo>? = null
+
+    private val originalWidgetInfo = mutableMapOf<WidgetFrame, WidgetInfo>()
 
     private fun initPendingWidgetMap() {
         val totalX = widgetContainerNum * widgetNumInContainerX
@@ -31,7 +34,6 @@ class WidgetRelocateEngine(
             return false
         }
     }
-
 
     private fun calculateRearrangeWidget(widget: WidgetFrame, cId: Int, toX: Int, toY: Int): Boolean {
 
@@ -58,22 +60,29 @@ class WidgetRelocateEngine(
                     locatedWidget!!
                     relocatedWidget.add(locatedWidget)
 
-                    var newX = toX + widget.spanX
-                    var newId = cId
+                    if (originalWidgetInfo.get(locatedWidget) == null) {
+                        originalWidgetInfo.put(locatedWidget,
+                            WidgetInfo(cId, locatedWidget.positionX, locatedWidget.positionY)
+                        )
+                    }
+
+                    var nextX = toX + widget.spanX
+                    var nextY = locatedWidget.positionY
+                    var nextId = cId
                     while (true) {
-                        if (isWidgetLocatable(locatedWidget, newId, newX, y, pendingWidgetMap)) {
-                            addWidgetToMap(locatedWidget, newId, newX, y, pendingWidgetMap)
-                            val info = WidgetRelocateInfo(locatedWidget, WidgetInfo(cId, toX + dx, toY + dy), WidgetInfo(newId, newX, y))
+                        if (nextX >= widgetNumInContainerX) {
+                            nextX = nextX % widgetNumInContainerX
+                            nextId++
+                            if (nextId >= widgetContainerNum) return false
+                        }
+                        if (isWidgetLocatable(locatedWidget, nextId, nextX, nextY, pendingWidgetMap)) {
+                            addWidgetToMap(locatedWidget, nextId, nextX, nextY, pendingWidgetMap)
+                            val info = WidgetRelocateInfo(locatedWidget, originalWidgetInfo.get(locatedWidget)!!, WidgetInfo(nextId, nextX, nextY))
                             queue.push(info)
                             widgetsToRelocate!!.add(info)
                             break
                         }
-                        newX++
-                        if (newX >= widgetNumInContainerX) {
-                            newX = newX % widgetNumInContainerX
-                            newId++
-                            if (newId >= widgetContainerNum) return false
-                        }
+                        nextX++
                     }
                 }
             }

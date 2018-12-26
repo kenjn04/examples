@@ -20,22 +20,16 @@ class Launcher : AppCompatActivity() {
 
     private val APP_WIDGET_HOST_ID = 12345
 
-    /**
-     * Managers
-     */
+    /** Managers */
     private lateinit var appWidgetManager: AppWidgetManager
     private lateinit var userManager: UserManager
 
 
-    /**
-     * Views
-     */
+    /** Views */
     lateinit var dragLayer: LinearLayout
     private lateinit var widgetsView: WidgetContainerView
 
-    /**
-     * Others
-     */
+    /** Others */
     lateinit var appWidgetHost: AppWidgetHost
     val dragController = DragController(this)
 
@@ -58,15 +52,12 @@ class Launcher : AppCompatActivity() {
     }
 
     private fun setViews() {
-        dragLayer = findViewById(R.id.drag_layer)
         widgetsView = findViewById(R.id.widget_view)
     }
 
     private fun bindAllWidgets(widgets: MultiHashMap<PackageItemInfo, WidgetItem>) {
         widgetsView.setWidgets(widgets)
     }
-
-
 
     /**
      * Maybe this should be done in model layer

@@ -6,22 +6,6 @@
     android:layout_height="match_parent"
     tools:context=".Launcher">
 
-    <LinearLayout
-        android:id="@+id/drag_layer"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_weight="1"
-        android:orientation="horizontal"
-    />
-
-    <LinearLayout
-        android:id="@+id/bbbbb"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_weight="1"
-        android:orientation="horizontal"
-        />
-
     <include layout="@layout/widgets_view"
         android:id="@+id/widget_view"
         android:layout_width="match_parent"

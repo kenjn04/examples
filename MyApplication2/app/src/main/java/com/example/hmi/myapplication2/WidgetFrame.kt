@@ -20,6 +20,8 @@ class WidgetFrame(
 
     var spanX: Int = 1
     var spanY: Int = 1
+    var positionX: Int = 1
+    var positionY: Int = 1
     var appWidgetId: Int = -1
 
     private val draggingHelper = DraggingHelper(this)

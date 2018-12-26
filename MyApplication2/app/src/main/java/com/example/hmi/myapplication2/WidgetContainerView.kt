@@ -93,13 +93,17 @@ class WidgetContainerView(
             layoutParams = FrameLayout.LayoutParams(width, height)
         }
         layoutParams.gravity = Gravity.TOP or Gravity.LEFT
-        widget.layoutParams = layoutParams
+        widget.apply {
+            this.layoutParams = layoutParams
 
-        widget.translationX = widgetPositionX[x]
-        widget.translationY = widgetPositionY[y]
+            positionX = x
+            positionY = y
 
-        widget.widgetContainerView = this
+            translationX = widgetPositionX[x]
+            translationY = widgetPositionY[y]
 
+            widgetContainerView = this@WidgetContainerView
+        }
         addView(widget)
     }
 
