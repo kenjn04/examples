@@ -1,6 +1,9 @@
 package jp.co.nissan.hmi.myapplication.widgetselection
 
 import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.Bitmap.Config
+import android.graphics.Canvas
 import android.util.AttributeSet
 import android.widget.ImageView
 import android.widget.LinearLayout
@@ -44,10 +47,36 @@ class WidgetCell(
         // TODO: Is this correct?
         val density = this.resources.displayMetrics.density
         // TODO: Is this heavy task? Should be done in background? caching is required?
-        val preview = item!!.widgetInfo.loadPreviewImage(this.context, density.toInt())
-        image.setImageDrawable(preview)
+//        val preview = item!!.widgetInfo.loadPreviewImage(this.context, density.toInt())
+//        image.setImageDrawable(preview)
 //        val preview = generateWidgetPreview(item!!.widgetInfo)
 //        image.setImageBitmap(preview)
+        val drawable = item!!.widgetInfo.loadPreviewImage(this.context, 0)
+        var previewWidth = drawable.intrinsicWidth
+        var previewHeight = drawable.intrinsicHeight
+
+        var scale = 1f
+        val minPreviewWidth = 300
+        val maxPreviewWidth = 400
+        if (previewWidth < minPreviewWidth) {
+            scale = minPreviewWidth.toFloat() / previewWidth
+        }
+        if (previewWidth > maxPreviewWidth) {
+            scale = maxPreviewWidth.toFloat() / previewWidth
+        }
+        previewWidth = (scale * previewWidth).toInt()
+        previewHeight = (scale * previewHeight).toInt()
+
+        val c = Canvas()
+        val preview = Bitmap.createBitmap(previewWidth, previewHeight, Config.ARGB_8888)
+        c.setBitmap(preview)
+
+        val x = (preview.width - previewWidth) / 2
+        drawable.setBounds(x, 0, x + previewWidth, previewHeight)
+        drawable.draw(c)
+
+        image.setImageBitmap(preview)
+
     }
 
     // From widgetPreviewLoader in launcher3

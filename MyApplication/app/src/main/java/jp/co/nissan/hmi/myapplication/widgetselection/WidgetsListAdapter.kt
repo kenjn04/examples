@@ -2,6 +2,7 @@ package jp.co.nissan.hmi.myapplication.widgetselection
 
 import android.content.Context
 import android.support.v7.widget.RecyclerView.Adapter
+import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -43,6 +44,8 @@ class WidgetsListAdapter(
             widget.applyFromCellItem(info)
             widget.ensurePreview()
             widget.visibility = View.VISIBLE
+
+            widget.gravity = Gravity.CENTER
         }
     }
 
