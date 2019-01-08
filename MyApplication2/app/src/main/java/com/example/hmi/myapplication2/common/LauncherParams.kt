@@ -7,7 +7,7 @@ class LauncherParams(launcher: Launcher) {
 
     val displaySize: Point = Point()
 
-    // For WidgetContainerView
+    // For WidgetPreviewView
     val widgetContainerNum = 5
     val widgetNumInContainerX = 4
     val widgetNumInContainerY = 2

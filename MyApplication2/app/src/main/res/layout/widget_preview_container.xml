@@ -15,11 +15,10 @@
 -->
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/widgets_cell_list_container"
+    android:id="@+id/widget_preview_cell_list_container"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:focusable="true"
     android:descendantFocusability="afterDescendants"
     >
 
@@ -28,26 +27,11 @@
     <TextView
         android:id="@+id/section"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/widget_section_height"
-        android:background="?android:attr/colorPrimary"
-        android:drawablePadding="@dimen/widget_section_horizontal_padding"
-        android:ellipsize="end"
-        android:focusable="true"
+        android:layout_height="match_parent"
         android:gravity="start|center_vertical"
-        android:paddingBottom="@dimen/widget_section_vertical_padding"
-        android:paddingLeft="@dimen/widget_section_horizontal_padding"
-        android:paddingRight="@dimen/widget_section_horizontal_padding"
-        android:paddingTop="@dimen/widget_section_vertical_padding"
-        android:singleLine="true"
         android:textColor="?android:attr/textColorPrimary"
-        android:textSize="16sp"/>
-        <!--
-        launcher:customShadows="false"
-        launcher:deferShadowGeneration="true"
-        launcher:iconDisplay="widget_section"
-        launcher:iconSizeOverride="@dimen/widget_section_icon_size"
-        launcher:layoutHorizontal="true"
-        -->
+        android:textSize="16sp"
+    />
 
-    <include layout="@layout/widgets_scroll_container" />
+    <include layout="@layout/widget_preview_list" />
 </LinearLayout>

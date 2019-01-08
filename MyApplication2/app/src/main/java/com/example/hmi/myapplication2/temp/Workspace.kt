@@ -1,4 +1,4 @@
-package com.example.hmi.myapplication2
+package com.example.hmi.myapplication2.temp
 
 import android.animation.ObjectAnimator
 import android.animation.PropertyValuesHolder
@@ -6,6 +6,8 @@ import android.content.Context
 import android.util.AttributeSet
 import android.widget.FrameLayout
 import android.view.MotionEvent
+import com.example.hmi.myapplication2.Launcher
+import com.example.hmi.myapplication2.R
 import com.example.hmi.myapplication2.util.SwipeDetector
 
 class Workspace(
@@ -41,6 +43,11 @@ class Workspace(
     fun shrink() {
         val shrinkAnimator = createShrinkAnimator()
         shrinkAnimator.start()
+    }
+
+    fun unShrink() {
+        scaleX = 1.0F
+        scaleY = 1.0F
     }
 
     private fun createShrinkAnimator(): ObjectAnimator {

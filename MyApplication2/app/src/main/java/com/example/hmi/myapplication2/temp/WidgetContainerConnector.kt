@@ -1,4 +1,4 @@
-package com.example.hmi.myapplication2
+package com.example.hmi.myapplication2.temp
 
 import android.animation.Animator
 import android.animation.ObjectAnimator
@@ -11,6 +11,7 @@ import android.view.Gravity
 import android.widget.FrameLayout
 import android.view.MotionEvent
 import android.view.View
+import com.example.hmi.myapplication2.Launcher
 import com.example.hmi.myapplication2.common.WidgetRelocateInfo
 import com.example.hmi.myapplication2.util.DraggingHelper
 import java.lang.Math.abs
@@ -126,7 +127,12 @@ class WidgetContainerConnector(
         draggingWidgetPosition = container.calculateDraggingWidgetPosition()
         draggingWidgetOriginalContainerId = currentMainContainer
 
-        engine = WidgetRelocateEngine(widgetMap, widgetContainerNum, widgetNumInContainerX, widgetNumInContainerY)
+        engine = WidgetRelocateEngine(
+            widgetMap,
+            widgetContainerNum,
+            widgetNumInContainerX,
+            widgetNumInContainerY
+        )
     }
 
     fun finishWidgetDragging() {

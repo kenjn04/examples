@@ -6,18 +6,18 @@
         android:layout_height="match_parent"
         tools:context=".Launcher">
 
-    <com.example.hmi.myapplication2.Workspace
-            android:id="@+id/workspace"
-            android:layout_width="3840dp"
-            android:layout_height="match_parent"
-    >
-        <com.example.hmi.myapplication2.WidgetContainerConnector
-                android:id="@+id/widget_container_connector"
-                android:layout_width="7680dp"
-                android:layout_height="match_parent"
-        >
-        </com.example.hmi.myapplication2.WidgetContainerConnector>
-    </com.example.hmi.myapplication2.Workspace>
+    <include layout="@layout/workspace"
+             android:id="@+id/workspace"
+             android:layout_width="3840dp"
+             android:layout_height="match_parent"
+    />
+
+    <include layout="@layout/widget_preview"
+             android:id="@+id/widget_preview"
+             android:layout_width="match_parent"
+             android:layout_height="match_parent"
+             android:layout_gravity="center_vertical"
+    />
 
 </FrameLayout>
 

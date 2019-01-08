@@ -1,29 +1,28 @@
-package jp.co.nissan.hmi.myapplication.widgetselection
+package com.example.hmi.myapplication2.preview.view
 
 import android.content.Context
-import android.support.v7.widget.RecyclerView.Adapter
+import android.support.v7.widget.RecyclerView
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import jp.co.nissan.hmi.myapplication.R
-import jp.co.nissan.hmi.myapplication.common.PackageItemInfo
-import jp.co.nissan.hmi.myapplication.common.WidgetItem
-import jp.co.nissan.hmi.myapplication.util.MultiHashMap
+import com.example.hmi.myapplication2.R
+import com.example.hmi.myapplication2.preview.common.PackageItemInfo
+import com.example.hmi.myapplication2.util.MultiHashMap
 
 class WidgetsListAdapter(
     val onClickListener: View.OnClickListener,
     val onLongClickListener: View.OnLongClickListener,
     context: Context
-): Adapter<WidgetRowViewHolder>() {
+): RecyclerView.Adapter<WidgetRowViewHolder>() {
 
-    private val entries = mutableListOf<WidgetListRowEntry>()
+    private val entries = mutableListOf<WidgetListPackageEntry>()
 
     private val layoutInflater: LayoutInflater = LayoutInflater.from(context)
 
     // set layout
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): WidgetRowViewHolder {
-        val container = layoutInflater.inflate(R.layout.widgets_list_row_view, parent, false) as ViewGroup
+        val container = layoutInflater.inflate(R.layout.widget_preview_container, parent, false) as ViewGroup
 
         return WidgetRowViewHolder(container)
     }
@@ -33,13 +32,13 @@ class WidgetsListAdapter(
         val entry = entries[pos]
         val infoList = entry.widgets
 
-        val row = holder.cellContainer
+        val container = holder.cellContainer
         for (info in infoList) {
-            val widget = layoutInflater.inflate(R.layout.widget_cell, row, false) as WidgetCell
+            val widget = layoutInflater.inflate(R.layout.widget_preview_cell, container, false) as WidgetPreviewCell
 
             widget.setOnClickListener(onClickListener)
             widget.setOnLongClickListener(onLongClickListener)
-            row.addView(widget)
+            container.addView(widget)
 
             widget.applyFromCellItem(info)
             widget.ensurePreview()
@@ -49,15 +48,15 @@ class WidgetsListAdapter(
         }
     }
 
-    override fun getItemCount(): Int = 3 //entries.size
+    override fun getItemCount(): Int = entries.size
 
     fun setWidgets(widgets: MultiHashMap<PackageItemInfo, WidgetItem>) {
         entries.clear()
         // handling widget by grouping with package. (This may not be required.)
         for ((key, value) in widgets) {
             // TODO: maybe some sorting is required for row?
-            val row = WidgetListRowEntry(key, value)
-            entries.add(row)
+            val entry = WidgetListPackageEntry(key, value)
+            entries.add(entry)
         }
         // TODO: maybe some sorting is required for entries?
     }

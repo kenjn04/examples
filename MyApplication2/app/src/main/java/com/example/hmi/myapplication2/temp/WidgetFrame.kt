@@ -1,10 +1,11 @@
-package com.example.hmi.myapplication2
+package com.example.hmi.myapplication2.temp
 
 import android.content.Context
 import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.View
 import android.widget.FrameLayout
+import com.example.hmi.myapplication2.Launcher
 import com.example.hmi.myapplication2.common.LauncherMode
 import com.example.hmi.myapplication2.util.DraggingHelper
 

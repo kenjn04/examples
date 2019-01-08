@@ -1,4 +1,4 @@
-package com.example.hmi.myapplication2
+package com.example.hmi.myapplication2.temp
 
 import android.content.Context
 import android.graphics.Color
@@ -6,6 +6,7 @@ import android.util.AttributeSet
 import android.widget.FrameLayout
 import android.view.Gravity
 import android.view.View
+import com.example.hmi.myapplication2.Launcher
 
 class WidgetContainerView(
     context: Context,

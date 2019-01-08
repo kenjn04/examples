@@ -1,6 +1,5 @@
-package com.example.hmi.myapplication2
+package com.example.hmi.myapplication2.temp
 
-import android.util.Log
 import com.example.hmi.myapplication2.common.WidgetInfo
 import com.example.hmi.myapplication2.common.WidgetRelocateInfo
 import com.example.hmi.myapplication2.util.Queue

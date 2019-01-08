@@ -1,4 +1,4 @@
-package jp.co.nissan.hmi.myapplication.widgetselection
+package com.example.hmi.myapplication2.preview.view
 
 import android.content.Context
 import android.graphics.Bitmap
@@ -8,11 +8,10 @@ import android.util.AttributeSet
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
-import jp.co.nissan.hmi.myapplication.R
-import jp.co.nissan.hmi.myapplication.common.PendingAppWidgetInfo
-import jp.co.nissan.hmi.myapplication.common.WidgetItem
+import com.example.hmi.myapplication2.R
+import com.example.hmi.myapplication2.preview.PendingAppWidgetInfo
 
-class WidgetCell(
+class WidgetPreviewCell(
     context: Context,
     attrs: AttributeSet?,
     defStyle: Int
@@ -44,13 +43,7 @@ class WidgetCell(
     }
 
     fun ensurePreview() {
-        // TODO: Is this correct?
-        val density = this.resources.displayMetrics.density
-        // TODO: Is this heavy task? Should be done in background? caching is required?
-//        val preview = item!!.widgetInfo.loadPreviewImage(this.context, density.toInt())
-//        image.setImageDrawable(preview)
-//        val preview = generateWidgetPreview(item!!.widgetInfo)
-//        image.setImageBitmap(preview)
+
         val drawable = item!!.widgetInfo.loadPreviewImage(this.context, 0)
         var previewWidth = drawable.intrinsicWidth
         var previewHeight = drawable.intrinsicHeight
@@ -78,11 +71,4 @@ class WidgetCell(
         image.setImageBitmap(preview)
 
     }
-
-    // From widgetPreviewLoader in launcher3
-/*
-    private fun generateWidgetPreview(info: LauncherAppWidgetProviderInfo): Bitmap {
-        val drawable = info.loadPreviewImage(this.context, 0)
-    }
-*/
 }
