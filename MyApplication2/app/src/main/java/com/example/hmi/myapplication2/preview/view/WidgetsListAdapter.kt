@@ -11,8 +11,8 @@ import com.example.hmi.myapplication2.preview.common.PackageItemInfo
 import com.example.hmi.myapplication2.util.MultiHashMap
 
 class WidgetsListAdapter(
-    val onClickListener: View.OnClickListener,
-    val onLongClickListener: View.OnLongClickListener,
+    private val onClickListener: View.OnClickListener,
+    private val onLongClickListener: View.OnLongClickListener,
     context: Context
 ): RecyclerView.Adapter<WidgetRowViewHolder>() {
 

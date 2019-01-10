@@ -10,16 +10,16 @@ import com.example.hmi.myapplication2.preview.common.LauncherAppWidgetProviderIn
 import com.example.hmi.myapplication2.preview.view.WidgetPreviewCell
 
 class WidgetHostViewLoader(
-    val launcher: Launcher, val view: WidgetPreviewCell
+    val launcher: Launcher,
+    private val pInfo: LauncherAppWidgetProviderInfo,
+    private val id: Int = 0,
+    private val x: Int = 0,
+    private val y: Int = 0
 ) {
-
-    val info: PendingAppWidgetInfo = view.tag as PendingAppWidgetInfo
 
     private var widgetLoadingId: Int = -1
 
     fun loadWidget() {
-        val pInfo = info.info
-
         bindWidget(pInfo)
     }
 
@@ -36,15 +36,15 @@ class WidgetHostViewLoader(
         }
     }
 
+    fun onRequestCompleted(pInfo: LauncherAppWidgetProviderInfo) {
+        inflateWidget(pInfo)
+    }
+
     private fun inflateWidget(pInfo: LauncherAppWidgetProviderInfo) {
         val hostView = launcher.appWidgetHost.createView(
             launcher as Context, widgetLoadingId, pInfo
         )
-        info.boundWidget = hostView
-        launcher.onAppWidgetInflated(hostView)
-    }
-
-    fun onRequestCompleted(pInfo: LauncherAppWidgetProviderInfo) {
-        inflateWidget(pInfo)
+//        info.boundWidget = hostView
+        launcher.onAppWidgetInflated(hostView, id, x, y)
     }
 }

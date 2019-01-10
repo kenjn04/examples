@@ -69,6 +69,5 @@ class WidgetPreviewCell(
         drawable.draw(c)
 
         image.setImageBitmap(preview)
-
     }
 }

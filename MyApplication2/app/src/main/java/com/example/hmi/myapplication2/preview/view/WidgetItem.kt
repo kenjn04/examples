@@ -24,6 +24,4 @@ class WidgetItem(
 
     val userHandle: UserHandle
         get() = widgetInfo.profile
-
-
 }

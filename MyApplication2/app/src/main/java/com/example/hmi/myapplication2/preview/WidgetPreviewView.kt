@@ -58,7 +58,8 @@ class WidgetPreviewView(
     }
 
     private fun handleLongClick(view: View?): Boolean {
-        val loader = WidgetHostViewLoader(launcher, view as WidgetPreviewCell)
+        val info: PendingAppWidgetInfo = view!!.tag as PendingAppWidgetInfo
+        val loader = WidgetHostViewLoader(launcher, info.info)
         loader.loadWidget()
         return true
     }

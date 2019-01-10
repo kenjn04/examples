@@ -4,6 +4,7 @@ import android.appwidget.AppWidgetHost
 import android.appwidget.AppWidgetHostView
 import android.appwidget.AppWidgetManager
 import android.appwidget.AppWidgetProviderInfo
+import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.graphics.Color
@@ -43,7 +44,9 @@ class Launcher : AppCompatActivity() {
     lateinit var params: LauncherParams
     private lateinit var containerConnector: WidgetContainerConnector
     lateinit var appWidgetHost: AppWidgetHost
-    var mode = LauncherMode.SELECT
+    lateinit var installedWidgets: MultiHashMap<PackageItemInfo, WidgetItem>
+
+    var mode = LauncherMode.DISPLAY
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -52,11 +55,16 @@ class Launcher : AppCompatActivity() {
         setContentView(R.layout.launcher)
 
         setManagers()
+        appWidgetHost.startListening()
+
         setViews()
 
-        getWidgetsList {
-            bindAllWidgets(it)
-        }
+        installedWidgets = getWidgetsList()
+
+        setCurrentWidgets()
+
+        bindAllWidgets(installedWidgets)
+
         transitMode(mode)
     }
 
@@ -71,8 +79,28 @@ class Launcher : AppCompatActivity() {
         containerConnector = findViewById(R.id.widget_container_connector)
         widgetPreview = findViewById(R.id.widget_preview)
 
-//        setDataForTest()
         workspace.visibility = View.GONE
+    }
+
+    private fun setCurrentWidgets() {
+        val pName = "com.android.chrome"
+        val cName = "org.chromium.chrome.browser.searchwidget.SearchWidgetProvider"
+        val id = 0
+        val x = 1
+        val y = 0
+
+        val packageItemInfo = PackageItemInfo(pName)
+        val componentName = ComponentName(pName, cName)
+
+        val itemList = installedWidgets[packageItemInfo]!!
+        var loader: WidgetHostViewLoader? = null
+        for (item in itemList) {
+            if (item.componentName == componentName) {
+                loader = WidgetHostViewLoader(this, item.widgetInfo, id, x, y)
+                break
+            }
+        }
+        loader!!.loadWidget()
     }
 
     private val colors = listOf(
@@ -102,7 +130,7 @@ class Launcher : AppCompatActivity() {
 //            containerConnector.addWidget(frame3, i - 1, 0, 1)
             containerConnector.addWidget(frame4, i - 1, 2, 0)
         }
-        transitMode(LauncherMode.REARRANGE)
+//        transitMode(LauncherMode.REARRANGE)
     }
 
     fun transitMode(nextMode: LauncherMode) {
@@ -131,12 +159,12 @@ class Launcher : AppCompatActivity() {
         widgetPreview.setWidgets(widgets)
     }
 
-    fun onAppWidgetInflated(hostView: AppWidgetHostView) {
+    fun onAppWidgetInflated(hostView: AppWidgetHostView, id: Int, x: Int, y: Int) {
         var j = 1
         var k = 1
-        val frame = WidgetFrame(this, 3, 2, k++)
+        val frame = WidgetFrame(this, 1, 1, k++)
         frame.setBackgroundColor(colors[j++ % colors.size])
-        containerConnector.addWidget(frame, 0, 0, 0)
+        containerConnector.addWidget(frame, id, x, y)
         frame.addView(hostView)
 
         transitMode(LauncherMode.DISPLAY)
@@ -144,7 +172,7 @@ class Launcher : AppCompatActivity() {
     }
 
     /** Maybe this should be done in model layer */
-    private fun getWidgetsList(callback: (widgets: MultiHashMap<PackageItemInfo, WidgetItem>)->Unit) {
+    private fun getWidgetsList(): MultiHashMap<PackageItemInfo, WidgetItem> {
         // get all widgets as WidgetItem
         val widgetItems = mutableListOf<WidgetItem>()
         for (widgetInfo in getWidgetInfoFromAllProviders()) {
@@ -170,7 +198,7 @@ class Launcher : AppCompatActivity() {
             widgetsList.addToList(pInfo, item)
         }
 
-        callback(widgetsList)
+        return widgetsList
     }
 
     private fun getWidgetInfoFromAllProviders(): MutableList<AppWidgetProviderInfo> {
@@ -210,5 +238,4 @@ class Launcher : AppCompatActivity() {
             }
         }
     }
-
 }
