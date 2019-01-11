@@ -23,7 +23,6 @@ class WidgetViewCell(
     var spanY: Int = 1
     var positionX: Int = 1
     var positionY: Int = 1
-    var appWidgetId: Int = -1
 
     private val draggingHelper = DraggingHelper(this)
 
@@ -33,7 +32,6 @@ class WidgetViewCell(
     constructor(context: Context, spanX: Int, spanY: Int, id: Int) : this(context, null, 0) {
         this.spanX = spanX
         this.spanY = spanY
-        this.appWidgetId = id
     }
 
     init {
@@ -45,9 +43,9 @@ class WidgetViewCell(
     override fun onLongClick(v: View?): Boolean {
         when (home.mode) {
             HomeMode.DISPLAY -> {
-                home.transitMode(HomeMode.REARRANGE)
+                home.transitMode(HomeMode.REARRANGEMENT)
             }
-            HomeMode.REARRANGE -> {
+            HomeMode.REARRANGEMENT -> {
                 startDragging()
                 dragAllowed = true
             }
@@ -79,15 +77,8 @@ class WidgetViewCell(
 
     override fun onInterceptTouchEvent(ev: MotionEvent?): Boolean {
         // disable widget touch
-        if (home.mode == HomeMode.REARRANGE) {
+        if (home.mode == HomeMode.REARRANGEMENT) {
             return true
-        }
-        return false
-    }
-
-    override fun equals(other: Any?): Boolean {
-        if (other is WidgetViewCell) {
-            if (appWidgetId.equals(other.appWidgetId)) return true
         }
         return false
     }

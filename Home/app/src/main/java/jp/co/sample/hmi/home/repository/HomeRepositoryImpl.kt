@@ -15,7 +15,10 @@ class HomeRepositoryImpl private constructor(
 
     private val currentWidgets = MutableLiveData<List<WidgetItemInfo>>()
 
+    // TODO: WidgetItem need to be stored by using room etc.
+    // Need to check https://developer.android.com/topic/libraries/architecture/livedata#use_livedata_with_room
     init {
+        // For testing
         val pName = "com.android.chrome"
         val cName = "org.chromium.chrome.browser.searchwidget.SearchWidgetProvider"
         val widget = WidgetItemInfo(
@@ -35,6 +38,15 @@ class HomeRepositoryImpl private constructor(
             installedWidgetList.add(HomeAppWidgetProviderInfo.fromProviderInfo(widgetInfo))
         }
         return installedWidgetList
+    }
+
+    override fun addWidget(item: WidgetItemInfo) {
+        val list: MutableList<WidgetItemInfo> = currentWidgets.value!!.toMutableList()
+        list.add(item)
+        currentWidgets.postValue(list)
+    }
+
+    override fun deleteWidget(componentName: ComponentName) {
     }
 
     override fun getCurrentWidgets(): MutableLiveData<List<WidgetItemInfo>> = currentWidgets

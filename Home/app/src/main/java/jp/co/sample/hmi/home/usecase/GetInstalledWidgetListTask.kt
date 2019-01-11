@@ -10,7 +10,6 @@ class GetInstalledWidgetListTask(
     fun execute(): List<HomeAppWidgetProviderInfo> {
         val installedWidgetList = homeRepository.getInstalledWidgetList()
 
-        // TODO: Sorting is done here if necessary
         return installedWidgetList.toList()
     }
 }

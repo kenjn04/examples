@@ -3,28 +3,29 @@ package jp.co.sample.hmi.home.view
 import android.appwidget.AppWidgetHost
 import android.appwidget.AppWidgetHostView
 import android.appwidget.AppWidgetManager
-import android.content.Context
+import android.content.ComponentName
 import android.content.Intent
+import android.graphics.Color
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
-import android.os.UserManager
 import android.view.View
 import jp.co.sample.hmi.home.common.HomeAppWidgetProviderInfo
 import jp.co.sample.hmi.home.R
 import jp.co.sample.hmi.home.common.WidgetItemInfo
-import jp.co.sample.hmi.home.repository.HomeRepositoryImpl
-import jp.co.sample.hmi.home.usecase.GetCurrentWidgetsTask
-import jp.co.sample.hmi.home.usecase.GetInstalledWidgetListTask
-import jp.co.sample.hmi.home.view.widget.WidgetHostViewLoader
+import jp.co.sample.hmi.home.util.WidgetHostViewLoader
+import jp.co.sample.hmi.home.view.preview.WidgetSelectionView
+import jp.co.sample.hmi.home.view.widget.WidgetContainerConnector
+import jp.co.sample.hmi.home.view.widget.WidgetViewCell
 import jp.co.sample.hmi.home.view.widget.Workspace
 import jp.co.sample.hmi.home.viewmodel.HomeViewModel
+import kotlinx.android.synthetic.main.activity_home.*
+import org.koin.android.viewmodel.ext.android.viewModel
 
 class HomeActivity : AppCompatActivity() {
 
     private val APP_WIDGET_HOST_ID = 12345
 
-//    private val homeViewModel: HomeViewModel by viewModel()
-    private lateinit var homeViewModel: HomeViewModel
+    private val homeViewModel: HomeViewModel by viewModel()
 
     private var installedWidgetList: List<HomeAppWidgetProviderInfo> = listOf()
 
@@ -35,7 +36,8 @@ class HomeActivity : AppCompatActivity() {
 
     /** Views */
     lateinit var workspace: Workspace
-//    private lateinit var widgetPreview: WidgetPreviews
+    private lateinit var widgetSelectionView: WidgetSelectionView
+    private lateinit var containerConnector: WidgetContainerConnector
 
     /** Request Code */
     private val REQUEST_BIND_APPWIDGET = 1
@@ -54,19 +56,6 @@ class HomeActivity : AppCompatActivity() {
         // TODO: need to stop somewhere (need to check Activity lifecycle)
         appWidgetHost.startListening()
 
-        // TODO: remove the below by checking Koin di
-        /** kokokara */
-        val repo = HomeRepositoryImpl.getInstance(
-                        AppWidgetManager.getInstance(this),
-                        getSystemService(Context.USER_SERVICE) as UserManager
-        )
-        homeViewModel = HomeViewModel(
-                application,
-                GetInstalledWidgetListTask(repo),
-                GetCurrentWidgetsTask(repo)
-        )
-        /** kokomade */
-
         setViews()
 
         updateInstalledWidgetList()
@@ -74,12 +63,35 @@ class HomeActivity : AppCompatActivity() {
     }
 
     private fun setViews() {
+        workspace = findViewById(R.id.workspace)
+        widgetSelectionView = findViewById(R.id.widget_preview)
+        containerConnector = findViewById(R.id.widget_container_connector)
 
+        transitMode(mode)
+
+        // TODO: This is temporary. Button for adding widget should be in WidgetContainerView
+        tmp_button.setOnClickListener {
+            transitMode(HomeMode.SELECTION)
+        }
     }
 
     // TODO: Maybe need to be called when application is added and removed to get latest lists
     private fun updateInstalledWidgetList() {
         installedWidgetList = homeViewModel.installedWidgetList
+        widgetSelectionView.setWidgets(installedWidgetList)
+    }
+
+    fun addWidget(componentName: ComponentName) {
+        // TODO: Need to get layout information from workspace
+        val item = WidgetItemInfo(componentName, 0,2,0)
+        /** After adding, the updateCurrentWidgets will be called by LiveData */
+        homeViewModel.addWidget(item)
+        transitMode(HomeMode.DISPLAY)
+    }
+
+    fun deleteWidget(componentName: ComponentName) {
+        // TODO: appWidgetHost.deleteAppWidgetId is required
+        homeViewModel.deleteWidget(componentName)
     }
 
     private fun setCurrentWidgets() {
@@ -106,17 +118,16 @@ class HomeActivity : AppCompatActivity() {
         }
     }
 
-    // TODO: Update is required.
-    fun onWidgetViewLoaded(hostView: AppWidgetHostView, containerId: Int, coordinateX: Int, coordinateY: Int) {
-/*
-        val widgetViewCell = WidgetViewCell(hostView)
+    fun onWidgetViewLoaded(hostView: AppWidgetHostView, containerId: Int, coordinateX: Int, coordinateY: Int, spanX: Int, spanY: Int) {
+        val widgetViewCell = layoutInflater.inflate(R.layout.widget_view_cell, workspace, false) as WidgetViewCell
+        widgetViewCell.spanX = spanX
+        widgetViewCell.spanY = spanY
         widgetViewCell.setBackgroundColor(Color.YELLOW)
+        widgetViewCell.addView(hostView)
         containerConnector.addWidget(widgetViewCell, containerId, coordinateX, coordinateY)
-*/
     }
 
     fun requestAppWidgetBind(appWidgetId: Int, pInfo: HomeAppWidgetProviderInfo, loader: WidgetHostViewLoader) {
-
         val intent = Intent(AppWidgetManager.ACTION_APPWIDGET_BIND)
         intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId)
         intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_PROVIDER, pInfo.provider)
@@ -130,19 +141,19 @@ class HomeActivity : AppCompatActivity() {
         when (nextMode) {
             HomeMode.DISPLAY -> {
                 workspace.visibility = View.VISIBLE
-//                widgetPreview.visibility = View.GONE
+                widgetSelectionView.visibility = View.GONE
 
                 workspace.unShrink()
             }
-            HomeMode.REARRANGE -> {
+            HomeMode.REARRANGEMENT -> {
                 workspace.visibility = View.VISIBLE
-//                widgetPreview.visibility = View.GONE
+                widgetSelectionView.visibility = View.GONE
 
                 workspace.shrink()
             }
-            HomeMode.SELECT -> {
+            HomeMode.SELECTION -> {
                 workspace.visibility = View.GONE
-//                widgetPreview.visibility = View.VISIBLE
+                widgetSelectionView.visibility = View.VISIBLE
             }
         }
         mode = nextMode

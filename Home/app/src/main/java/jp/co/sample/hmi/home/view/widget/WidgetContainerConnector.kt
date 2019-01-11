@@ -112,8 +112,6 @@ class WidgetContainerConnector(
             for (dy in 0..(widget.spanY - 1)) {
                 val absoluteX = containerId * widgetNumInContainerX + x + dx
                 val absoluteY = y + dy
-                if (widget.appWidgetId == 4) {
-                }
                 widgetMap[absoluteX][absoluteY] = widget
             }
         }

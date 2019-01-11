@@ -1,4 +1,4 @@
-package jp.co.sample.hmi.home.view.widget
+package jp.co.sample.hmi.home.util
 
 import android.appwidget.AppWidgetManager
 import android.content.Context
@@ -7,7 +7,7 @@ import jp.co.sample.hmi.home.common.HomeAppWidgetProviderInfo
 import jp.co.sample.hmi.home.view.HomeActivity
 
 class WidgetHostViewLoader(
-        private val homeActivity: HomeActivity,
+        private val home: HomeActivity,
         private val pInfo: HomeAppWidgetProviderInfo,
         private val containerId: Int,
         private val coordinateX: Int,
@@ -23,13 +23,13 @@ class WidgetHostViewLoader(
     private fun bindWidget(pInfo: HomeAppWidgetProviderInfo) {
         val options = Bundle()
 
-        widgetLoadingId = homeActivity.appWidgetHost.allocateAppWidgetId()
-        if (AppWidgetManager.getInstance(homeActivity).bindAppWidgetIdIfAllowed(
+        widgetLoadingId = home.appWidgetHost.allocateAppWidgetId()
+        if (AppWidgetManager.getInstance(home).bindAppWidgetIdIfAllowed(
                 widgetLoadingId, pInfo.profile, pInfo.provider, options)
         ) {
             inflateWidget(pInfo)
         } else {
-            homeActivity.requestAppWidgetBind(widgetLoadingId, pInfo, this)
+            home.requestAppWidgetBind(widgetLoadingId, pInfo, this)
         }
     }
 
@@ -38,10 +38,9 @@ class WidgetHostViewLoader(
     }
 
     private fun inflateWidget(pInfo: HomeAppWidgetProviderInfo) {
-        val hostView = homeActivity.appWidgetHost.createView(
-            homeActivity as Context, widgetLoadingId, pInfo
+        val hostView = home.appWidgetHost.createView(
+            home as Context, widgetLoadingId, pInfo
         )
-//        info.boundWidget = hostView
-        homeActivity.onWidgetViewLoaded(hostView, containerId, coordinateX, coordinateY)
+        home.onWidgetViewLoaded(hostView, containerId, coordinateX, coordinateY, pInfo.spanX, pInfo.spanY)
     }
 }

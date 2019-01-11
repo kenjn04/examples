@@ -11,4 +11,5 @@
         android:layout_height="match_parent"
     >
     </jp.co.sample.hmi.home.view.widget.WidgetContainerConnector>
+
 </jp.co.sample.hmi.home.view.widget.Workspace>
