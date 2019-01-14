@@ -56,6 +56,6 @@ class HomeApplication : Application() {
     }
 
     private val repositoryModule = module {
-        single<HomeRepository> { HomeRepositoryImpl.getInstance(appWidgetManager, userManager) }
+        single<HomeRepository> { HomeRepositoryImpl.getInstance(androidApplication(), appWidgetManager, userManager) }
     }
 }

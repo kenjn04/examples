@@ -1,6 +1,7 @@
 package jp.co.sample.hmi.home.view.preview
 
 import android.content.Context
+import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.Bitmap.Config
 import android.graphics.Canvas
@@ -32,9 +33,9 @@ class WidgetPreviewCell(
         size = findViewById(R.id.widget_size)
     }
 
-    fun applyFromCellItem(info: HomeAppWidgetProviderInfo) {
+    fun applyFromCellItem(info: HomeAppWidgetProviderInfo, packageManager: PackageManager) {
         pInfo = info
-        name.text = pInfo.widgetLabel
+        name.text = pInfo.getLabel(packageManager)
         size.text = context.getString(R.string.widget_dims_format, pInfo.spanX, pInfo.spanY)
         // TODO; Is this required?
         size.contentDescription = context.getString(R.string.widget_accessible_dims_format, pInfo.spanX, pInfo.spanY)

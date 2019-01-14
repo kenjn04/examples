@@ -84,15 +84,15 @@ class WidgetContainerView(
         val height = widget.spanY * widgetFrameHeight
         val params = widget.layoutParams
 
-        var layoutParams: FrameLayout.LayoutParams? = null
-        if (params != null) {
-            layoutParams = FrameLayout.LayoutParams(params).apply {
-                this.width = width
-                this.height = height
+        var layoutParams: FrameLayout.LayoutParams = if (params != null)
+            {
+                FrameLayout.LayoutParams(params).apply {
+                    this.width = width
+                    this.height = height
+                }
+            } else {
+                FrameLayout.LayoutParams(width, height)
             }
-        } else {
-            layoutParams = FrameLayout.LayoutParams(width, height)
-        }
         layoutParams.gravity = Gravity.TOP or Gravity.LEFT
         widget.apply {
             this.layoutParams = layoutParams

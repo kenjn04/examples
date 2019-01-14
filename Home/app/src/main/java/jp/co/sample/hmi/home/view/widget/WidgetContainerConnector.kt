@@ -97,7 +97,6 @@ class WidgetContainerConnector(
         }
         for (i in -2..2) {
             val j = (currentMainContainer + i + widgetContainers.size) % widgetContainers.size
-            val k = i + 1
             val container = widgetContainers[j]
             container.apply {
                 translationX = shiftX + i * displaySize.x

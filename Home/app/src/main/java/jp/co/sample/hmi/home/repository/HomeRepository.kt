@@ -1,17 +1,18 @@
 package jp.co.sample.hmi.home.repository
 
+import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.MutableLiveData
 import android.content.ComponentName
 import jp.co.sample.hmi.home.common.HomeAppWidgetProviderInfo
-import jp.co.sample.hmi.home.common.WidgetItemInfo
+import jp.co.sample.hmi.home.repository.db.WidgetItemInfo
 
 interface HomeRepository{
 
-    fun getInstalledWidgetList(): MutableList<HomeAppWidgetProviderInfo>
+    val currentWidgets: LiveData<List<WidgetItemInfo>>
 
-    fun getCurrentWidgets(): MutableLiveData<List<WidgetItemInfo>>
+    fun getInstalledWidgetList(): MutableList<HomeAppWidgetProviderInfo>
 
     fun addWidget(item: WidgetItemInfo)
 
-    fun deleteWidget(componentName: ComponentName)
+    fun deleteWidget(item: WidgetItemInfo)
 }

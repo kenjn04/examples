@@ -19,7 +19,7 @@ class WidgetSelectionView(
     private val home = context as HomeActivity
 
     private val adapter: WidgetsListAdapter =
-        WidgetsListAdapter(this, this, context)
+        WidgetsListAdapter(context,this, this)
 
     private lateinit var recyclerView: RecyclerView
 

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- HomeActivity -->
+    <dimen name="target_screen_size_width">1920dp</dimen>
+    <dimen name="target_screen_size_widthx2">3840dp</dimen>
+    <dimen name="target_screen_size_widthx5">7680dp</dimen>
+    <dimen name="target_screen_size_height">720dp</dimen>
+
+    <!-- WidgetSelectionView -->
+    <dimen name="widget_selection_recycler_view_width">1700dp</dimen>
+
+    <!-- WidgetPreviewCell -->
+    <dimen name="widget_preview_cell_outer_width">400dp</dimen>
+    <dimen name="widget_preview_cell_outer_height">500dp</dimen>
+    <dimen name="widget_preview_cell_inner_width">300dp</dimen>
+    <dimen name="widget_preview_cell_inner_height">400dp</dimen>
+    <dimen name="widget_preview_width">250dp</dimen>
+    <dimen name="widget_preview_height">250dp</dimen>
+    <dimen name="widget_preview_margin_top">30dp</dimen>
+    <dimen name="widget_name_text_size">21sp</dimen>
+    <dimen name="widget_size_text_size">21sp</dimen>
+</resources>

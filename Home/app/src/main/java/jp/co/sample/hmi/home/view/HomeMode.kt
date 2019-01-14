@@ -7,3 +7,8 @@ enum class HomeMode {
 
     SELECTION
 }
+interface HomeModeChangeListener {
+
+    fun onHomeModeChanged(mode: HomeMode)
+}
+

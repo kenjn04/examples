@@ -9,10 +9,16 @@
     android:background="?android:attr/colorPrimaryDark"
     android:gravity="center_horizontal">
 
-        <ImageView
+        <FrameLayout
             android:id="@+id/widget_view"
-            android:layout_width="300dp"
-            android:layout_height="300dp"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
         />
+
+        <Button
+            android:id="@+id/delete_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Delete" />
 
 </jp.co.sample.hmi.home.view.widget.WidgetViewCell>

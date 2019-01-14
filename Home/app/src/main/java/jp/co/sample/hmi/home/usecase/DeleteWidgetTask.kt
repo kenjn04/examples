@@ -1,11 +1,11 @@
 package jp.co.sample.hmi.home.usecase
 
-import android.content.ComponentName
 import jp.co.sample.hmi.home.repository.HomeRepository
+import jp.co.sample.hmi.home.repository.db.WidgetItemInfo
 
 class DeleteWidgetTask(
         private val homeRepository: HomeRepository
 ) {
 
-    fun execute(componentName: ComponentName) = homeRepository.deleteWidget(componentName)
+    fun execute(item: WidgetItemInfo) = homeRepository.deleteWidget(item)
 }

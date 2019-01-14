@@ -8,9 +8,10 @@
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/widgets_list_view"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_gravity="center_vertical"
+        android:layout_width="@dimen/widget_selection_recycler_view_width"
+        android:layout_height="@dimen/widget_preview_cell_outer_height"
+        android:layout_gravity="center"
+        android:scrollbars="horizontal"
     />
 
 </jp.co.sample.hmi.home.view.preview.WidgetSelectionView>

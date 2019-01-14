@@ -8,10 +8,11 @@ import android.content.Intent
 import android.graphics.Color
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import jp.co.sample.hmi.home.common.HomeAppWidgetProviderInfo
 import jp.co.sample.hmi.home.R
-import jp.co.sample.hmi.home.common.WidgetItemInfo
+import jp.co.sample.hmi.home.repository.db.WidgetItemInfo
 import jp.co.sample.hmi.home.util.WidgetHostViewLoader
 import jp.co.sample.hmi.home.view.preview.WidgetSelectionView
 import jp.co.sample.hmi.home.view.widget.WidgetContainerConnector
@@ -27,10 +28,10 @@ class HomeActivity : AppCompatActivity() {
 
     private val homeViewModel: HomeViewModel by viewModel()
 
-    private var installedWidgetList: List<HomeAppWidgetProviderInfo> = listOf()
-
     lateinit var appWidgetHost: AppWidgetHost
 
+    private var installedWidgetList: List<HomeAppWidgetProviderInfo> = listOf()
+    private val activeWidgetViewCells = hashMapOf<Int, WidgetViewCell>()
     private val pendingWidgets
             = mutableMapOf<Int, Pair<HomeAppWidgetProviderInfo, WidgetHostViewLoader>>()
 
@@ -81,36 +82,37 @@ class HomeActivity : AppCompatActivity() {
         widgetSelectionView.setWidgets(installedWidgetList)
     }
 
-    fun addWidget(componentName: ComponentName) {
+    fun addWidget(cName: ComponentName) {
         // TODO: Need to get layout information from workspace
-        val item = WidgetItemInfo(componentName, 0,2,0)
+        val item = WidgetItemInfo(cName.packageName, cName.className,0, 2, 0)
         /** After adding, the updateCurrentWidgets will be called by LiveData */
         homeViewModel.addWidget(item)
         transitMode(HomeMode.DISPLAY)
     }
 
-    fun deleteWidget(componentName: ComponentName) {
+    fun deleteWidget(item: WidgetItemInfo) {
         // TODO: appWidgetHost.deleteAppWidgetId is required
-        homeViewModel.deleteWidget(componentName)
+        // TODO: delete from activeWidgetViewCells
+        homeViewModel.deleteWidget(item)
     }
 
     private fun setCurrentWidgets() {
         val currentWidgetsLiveData = homeViewModel.currentWidgets
         val currentWidgets = currentWidgetsLiveData.value
-        updateCurrentWidgets(currentWidgets)
+//        updateCurrentWidgets(currentWidgets)
         currentWidgetsLiveData.observeForever {
             updateCurrentWidgets(it)
         }
     }
 
+    // TODO: Need to reconsider with rearrange etc.
     private fun updateCurrentWidgets(currentWidgets: List<WidgetItemInfo>?) {
         if (currentWidgets == null) return
-        val widgets = currentWidgets!!
-        for (widget in widgets) {
+        for (widget in currentWidgets) {
             for (widgetInfo in installedWidgetList) {
-                if (widgetInfo.provider == widget.componentName) {
+                if (widgetInfo.provider.className == widget.className) {
                     val loader = WidgetHostViewLoader(this, widgetInfo, widget.containerId, widget.coordinateX, widget.coordinateY)
-                    // After loadin WidgetView onWidgetViewLoaded is called
+                    // After loading WidgetView onWidgetViewLoaded is called
                     loader.loadWidgetView()
                     break
                 }
@@ -120,10 +122,12 @@ class HomeActivity : AppCompatActivity() {
 
     fun onWidgetViewLoaded(hostView: AppWidgetHostView, containerId: Int, coordinateX: Int, coordinateY: Int, spanX: Int, spanY: Int) {
         val widgetViewCell = layoutInflater.inflate(R.layout.widget_view_cell, workspace, false) as WidgetViewCell
+        // TODO: Remove the blow. (This is for test.)
         widgetViewCell.spanX = spanX
         widgetViewCell.spanY = spanY
         widgetViewCell.setBackgroundColor(Color.YELLOW)
-        widgetViewCell.addView(hostView)
+        widgetViewCell.addWidgetView(hostView)
+        activeWidgetViewCells[hostView.appWidgetId] = widgetViewCell
         containerConnector.addWidget(widgetViewCell, containerId, coordinateX, coordinateY)
     }
 
@@ -156,7 +160,14 @@ class HomeActivity : AppCompatActivity() {
                 widgetSelectionView.visibility = View.VISIBLE
             }
         }
+        notifyListeners(nextMode)
         mode = nextMode
+    }
+
+    private fun notifyListeners(mode: HomeMode) {
+        for ((id, cell) in activeWidgetViewCells) {
+            cell.onHomeModeChanged(mode)
+        }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {

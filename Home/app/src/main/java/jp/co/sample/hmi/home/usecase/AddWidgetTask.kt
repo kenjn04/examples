@@ -1,6 +1,6 @@
 package jp.co.sample.hmi.home.usecase
 
-import jp.co.sample.hmi.home.common.WidgetItemInfo
+import jp.co.sample.hmi.home.repository.db.WidgetItemInfo
 import jp.co.sample.hmi.home.repository.HomeRepository
 
 class AddWidgetTask(

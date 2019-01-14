@@ -1,23 +1,30 @@
 package jp.co.sample.hmi.home.view.widget
 
+import android.appwidget.AppWidgetHostView
 import android.content.Context
 import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.View
+import android.widget.Button
 import android.widget.FrameLayout
+import jp.co.sample.hmi.home.R
 import jp.co.sample.hmi.home.util.DraggingHelper
 import jp.co.sample.hmi.home.view.HomeActivity
 import jp.co.sample.hmi.home.view.HomeMode
+import jp.co.sample.hmi.home.view.HomeModeChangeListener
 
 class WidgetViewCell(
     context: Context,
     attrs: AttributeSet?,
     defStyle: Int
-): FrameLayout(context, attrs, defStyle), View.OnLongClickListener {
+): FrameLayout(context, attrs, defStyle), View.OnLongClickListener, HomeModeChangeListener {
 
     private val home: HomeActivity = context as HomeActivity
 
     lateinit var widgetContainerView: WidgetContainerView
+
+    lateinit var widgetView: FrameLayout
+    lateinit var deleteButton: Button
 
     var spanX: Int = 1
     var spanY: Int = 1
@@ -29,13 +36,23 @@ class WidgetViewCell(
     constructor(context: Context) : this(context, null, 0)
     constructor(context: Context, attrs: AttributeSet) : this(context, attrs, 0)
 
-    constructor(context: Context, spanX: Int, spanY: Int, id: Int) : this(context, null, 0) {
-        this.spanX = spanX
-        this.spanY = spanY
-    }
-
     init {
         setOnLongClickListener(this)
+    }
+
+    override fun onFinishInflate() {
+        super.onFinishInflate()
+        widgetView = findViewById(R.id.widget_view)
+        deleteButton = findViewById(R.id.delete_button)
+        deleteButton.setOnClickListener {
+            // TODO: How to delete the widget?
+            //home.deleteWidget()
+        }
+        deleteButton.visibility = View.GONE
+    }
+
+    fun addWidgetView(hostView: AppWidgetHostView) {
+        widgetView.addView(hostView)
     }
 
     private var dragAllowed = false
@@ -49,8 +66,25 @@ class WidgetViewCell(
                 startDragging()
                 dragAllowed = true
             }
+            HomeMode.SELECTION -> {
+                // Never reach here
+            }
         }
         return true
+    }
+
+    override fun onHomeModeChanged(mode: HomeMode) {
+        when (mode) {
+            HomeMode.DISPLAY -> {
+                deleteButton.visibility = View.GONE
+            }
+            HomeMode.REARRANGEMENT -> {
+                deleteButton.visibility = View.VISIBLE
+            }
+            HomeMode.SELECTION -> {
+                // Nothing to do
+            }
+        }
     }
 
     private fun startDragging() {

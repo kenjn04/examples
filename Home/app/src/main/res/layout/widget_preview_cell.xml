@@ -1,34 +1,45 @@
 <?xml version="1.0" encoding="utf-8"?>
 <jp.co.sample.hmi.home.view.preview.WidgetPreviewCell
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:layout_weight="1"
-    android:orientation="vertical"
-    android:focusable="true"
-    android:background="?android:attr/colorPrimaryDark"
-    android:gravity="center_horizontal">
+    android:layout_width="@dimen/widget_preview_cell_outer_width"
+    android:layout_height="@dimen/widget_preview_cell_outer_height"
+    android:gravity="center_horizontal"
+    >
 
     <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:layout_width="@dimen/widget_preview_cell_inner_width"
+        android:layout_height="@dimen/widget_preview_cell_inner_height"
+        android:orientation="vertical"
+        android:layout_gravity="center"
+        android:background="@color/colorPrimaryDark"
+        >
 
         <ImageView
             android:id="@+id/widget_preview"
-            android:layout_width="300dp"
-            android:layout_height="300dp"
-            android:layout_weight="1" />
+            android:layout_width="@dimen/widget_preview_width"
+            android:layout_height="@dimen/widget_preview_height"
+            android:layout_marginTop="@dimen/widget_preview_margin_top"
+            android:layout_gravity="center_horizontal"
+            android:background="@color/colorPrimary"
+            />
 
         <TextView
             android:id="@+id/widget_name"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:textSize="@dimen/widget_name_text_size"
+            android:textColor="@color/white"
+            />
 
         <TextView
             android:id="@+id/widget_size"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:textSize="@dimen/widget_size_text_size"
+            android:textColor="@color/white"
+            />
     </LinearLayout>
 
 </jp.co.sample.hmi.home.view.preview.WidgetPreviewCell>

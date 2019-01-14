@@ -2,12 +2,12 @@
 <jp.co.sample.hmi.home.view.widget.Workspace
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/workspace"
-    android:layout_width="3840dp"
+    android:layout_width="@dimen/target_screen_size_widthx2"
     android:layout_height="match_parent"
 >
     <jp.co.sample.hmi.home.view.widget.WidgetContainerConnector
         android:id="@+id/widget_container_connector"
-        android:layout_width="7680dp"
+        android:layout_width="@dimen/target_screen_size_widthx5"
         android:layout_height="match_parent"
     >
     </jp.co.sample.hmi.home.view.widget.WidgetContainerConnector>

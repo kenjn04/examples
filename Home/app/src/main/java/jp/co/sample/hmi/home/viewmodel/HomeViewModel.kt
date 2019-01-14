@@ -2,10 +2,11 @@ package jp.co.sample.hmi.home.viewmodel
 
 import android.app.Application
 import android.arch.lifecycle.AndroidViewModel
+import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.MutableLiveData
 import android.content.ComponentName
 import jp.co.sample.hmi.home.common.HomeAppWidgetProviderInfo
-import jp.co.sample.hmi.home.common.WidgetItemInfo
+import jp.co.sample.hmi.home.repository.db.WidgetItemInfo
 import jp.co.sample.hmi.home.usecase.AddWidgetTask
 import jp.co.sample.hmi.home.usecase.DeleteWidgetTask
 import jp.co.sample.hmi.home.usecase.GetCurrentWidgetsTask
@@ -25,12 +26,12 @@ class HomeViewModel(
             return getInstalledWidgetListTask.execute()
         }
 
-    val currentWidgets: MutableLiveData<List<WidgetItemInfo>>
+    val currentWidgets: LiveData<List<WidgetItemInfo>>
         get() {
             return getCurrentWidgetsTask.execute()
         }
 
     fun addWidget(item: WidgetItemInfo) = addWidgetTask.execute(item)
 
-    fun deleteWidget(componentName: ComponentName) = deleteWidgetTask.execute(componentName)
+    fun deleteWidget(item: WidgetItemInfo) = deleteWidgetTask.execute(item)
 }
