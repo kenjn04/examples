@@ -24,11 +24,6 @@ class WidgetViewCell(
     lateinit var widgetView: FrameLayout
     lateinit var deleteButton: Button
 
-    override var spanX: Int = 1
-    override var spanY: Int = 1
-    override var positionX: Int = 1
-    override var positionY: Int = 1
-
     private val draggingHelper = DraggingHelper(this)
 
     constructor(context: Context) : this(context, null, 0)
@@ -43,14 +38,17 @@ class WidgetViewCell(
         widgetView = findViewById(R.id.widget_view)
         deleteButton = findViewById(R.id.delete_button)
         deleteButton.setOnClickListener {
-            // TODO: How to delete the widget?
-            //home.deleteWidget()
+            home.deleteWidget(item)
         }
         deleteButton.visibility = View.GONE
     }
 
     fun addWidgetView(hostView: AppWidgetHostView) {
         widgetView.addView(hostView)
+    }
+
+    fun deleteFromParent() {
+        widgetContainerView.removeWidget(this)
     }
 
     private var dragAllowed = false
@@ -108,9 +106,9 @@ class WidgetViewCell(
     }
 
     override fun onInterceptTouchEvent(ev: MotionEvent?): Boolean {
-        // disable widget touch
+        // TODO: disable widget touch
         if (home.mode == HomeMode.REARRANGEMENT) {
-            return true
+            return false
         }
         return false
     }

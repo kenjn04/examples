@@ -4,14 +4,13 @@ import android.appwidget.AppWidgetManager
 import android.content.Context
 import android.os.Bundle
 import jp.co.sample.hmi.home.common.HomeAppWidgetProviderInfo
+import jp.co.sample.hmi.home.repository.db.WidgetItemInfo
 import jp.co.sample.hmi.home.view.HomeActivity
 
 class WidgetHostViewLoader(
         private val home: HomeActivity,
         private val pInfo: HomeAppWidgetProviderInfo,
-        private val containerId: Int,
-        private val coordinateX: Int,
-        private val coordinateY: Int
+        private val item: WidgetItemInfo
 ) {
 
     private var widgetLoadingId: Int = -1
@@ -41,6 +40,6 @@ class WidgetHostViewLoader(
         val hostView = home.appWidgetHost.createView(
             home as Context, widgetLoadingId, pInfo
         )
-        home.onWidgetViewLoaded(hostView, containerId, coordinateX, coordinateY, pInfo.spanX, pInfo.spanY)
+        home.onWidgetViewLoaded(hostView, pInfo, item)
     }
 }

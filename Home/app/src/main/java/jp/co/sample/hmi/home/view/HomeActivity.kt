@@ -19,7 +19,6 @@ import jp.co.sample.hmi.home.view.widget.WidgetContainerConnector
 import jp.co.sample.hmi.home.view.widget.WidgetViewCell
 import jp.co.sample.hmi.home.view.widget.Workspace
 import jp.co.sample.hmi.home.viewmodel.HomeViewModel
-import kotlinx.android.synthetic.main.activity_home.*
 import org.koin.android.viewmodel.ext.android.viewModel
 
 class HomeActivity : AppCompatActivity() {
@@ -78,17 +77,22 @@ class HomeActivity : AppCompatActivity() {
         widgetSelectionView.setWidgets(installedWidgetList)
     }
 
-    fun addWidget(cName: ComponentName) {
-        // TODO: Need to get layout information from workspace
-        val item = WidgetItemInfo(cName.packageName, cName.className,0, 2, 0)
-        /** After adding, the updateCurrentWidgets will be called by LiveData */
+    fun addWidget(componentName: ComponentName) {
+        val addItem = containerConnector.widgetAddCell.item
+        val item = WidgetItemInfo(addItem).apply {
+            packageName = componentName.packageName
+            className = componentName.className
+        }
+        /** After adding from db, the updateCurrentWidgets will be called by LiveData */
         homeViewModel.addWidget(item)
         transitMode(HomeMode.DISPLAY)
     }
 
     fun deleteWidget(item: WidgetItemInfo) {
-        // TODO: appWidgetHost.deleteAppWidgetId is required
-        // TODO: delete from activeWidgetViewCells
+        val appWidgetId = item.appWidgetId!!
+        appWidgetHost.deleteAppWidgetId(appWidgetId)
+        activeWidgetViewCells.remove(appWidgetId)
+        /** After deleting from db, the updateCurrentWidgets will be called by LiveData */
         homeViewModel.deleteWidget(item)
     }
 
@@ -133,10 +137,10 @@ class HomeActivity : AppCompatActivity() {
         }
 
         /** handle Added Widgets */
-        for (widget in addedWidgetList) {
-            for (widgetInfo in installedWidgetList) {
-                if (widgetInfo.provider.className == widget.className) {
-                    val loader = WidgetHostViewLoader(this, widgetInfo, widget.containerId, widget.coordinateX, widget.coordinateY)
+        for (item in addedWidgetList) {
+            for (pInfo in installedWidgetList) {
+                if (pInfo.provider.className == item.className) {
+                    val loader = WidgetHostViewLoader(this, pInfo, item)
                     /** After loading WidgetView onWidgetViewLoaded is called */
                     loader.loadWidgetView()
                     break
@@ -145,9 +149,10 @@ class HomeActivity : AppCompatActivity() {
         }
 
         /** handle Deleted Widgets */
-        for (widget in deletedWidgetList) {
+        for (item in deletedWidgetList) {
             // TODO:
-//            containerConnector.deleteWidget(widget)
+            Log.d("aaabbbccc", "delete: " + item.packageName)
+            containerConnector.deleteWidget(item)
         }
 
         /** handle Updated Widget */
@@ -156,15 +161,16 @@ class HomeActivity : AppCompatActivity() {
         currentWidgetList = latestWidgetList.toList()
     }
 
-    fun onWidgetViewLoaded(hostView: AppWidgetHostView, containerId: Int, coordinateX: Int, coordinateY: Int, spanX: Int, spanY: Int) {
+    fun onWidgetViewLoaded(hostView: AppWidgetHostView, pInfo: HomeAppWidgetProviderInfo, item: WidgetItemInfo) {
         val widgetViewCell = layoutInflater.inflate(R.layout.widget_view_cell, workspace, false) as WidgetViewCell
-        // TODO: Remove the blow. (This is for test.)
-        widgetViewCell.spanX = spanX
-        widgetViewCell.spanY = spanY
+        widgetViewCell.spanX = pInfo.spanX
+        widgetViewCell.spanY = pInfo.spanY
+        widgetViewCell.item = item
         widgetViewCell.setBackgroundColor(Color.YELLOW)
         widgetViewCell.addWidgetView(hostView)
+        item.appWidgetId = hostView.appWidgetId
         activeWidgetViewCells[hostView.appWidgetId] = widgetViewCell
-        containerConnector.addWidget(widgetViewCell, containerId, coordinateX, coordinateY)
+        containerConnector.addWidget(widgetViewCell)
     }
 
     fun requestAppWidgetBind(appWidgetId: Int, pInfo: HomeAppWidgetProviderInfo, loader: WidgetHostViewLoader) {

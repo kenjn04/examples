@@ -17,11 +17,6 @@ class WidgetAddCell(
 
     lateinit var addButton: Button
 
-    override var spanX: Int = 1
-    override var spanY: Int = 1
-    override var positionX: Int = 1
-    override var positionY: Int = 1
-
     constructor(context: Context) : this(context, null, 0)
     constructor(context: Context, attrs: AttributeSet) : this(context, attrs, 0)
 

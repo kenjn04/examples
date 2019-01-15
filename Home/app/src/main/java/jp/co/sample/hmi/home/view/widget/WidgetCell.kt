@@ -3,6 +3,7 @@ package jp.co.sample.hmi.home.view.widget
 import android.content.Context
 import android.util.AttributeSet
 import android.widget.FrameLayout
+import jp.co.sample.hmi.home.repository.db.WidgetItemInfo
 
 abstract class WidgetCell(
         context: Context,
@@ -12,8 +13,21 @@ abstract class WidgetCell(
 
     lateinit var widgetContainerView: WidgetContainerView
 
-    abstract var spanX: Int
-    abstract var spanY: Int
-    abstract var positionX: Int
-    abstract var positionY: Int
+    var item: WidgetItemInfo = WidgetItemInfo()
+
+    var spanX: Int = 1
+    var spanY: Int = 1
+
+    var positionX: Int
+        set(value) {
+            item.coordinateX = value
+        }
+        get() = item.coordinateX
+
+    var positionY: Int
+        set(value) {
+            item.coordinateY = value
+        }
+        get() = item.coordinateY
+
 }

@@ -12,6 +12,7 @@ import android.widget.FrameLayout
 import android.view.MotionEvent
 import android.view.View
 import jp.co.sample.hmi.home.R
+import jp.co.sample.hmi.home.repository.db.WidgetItemInfo
 import jp.co.sample.hmi.home.util.DraggingHelper
 import jp.co.sample.hmi.home.view.HomeActivity
 import jp.co.sample.hmi.home.view.widget.rearrange.WidgetRearrangeEngine
@@ -36,7 +37,9 @@ class WidgetContainerConnector(
 
     private var duringTransition = false
 
-    private val widgetAddCell: WidgetAddCell
+    val widgetAddCell: WidgetAddCell
+
+    private val widgetViewCellMap = mutableMapOf<WidgetItemInfo, WidgetViewCell>()
 
     private var draggingWidget: WidgetViewCell? = null
     private var draggingWidgetOriginalContainerId: Int = -1
@@ -85,7 +88,7 @@ class WidgetContainerConnector(
         }
         initializeWidgetContainers()
         // TODO: Need to consider where this should be located
-        widgetContainers[0].addWidget(widgetAddCell, 0, 0)
+        widgetContainers[0].addWidget(widgetAddCell, 1, 0)
     }
 
     private fun initializeWidgetContainers() {
@@ -113,7 +116,10 @@ class WidgetContainerConnector(
         }
     }
 
-    fun addWidget(widget: WidgetViewCell, containerId: Int, x: Int, y: Int) {
+    fun addWidget(widget: WidgetViewCell) {
+        val containerId = widget.item.containerId
+        val x = widget.item.coordinateX
+        val y = widget.item.coordinateY
         for (dx in 0..(widget.spanX - 1)) {
             for (dy in 0..(widget.spanY - 1)) {
                 val absoluteX = containerId * widgetNumInContainerX + x + dx
@@ -121,7 +127,13 @@ class WidgetContainerConnector(
                 widgetMap[absoluteX][absoluteY] = widget
             }
         }
+        widgetViewCellMap[widget.item] = widget
         widgetContainers[containerId].addWidget(widget, x, y)
+    }
+
+    fun deleteWidget(item: WidgetItemInfo) {
+        val widget = widgetViewCellMap[item]
+        widget?.deleteFromParent()
     }
 
     private var engine: WidgetRearrangeEngine? = null
