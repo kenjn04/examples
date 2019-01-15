@@ -11,8 +11,6 @@ import jp.co.sample.hmi.home.repository.db.WidgetDatabase
 import jp.co.sample.hmi.home.repository.db.WidgetItemInfo
 import android.os.AsyncTask
 
-
-
 class HomeRepositoryImpl private constructor(
         application: Application,
         private val appWidgetManager: AppWidgetManager,
@@ -54,16 +52,29 @@ class HomeRepositoryImpl private constructor(
         AsyncDeleteTask(widgetDao).execute(item)
     }
 
+    override fun updateWidget(items: List<WidgetItemInfo>) {
+        AsyncUpdateTask(widgetDao).execute(*items.toTypedArray())
+    }
+
     /** Operation to database should be asynchronous */
     private class AsyncInsertTask internal constructor(val dao: WidgetDao): AsyncTask<WidgetItemInfo, Unit, Unit>()
     {
-        override fun doInBackground(vararg params: WidgetItemInfo?) = dao.insert(params[0]!!)
+        override fun doInBackground(vararg params: WidgetItemInfo) = dao.insert(params[0])
     }
 
     /** Operation to database should be asynchronous */
     private class AsyncDeleteTask internal constructor(private val dao: WidgetDao) : AsyncTask<WidgetItemInfo, Unit, Unit>()
     {
-        override fun doInBackground(vararg params: WidgetItemInfo?) = dao.delete(params[0]!!)
+        override fun doInBackground(vararg params: WidgetItemInfo) = dao.delete(params[0])
+    }
+
+    /** Operation to database should be asynchronous */
+    private class AsyncUpdateTask internal constructor(private val dao: WidgetDao) : AsyncTask<WidgetItemInfo, Unit, Unit>()
+    {
+        override fun doInBackground(vararg params: WidgetItemInfo) {
+            val items: List<WidgetItemInfo> = arrayOf(*params).toList()
+            dao.update(*items.toTypedArray())
+        }
     }
 
     companion object {

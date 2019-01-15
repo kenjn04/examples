@@ -20,9 +20,10 @@ abstract class WidgetDatabase : RoomDatabase() {
             if (INSTANCE == null) {
                 synchronized(WidgetDatabase::class.java) {
                     if (INSTANCE == null) {
-                        INSTANCE = Room.databaseBuilder(context.getApplicationContext(),
-                                    WidgetDatabase::class.java!!, "widget_database"
+                        INSTANCE = Room.databaseBuilder(context.applicationContext,
+                                    WidgetDatabase::class.java, "widget_database"
                                 )
+                                // TODO: Is this required?
 //                                .fallbackToDestructiveMigration()
                                 .addCallback(widgetDatabaseCallback)
                                 .build()
@@ -55,7 +56,7 @@ abstract class WidgetDatabase : RoomDatabase() {
 
                 val packageName = "com.android.chrome"
                 val className = "org.chromium.chrome.browser.searchwidget.SearchWidgetProvider"
-                val widget = WidgetItemInfo(packageName, className,  0,  0,  0)
+                val widget = WidgetItemInfo(packageName, className,  0,  1,  0)
 
                 widgetDao.insert(widget)
             }

@@ -17,19 +17,17 @@ class WidgetViewCell(
     context: Context,
     attrs: AttributeSet?,
     defStyle: Int
-): FrameLayout(context, attrs, defStyle), View.OnLongClickListener, HomeModeChangeListener {
+): WidgetCell(context, attrs, defStyle), View.OnLongClickListener, HomeModeChangeListener {
 
     private val home: HomeActivity = context as HomeActivity
-
-    lateinit var widgetContainerView: WidgetContainerView
 
     lateinit var widgetView: FrameLayout
     lateinit var deleteButton: Button
 
-    var spanX: Int = 1
-    var spanY: Int = 1
-    var positionX: Int = 1
-    var positionY: Int = 1
+    override var spanX: Int = 1
+    override var spanY: Int = 1
+    override var positionX: Int = 1
+    override var positionY: Int = 1
 
     private val draggingHelper = DraggingHelper(this)
 

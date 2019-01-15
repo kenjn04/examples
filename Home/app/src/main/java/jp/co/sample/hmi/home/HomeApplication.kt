@@ -5,12 +5,10 @@ import android.appwidget.AppWidgetHost
 import android.appwidget.AppWidgetManager
 import android.content.Context
 import android.os.UserManager
+import android.util.Log
 import jp.co.sample.hmi.home.repository.HomeRepository
 import jp.co.sample.hmi.home.repository.HomeRepositoryImpl
-import jp.co.sample.hmi.home.usecase.AddWidgetTask
-import jp.co.sample.hmi.home.usecase.DeleteWidgetTask
-import jp.co.sample.hmi.home.usecase.GetCurrentWidgetsTask
-import jp.co.sample.hmi.home.usecase.GetInstalledWidgetListTask
+import jp.co.sample.hmi.home.usecase.*
 import jp.co.sample.hmi.home.viewmodel.HomeViewModel
 import org.koin.android.ext.android.startKoin
 import org.koin.android.ext.koin.androidApplication
@@ -45,7 +43,7 @@ class HomeApplication : Application() {
 
     // Koin dependency injection
     private val viewModelModule = module {
-        viewModel { HomeViewModel(androidApplication(), get(), get(), get(), get()) }
+        viewModel { HomeViewModel(androidApplication(), get(), get(), get(), get(), get()) }
     }
 
     private val useCaseModule = module {
@@ -53,6 +51,7 @@ class HomeApplication : Application() {
         factory { GetCurrentWidgetsTask(get()) }
         factory { AddWidgetTask(get()) }
         factory { DeleteWidgetTask(get()) }
+        factory { UpdateWidgetTask(get()) }
     }
 
     private val repositoryModule = module {

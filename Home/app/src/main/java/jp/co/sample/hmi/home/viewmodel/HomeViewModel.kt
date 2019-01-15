@@ -7,18 +7,15 @@ import android.arch.lifecycle.MutableLiveData
 import android.content.ComponentName
 import jp.co.sample.hmi.home.common.HomeAppWidgetProviderInfo
 import jp.co.sample.hmi.home.repository.db.WidgetItemInfo
-import jp.co.sample.hmi.home.usecase.AddWidgetTask
-import jp.co.sample.hmi.home.usecase.DeleteWidgetTask
-import jp.co.sample.hmi.home.usecase.GetCurrentWidgetsTask
-
-import jp.co.sample.hmi.home.usecase.GetInstalledWidgetListTask
+import jp.co.sample.hmi.home.usecase.*
 
 class HomeViewModel(
     application: Application,
     private val getInstalledWidgetListTask: GetInstalledWidgetListTask,
     private val getCurrentWidgetsTask: GetCurrentWidgetsTask,
     private val addWidgetTask: AddWidgetTask,
-    private val deleteWidgetTask: DeleteWidgetTask
+    private val deleteWidgetTask: DeleteWidgetTask,
+    private val updateWidgetTask: UpdateWidgetTask
 ) : AndroidViewModel(application) {
 
     val installedWidgetList: List<HomeAppWidgetProviderInfo>
@@ -34,4 +31,6 @@ class HomeViewModel(
     fun addWidget(item: WidgetItemInfo) = addWidgetTask.execute(item)
 
     fun deleteWidget(item: WidgetItemInfo) = deleteWidgetTask.execute(item)
+
+    fun updateWidget(items: List<WidgetItemInfo>) = updateWidgetTask.execute(items)
 }

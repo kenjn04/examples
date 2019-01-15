@@ -35,6 +35,7 @@ class WidgetsListAdapter(
 
         val widget = holder.previewCell
 
+        // TODO: Need to confirm the scope of onclicklistener.
         widget.setOnClickListener(onClickListener)
         widget.setOnLongClickListener(onLongClickListener)
 

@@ -11,6 +11,7 @@ import android.view.Gravity
 import android.widget.FrameLayout
 import android.view.MotionEvent
 import android.view.View
+import jp.co.sample.hmi.home.R
 import jp.co.sample.hmi.home.util.DraggingHelper
 import jp.co.sample.hmi.home.view.HomeActivity
 import jp.co.sample.hmi.home.view.widget.rearrange.WidgetRearrangeEngine
@@ -34,6 +35,8 @@ class WidgetContainerConnector(
     private var currentMainContainer = 0
 
     private var duringTransition = false
+
+    private val widgetAddCell: WidgetAddCell
 
     private var draggingWidget: WidgetViewCell? = null
     private var draggingWidgetOriginalContainerId: Int = -1
@@ -63,6 +66,8 @@ class WidgetContainerConnector(
         relativeTranslationX = -1.0F * displaySize.x // workspace.shiftX - shiftX
 
         widgetMap = Array(totalX, {arrayOfNulls<WidgetViewCell>(totalY)})
+
+        widgetAddCell = home.layoutInflater.inflate(R.layout.widget_add_cell, this, false) as WidgetAddCell
     }
 
     override fun onFinishInflate() {
@@ -79,6 +84,8 @@ class WidgetContainerConnector(
             widgetContainers.add(widgetContainer)
         }
         initializeWidgetContainers()
+        // TODO: Need to consider where this should be located
+        widgetContainers[0].addWidget(widgetAddCell, 0, 0)
     }
 
     private fun initializeWidgetContainers() {

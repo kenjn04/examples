@@ -31,6 +31,7 @@ class HomeActivity : AppCompatActivity() {
     lateinit var appWidgetHost: AppWidgetHost
 
     private var installedWidgetList: List<HomeAppWidgetProviderInfo> = listOf()
+    private var currentWidgetList: List<WidgetItemInfo> = listOf()
     private val activeWidgetViewCells = hashMapOf<Int, WidgetViewCell>()
     private val pendingWidgets
             = mutableMapOf<Int, Pair<HomeAppWidgetProviderInfo, WidgetHostViewLoader>>()
@@ -69,11 +70,6 @@ class HomeActivity : AppCompatActivity() {
         containerConnector = findViewById(R.id.widget_container_connector)
 
         transitMode(mode)
-
-        // TODO: This is temporary. Button for adding widget should be in WidgetContainerView
-        tmp_button.setOnClickListener {
-            transitMode(HomeMode.SELECTION)
-        }
     }
 
     // TODO: Maybe need to be called when application is added and removed to get latest lists
@@ -96,28 +92,68 @@ class HomeActivity : AppCompatActivity() {
         homeViewModel.deleteWidget(item)
     }
 
+    fun updateWidget(items: List<WidgetItemInfo>) {
+        homeViewModel.updateWidget(items)
+    }
+
     private fun setCurrentWidgets() {
         val currentWidgetsLiveData = homeViewModel.currentWidgets
         val currentWidgets = currentWidgetsLiveData.value
-//        updateCurrentWidgets(currentWidgets)
         currentWidgetsLiveData.observeForever {
             updateCurrentWidgets(it)
         }
     }
 
-    // TODO: Need to reconsider with rearrange etc.
     private fun updateCurrentWidgets(currentWidgets: List<WidgetItemInfo>?) {
-        if (currentWidgets == null) return
-        for (widget in currentWidgets) {
+
+        val previousWidgetList = currentWidgetList.toList()
+        val latestWidgetList = currentWidgets?.toList() ?: listOf<WidgetItemInfo>()
+
+        val addedWidgetList = mutableListOf<WidgetItemInfo>()
+        val deletedWidgetList = currentWidgetList.toMutableList()
+        val updatedWidgetList = mutableListOf<Pair<WidgetItemInfo, WidgetItemInfo>>()
+
+        for (lWidget in latestWidgetList) {
+            var found: Boolean = false
+            for (pWidget in previousWidgetList) {
+                if (lWidget == pWidget) {
+                    found = true
+                    deletedWidgetList.remove(pWidget)
+                    break
+                } else if ((lWidget.packageName == pWidget.packageName) and (lWidget.className == pWidget.className)) {
+                    found = true
+                    deletedWidgetList.remove(pWidget)
+                    updatedWidgetList.add(Pair(pWidget, lWidget))
+                    break
+                }
+            }
+            if (!found) {
+                addedWidgetList.add(lWidget)
+            }
+        }
+
+        /** handle Added Widgets */
+        for (widget in addedWidgetList) {
             for (widgetInfo in installedWidgetList) {
                 if (widgetInfo.provider.className == widget.className) {
                     val loader = WidgetHostViewLoader(this, widgetInfo, widget.containerId, widget.coordinateX, widget.coordinateY)
-                    // After loading WidgetView onWidgetViewLoaded is called
+                    /** After loading WidgetView onWidgetViewLoaded is called */
                     loader.loadWidgetView()
                     break
                 }
             }
         }
+
+        /** handle Deleted Widgets */
+        for (widget in deletedWidgetList) {
+            // TODO:
+//            containerConnector.deleteWidget(widget)
+        }
+
+        /** handle Updated Widget */
+        // Nothing to do because that should be already handled in container connector due to animation
+
+        currentWidgetList = latestWidgetList.toList()
     }
 
     fun onWidgetViewLoaded(hostView: AppWidgetHostView, containerId: Int, coordinateX: Int, coordinateY: Int, spanX: Int, spanY: Int) {

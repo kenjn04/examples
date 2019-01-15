@@ -34,7 +34,7 @@ class WidgetContainerView(
     private lateinit var widgetPositionY: MutableList<Float>
 
     /** */
-    private var draggingWidget: WidgetViewCell? = null
+    private var draggingWidget: WidgetCell? = null
 
     private val shadowFrame: FrameLayout = FrameLayout(context)
     private var shadowX: Int = -1
@@ -78,7 +78,7 @@ class WidgetContainerView(
         containerConnector = connector
     }
 
-    fun addWidget(widget: WidgetViewCell, x: Int, y: Int) {
+    fun addWidget(widget: WidgetCell, x: Int, y: Int) {
 
         val width = widget.spanX * widgetFrameWidth
         val height = widget.spanY * widgetFrameHeight
@@ -108,7 +108,7 @@ class WidgetContainerView(
         addView(widget)
     }
 
-    fun removeWidget(widget: WidgetViewCell) {
+    fun removeWidget(widget: WidgetCell) {
         removeView(widget)
     }
 
@@ -179,7 +179,7 @@ class WidgetContainerView(
         shadowY = y
     }
 
-    fun startWidgetDrag(widget: WidgetViewCell) {
+    fun startWidgetDrag(widget: WidgetCell) {
         draggingWidget = widget
         removeView(shadowFrame)
         addView(shadowFrame)

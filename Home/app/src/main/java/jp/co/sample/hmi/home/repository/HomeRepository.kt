@@ -1,12 +1,10 @@
 package jp.co.sample.hmi.home.repository
 
 import android.arch.lifecycle.LiveData
-import android.arch.lifecycle.MutableLiveData
-import android.content.ComponentName
 import jp.co.sample.hmi.home.common.HomeAppWidgetProviderInfo
 import jp.co.sample.hmi.home.repository.db.WidgetItemInfo
 
-interface HomeRepository{
+interface HomeRepository {
 
     val currentWidgets: LiveData<List<WidgetItemInfo>>
 
@@ -15,4 +13,6 @@ interface HomeRepository{
     fun addWidget(item: WidgetItemInfo)
 
     fun deleteWidget(item: WidgetItemInfo)
+
+    fun updateWidget(items: List<WidgetItemInfo>)
 }
