@@ -18,6 +18,15 @@ abstract class WidgetCell(
     var spanX: Int = 1
     var spanY: Int = 1
 
+    val widgetId: Int
+        get() = item.id
+
+    var containerId: Int
+        set(value) {
+            item.containerId = value
+        }
+        get() = item.containerId
+
     var positionX: Int
         set(value) {
             item.coordinateX = value

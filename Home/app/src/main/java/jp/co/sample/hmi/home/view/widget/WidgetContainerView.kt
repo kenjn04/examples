@@ -12,7 +12,8 @@ import jp.co.sample.hmi.home.view.HomeActivity
 class WidgetContainerView(
     context: Context,
     attrs: AttributeSet?,
-    defStyle: Int
+    defStyle: Int,
+    private val widgetContainerId: Int = 0
 ): FrameLayout(context, attrs, defStyle) {
 
     private val home: HomeActivity = context as HomeActivity
@@ -43,6 +44,8 @@ class WidgetContainerView(
 
     constructor(context: Context) : this(context, null, 0)
     constructor(context: Context, attrs: AttributeSet) : this(context, attrs, 0)
+
+    constructor(context: Context, id: Int) : this(context, null, 0, id)
 
     init {
         // set parameters
@@ -98,6 +101,7 @@ class WidgetContainerView(
         widget.apply {
             this.layoutParams = layoutParams
 
+            containerId = widgetContainerId
             positionX = x
             positionY = y
 
@@ -106,7 +110,7 @@ class WidgetContainerView(
 
             widgetContainerView = this@WidgetContainerView
         }
-        Log.d("aaabbbccc", "" + x + " " + widget.item.className + " " + widget.item.coordinateX + " " + widget.positionX)
+        Log.d("aaabbbccc", "" + widget.item.className + " " + widget.item.containerId)
         addView(widget)
     }
 
@@ -194,9 +198,11 @@ class WidgetContainerView(
 
         shadowFrame.visibility = View.GONE
 
+        /*
         if (drop) {
             home.workspace.removeView(draggingWidget)
             addWidget(draggingWidget, shadowX, shadowY)
         }
+        */
     }
 }

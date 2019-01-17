@@ -10,6 +10,7 @@ import jp.co.sample.hmi.home.repository.db.WidgetDao
 import jp.co.sample.hmi.home.repository.db.WidgetDatabase
 import jp.co.sample.hmi.home.repository.db.WidgetItemInfo
 import android.os.AsyncTask
+import android.util.Log
 
 class HomeRepositoryImpl private constructor(
         application: Application,
@@ -53,6 +54,9 @@ class HomeRepositoryImpl private constructor(
     }
 
     override fun updateWidget(items: List<WidgetItemInfo>) {
+        for (item in items) {
+            Log.d("aaabbbccc", "item: " + item.id + " " + item.packageName + " " + item.coordinateX + " " + item.coordinateY)
+        }
         AsyncUpdateTask(widgetDao).execute(*items.toTypedArray())
     }
 

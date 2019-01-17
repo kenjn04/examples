@@ -47,7 +47,11 @@ class WidgetViewCell(
         widgetView.addView(hostView)
     }
 
-    fun deleteFromParent() {
+    fun revertPosition() {
+        widgetContainerView.addWidget(this, positionX, positionY)
+    }
+
+    fun deleteFromContainer() {
         widgetContainerView.removeWidget(this)
     }
 

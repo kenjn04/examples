@@ -31,7 +31,7 @@ class HomeActivity : AppCompatActivity() {
 
     private var installedWidgetList: List<HomeAppWidgetProviderInfo> = listOf()
     private var currentWidgetList: List<WidgetItemInfo> = listOf()
-    private val activeWidgetViewCells = hashMapOf<Int, WidgetViewCell>()
+    private val homeModeChangeListeners = hashMapOf<Int, HomeModeChangeListener>()
     private val pendingWidgets
             = mutableMapOf<Int, Pair<HomeAppWidgetProviderInfo, WidgetHostViewLoader>>()
 
@@ -68,6 +68,7 @@ class HomeActivity : AppCompatActivity() {
         widgetSelectionView = findViewById(R.id.widget_preview)
         containerConnector = findViewById(R.id.widget_container_connector)
 
+        homeModeChangeListeners[0] = containerConnector
         transitMode(mode)
     }
 
@@ -91,7 +92,7 @@ class HomeActivity : AppCompatActivity() {
     fun deleteWidget(item: WidgetItemInfo) {
         val appWidgetId = item.appWidgetId!!
         appWidgetHost.deleteAppWidgetId(appWidgetId)
-        activeWidgetViewCells.remove(appWidgetId)
+        homeModeChangeListeners.remove(appWidgetId)
         /** After deleting from db, the updateCurrentWidgets will be called by LiveData */
         homeViewModel.deleteWidget(item)
     }
@@ -109,7 +110,6 @@ class HomeActivity : AppCompatActivity() {
     }
 
     private fun updateCurrentWidgets(currentWidgets: List<WidgetItemInfo>?) {
-
         val previousWidgetList = currentWidgetList.toList()
         val latestWidgetList = currentWidgets?.toList() ?: listOf<WidgetItemInfo>()
 
@@ -124,7 +124,7 @@ class HomeActivity : AppCompatActivity() {
                     found = true
                     deletedWidgetList.remove(pWidget)
                     break
-                } else if ((lWidget.packageName == pWidget.packageName) and (lWidget.className == pWidget.className)) {
+                } else if (lWidget.id == pWidget.id) {
                     found = true
                     deletedWidgetList.remove(pWidget)
                     updatedWidgetList.add(Pair(pWidget, lWidget))
@@ -150,13 +150,13 @@ class HomeActivity : AppCompatActivity() {
 
         /** handle Deleted Widgets */
         for (item in deletedWidgetList) {
-            // TODO:
-            Log.d("aaabbbccc", "delete: " + item.packageName)
             containerConnector.deleteWidget(item)
         }
 
         /** handle Updated Widget */
-        // Nothing to do because that should be already handled in container connector due to animation
+        for ((pItem, lItem) in updatedWidgetList) {
+            containerConnector.updateWidget(pItem, lItem)
+        }
 
         currentWidgetList = latestWidgetList.toList()
     }
@@ -169,7 +169,7 @@ class HomeActivity : AppCompatActivity() {
         widgetViewCell.setBackgroundColor(Color.YELLOW)
         widgetViewCell.addWidgetView(hostView)
         item.appWidgetId = hostView.appWidgetId
-        activeWidgetViewCells[hostView.appWidgetId] = widgetViewCell
+        homeModeChangeListeners[hostView.appWidgetId] = widgetViewCell
         containerConnector.addWidget(widgetViewCell)
     }
 
@@ -207,7 +207,7 @@ class HomeActivity : AppCompatActivity() {
     }
 
     private fun notifyListeners(mode: HomeMode) {
-        for ((id, cell) in activeWidgetViewCells) {
+        for ((id, cell) in homeModeChangeListeners) {
             cell.onHomeModeChanged(mode)
         }
     }

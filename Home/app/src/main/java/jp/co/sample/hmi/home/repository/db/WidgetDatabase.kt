@@ -6,8 +6,9 @@ import android.arch.persistence.room.Room
 import android.content.Context
 import android.os.AsyncTask
 import android.arch.persistence.db.SupportSQLiteDatabase
+import jp.co.sample.hmi.home.common.WidgetIdProvider
 
-@Database(entities = arrayOf(WidgetItemInfo::class), version = 1)
+@Database(entities = arrayOf(WidgetItemInfo::class), version = 2)
 abstract class WidgetDatabase : RoomDatabase() {
 
     abstract fun widgetDao(): WidgetDao
@@ -23,8 +24,7 @@ abstract class WidgetDatabase : RoomDatabase() {
                         INSTANCE = Room.databaseBuilder(context.applicationContext,
                                     WidgetDatabase::class.java, "widget_database"
                                 )
-                                // TODO: Is this required?
-//                                .fallbackToDestructiveMigration()
+                                .fallbackToDestructiveMigration()
                                 .addCallback(widgetDatabaseCallback)
                                 .build()
                     }
@@ -37,9 +37,13 @@ abstract class WidgetDatabase : RoomDatabase() {
 
             override fun onOpen(db: SupportSQLiteDatabase) {
                 super.onOpen(db)
+
+                val widgetDao = INSTANCE!!.widgetDao()
+                WidgetIdProvider.initialize(widgetDao.getAll())
+
                 // If you want to keep the data through app restarts,
                 // comment out the following line.
-                PopulateDbAsync(INSTANCE!!).execute()
+                PopulateDbAsync(widgetDao).execute()
             }
         }
 
@@ -47,18 +51,21 @@ abstract class WidgetDatabase : RoomDatabase() {
          * Populate the database in the background.
          * If you want to start with more words, just add them.
          */
-        private class PopulateDbAsync internal constructor(db: WidgetDatabase) : AsyncTask<Unit, Unit, Unit>() {
+        private class PopulateDbAsync internal constructor(private val widgetDao: WidgetDao) : AsyncTask<Unit, Unit, Unit>() {
 
-            private val widgetDao = db.widgetDao()
-
+            // TODO: how to initialize
             override fun doInBackground(vararg params: Unit?) {
                 widgetDao.deleteAll()
 
-                val packageName = "com.android.chrome"
-                val className = "org.chromium.chrome.browser.searchwidget.SearchWidgetProvider"
-                val widget = WidgetItemInfo(packageName, className,  0,  1,  0)
+                val packageName1 = "com.android.chrome"
+                val className1 = "org.chromium.chrome.browser.searchwidget.SearchWidgetProvider"
+                val widget1 = WidgetItemInfo(packageName1, className1,  0,  0,  0)
+                widgetDao.insert(widget1)
 
-                widgetDao.insert(widget)
+                val packageName2 = "com.google.android.apps.messaging"
+                val className2 = "com.google.android.apps.messaging.widget.BugleWidgetProvider"
+                val widget2 = WidgetItemInfo(packageName2, className2,  0,  2,  0)
+                widgetDao.insert(widget2)
             }
         }
 

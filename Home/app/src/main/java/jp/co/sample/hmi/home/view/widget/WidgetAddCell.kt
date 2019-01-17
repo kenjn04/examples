@@ -20,6 +20,10 @@ class WidgetAddCell(
     constructor(context: Context) : this(context, null, 0)
     constructor(context: Context, attrs: AttributeSet) : this(context, attrs, 0)
 
+    fun deleteFromContainer() {
+        widgetContainerView.removeWidget(this)
+    }
+
     override fun onFinishInflate() {
         super.onFinishInflate()
         addButton = findViewById(R.id.add_button)

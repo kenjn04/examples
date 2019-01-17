@@ -15,8 +15,9 @@ import jp.co.sample.hmi.home.R
 import jp.co.sample.hmi.home.repository.db.WidgetItemInfo
 import jp.co.sample.hmi.home.util.DraggingHelper
 import jp.co.sample.hmi.home.view.HomeActivity
-import jp.co.sample.hmi.home.view.widget.rearrange.WidgetRearrangeEngine
-import jp.co.sample.hmi.home.view.widget.rearrange.WidgetRelocateInfo
+import jp.co.sample.hmi.home.view.HomeMode
+import jp.co.sample.hmi.home.view.HomeModeChangeListener
+import jp.co.sample.hmi.home.view.widget.rearrange.WidgetMapUpdater
 import java.lang.Math.abs
 
 typealias WidgetMap = Array<Array<WidgetViewCell?>>
@@ -25,7 +26,7 @@ class WidgetContainerConnector(
     context: Context,
     attrs: AttributeSet?,
     defStyle: Int
-): FrameLayout(context, attrs, defStyle), Animator.AnimatorListener {
+): FrameLayout(context, attrs, defStyle), HomeModeChangeListener, Animator.AnimatorListener {
 
     private val home = context as HomeActivity
 
@@ -39,7 +40,7 @@ class WidgetContainerConnector(
 
     val widgetAddCell: WidgetAddCell
 
-    private val widgetViewCellMap = mutableMapOf<WidgetItemInfo, WidgetViewCell>()
+    private val widgetViewCellMap = mutableMapOf<Int, WidgetViewCell>()
 
     private var draggingWidget: WidgetViewCell? = null
     private var draggingWidgetOriginalContainerId: Int = -1
@@ -48,19 +49,19 @@ class WidgetContainerConnector(
 
     private val draggingHelper = DraggingHelper(this, false)
 
-    private val widgetMap: WidgetMap
+    private var widgetMap: WidgetMap
 
     private val scale: Float
         get() = scaleX
 
-    var widgetContainers: MutableList<WidgetContainerView> = mutableListOf()
+    private var widgetContainers: MutableList<WidgetContainerView> = mutableListOf()
 
     constructor(context: Context) : this(context, null, 0)
     constructor(context: Context, attrs: AttributeSet) : this(context, attrs, 0)
 
     private val widgetContainerNum = home.params.widgetContainerNum
     private val widgetNumInContainerX = home.params.widgetNumInContainerX
-    private val widgetNumInContainerY = home.params.widgetNumInContainerX
+    private val widgetNumInContainerY = home.params.widgetNumInContainerY
     private val totalX = widgetContainerNum * widgetNumInContainerX
     private val totalY = widgetNumInContainerY
 
@@ -76,7 +77,7 @@ class WidgetContainerConnector(
     override fun onFinishInflate() {
         super.onFinishInflate()
         for (i in 1..(widgetContainerNum)) {
-            val widgetContainer = WidgetContainerView(home)
+            val widgetContainer = WidgetContainerView(home, i - 1)
             val layoutParam = FrameLayout.LayoutParams(
                 displaySize.x - 20, displaySize.y
             ).apply {
@@ -87,8 +88,7 @@ class WidgetContainerConnector(
             widgetContainers.add(widgetContainer)
         }
         initializeWidgetContainers()
-        // TODO: Need to consider where this should be located
-        widgetContainers[0].addWidget(widgetAddCell, 1, 0)
+        widgetContainers[0].addWidget(widgetAddCell, 0, 0)
     }
 
     private fun initializeWidgetContainers() {
@@ -127,24 +127,93 @@ class WidgetContainerConnector(
                 widgetMap[absoluteX][absoluteY] = widget
             }
         }
-        widgetViewCellMap[widget.item] = widget
+        widgetViewCellMap[widget.item.id] = widget
         widgetContainers[containerId].addWidget(widget, x, y)
+        reLayoutWidgetAddView()
     }
 
     fun deleteWidget(item: WidgetItemInfo) {
-        val widget = widgetViewCellMap[item]
-        widget?.deleteFromParent()
+        val widget = widgetViewCellMap[item.id]!!
+        val containerId = widget.item.containerId
+        val x = widget.item.coordinateX
+        val y = widget.item.coordinateY
+        for (dx in 0..(widget.spanX - 1)) {
+            for (dy in 0..(widget.spanY - 1)) {
+                val absoluteX = containerId * widgetNumInContainerX + x + dx
+                val absoluteY = y + dy
+                widgetMap[absoluteX][absoluteY] = null
+            }
+        }
+        widget.deleteFromContainer()
     }
 
-    private var engine: WidgetRearrangeEngine? = null
+    fun updateWidget(pItem: WidgetItemInfo, lItem: WidgetItemInfo) {
+        val widget = widgetViewCellMap[pItem.id]!!
+        widget.deleteFromContainer()
+        widget.item = lItem
+        addWidget(widget)
+        widgetAddCell.deleteFromContainer()
+    }
+
+    private fun reLayoutWidgetAddView() {
+        widgetAddCell.deleteFromContainer()
+        for (id in (widgetContainerNum - 1) downTo 0) {
+            for (x in (widgetNumInContainerX - 1) downTo 0 ) {
+                for (y in (widgetNumInContainerY - 1) downTo 0 ) {
+                    val absoluteX = id * widgetNumInContainerX + x
+                    val absoluteY = y
+                    if (widgetMap[absoluteX][absoluteY] != null) {
+                        var id2 = id
+                        var x2 = x
+                        var y2 = y
+                        y2++
+                        if (y2 == widgetNumInContainerY) {
+                            y2 = 0
+                            x2++
+                        }
+                        if (x2 == widgetNumInContainerX) {
+                            x2 = 0
+                            id2++
+                        }
+
+                        if (id2 == widgetContainerNum) {
+                            // There is no space for WidgetAddView
+                        } else {
+                            widgetContainers[id2].addWidget(widgetAddCell, x2, y2)
+                        }
+                        return
+                    }
+                }
+            }
+        }
+        widgetContainers[0].addWidget(widgetAddCell, 0, 0)
+    }
+
+    override fun onHomeModeChanged(mode: HomeMode) {
+        when (mode) {
+            HomeMode.DISPLAY -> {
+                reLayoutWidgetAddView()
+            }
+            HomeMode.REARRANGEMENT -> {
+                widgetAddCell.deleteFromContainer()
+            }
+            HomeMode.SELECTION -> {
+                // Nothing to do
+            }
+        }
+    }
+
+    private var updater: WidgetMapUpdater? = null
+
     fun startWidgetDragging(widget: WidgetViewCell) {
         draggingWidget = widget
         val container = widgetContainers[currentMainContainer]
         container.startWidgetDrag(widget)
+
         draggingWidgetPosition = container.calculateDraggingWidgetPosition()
         draggingWidgetOriginalContainerId = currentMainContainer
 
-        engine = WidgetRearrangeEngine(
+        updater = WidgetMapUpdater(
                 widgetMap,
                 widgetContainerNum,
                 widgetNumInContainerX,
@@ -153,56 +222,31 @@ class WidgetContainerConnector(
     }
 
     fun finishWidgetDragging() {
-        updateWidgetList()
+        home.workspace.removeView(draggingWidget)
+        draggingWidget!!.revertPosition()
+
+        val container = widgetContainers[currentMainContainer]
+        val newDraggingWidgetPosition = container.calculateDraggingWidgetPosition()
+        val updatedWidgetMap = updater!!.updateWidgetMap(
+                draggingWidget!!, currentMainContainer, newDraggingWidgetPosition.first, newDraggingWidgetPosition.second
+        )
+        if (updatedWidgetMap != null) {
+            val items = getItemsFromWidgetMap(updatedWidgetMap)
+            home.updateWidget(items)
+            widgetMap = updatedWidgetMap
+        }
+
         draggingWidget = null
         widgetContainers[currentMainContainer].finishWidgetDrag(true)
-
-        temporalRearrangedWidgets = mutableListOf()
-    }
-
-    private fun updateWidgetList() {
-        for (i in 1..totalX) {
-            for (j in 1..totalY) {
-                val widget = widgetMap[i - 1][j - 1] ?: continue
-                var match = false
-                for (info in temporalRearrangedWidgets) {
-                    if (info.widget.equals(widget)) {
-                        match = true
-                        break
-                    }
-                }
-                if (match or (widget == draggingWidget!!)) widgetMap[i - 1][j - 1] = null
-            }
-        }
-        for (info in temporalRearrangedWidgets) {
-            val x = info.to.x
-            val y = info.to.y
-            val id = info.to.cId
-            putWidget(info.widget, id, x, y, widgetMap)
-        }
-        putWidget(draggingWidget!!, draggingWidgetOriginalContainerId, draggingWidgetPosition.first, draggingWidgetPosition.second, widgetMap)
     }
 
     fun onWidgetDragging() {
         val container = widgetContainers[currentMainContainer]
-
         val newDraggingWidgetPosition = container.calculateDraggingWidgetPosition()
 
         if (newDraggingWidgetPosition != Pair(-1, -1)) {
             if (newDraggingWidgetPosition != draggingWidgetPosition) {
-                val engine = engine!!
-                pendingRearrangeWidgets = mutableListOf()
-                if (engine.isWidgetDroppable(
-                        draggingWidget!!, currentMainContainer,
-                        newDraggingWidgetPosition.first, newDraggingWidgetPosition.second))
-                {
-                    pendingRearrangeWidgets = engine.widgetsToRelocate!!
-                    rearrangeWidget()
-                    for (i in pendingRearrangeWidgets) {
-                    }
-                    container.showShadowFrame(newDraggingWidgetPosition.first, newDraggingWidgetPosition.second)
-                    temporalRearrangedWidgets = pendingRearrangeWidgets.toMutableList()
-                }
+                container.showShadowFrame(newDraggingWidgetPosition.first, newDraggingWidgetPosition.second)
                 draggingWidgetPosition = newDraggingWidgetPosition
             } else {
                 container.showShadowFrame(newDraggingWidgetPosition.first, newDraggingWidgetPosition.second)
@@ -210,29 +254,29 @@ class WidgetContainerConnector(
         }
     }
 
-    private var pendingRearrangeWidgets = mutableListOf<WidgetRelocateInfo>()
-    private var temporalRearrangedWidgets = mutableListOf<WidgetRelocateInfo>()
-    private fun rearrangeWidget() {
-        for (info in temporalRearrangedWidgets) {
-            val widget = info.widget
-            widgetContainers[info.to.cId].removeWidget(widget)
-            widgetContainers[info.from.cId].addWidget(widget, info.from.x, info.from.y)
-        }
-        for (info in pendingRearrangeWidgets) {
-            val widget = info.widget
-            widgetContainers[info.from.cId].removeWidget(widget)
-            widgetContainers[info.to.cId].addWidget(widget, info.to.x, info.to.y)
-        }
-    }
-
-    private fun putWidget(widget: WidgetViewCell, containerId: Int, x: Int, y: Int, map: WidgetMap) {
-        for (dx in 0..(widget.spanX - 1)) {
-            for (dy in 0..(widget.spanY - 1)) {
-                val absoluteX = containerId * widgetNumInContainerX + x + dx
-                val absoluteY = y + dy
-                map[absoluteX][absoluteY] = widget
+    private fun getItemsFromWidgetMap(map: WidgetMap): List<WidgetItemInfo> {
+        val itemSet = mutableSetOf<Int>()
+        val updatedItems = mutableListOf<WidgetItemInfo>()
+        for (x in 0..(totalX - 1)) {
+            for (y in 0..(totalY - 1)) {
+                val widget = map[x][y]
+                if (widget != null) {
+                    val item = widget.item
+                    if (!itemSet.contains(item.id)) {
+                        itemSet.add(item.id)
+                        val updatedItem = WidgetItemInfo(item).apply {
+                            containerId = x / widgetContainerNum
+                            coordinateX = x % widgetContainerNum
+                            coordinateY = y
+                        }
+                        if (updatedItem != item) {
+                            updatedItems.add(updatedItem)
+                        }
+                    }
+                }
             }
         }
+        return updatedItems.toList()
     }
 
     private fun transitContainerIfRequired() {
