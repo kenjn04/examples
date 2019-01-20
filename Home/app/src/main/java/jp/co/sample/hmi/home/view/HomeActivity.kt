@@ -10,6 +10,8 @@ import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.widget.Button
+import android.widget.LinearLayout
 import jp.co.sample.hmi.home.common.HomeAppWidgetProviderInfo
 import jp.co.sample.hmi.home.R
 import jp.co.sample.hmi.home.repository.db.WidgetItemInfo
@@ -22,6 +24,8 @@ import jp.co.sample.hmi.home.viewmodel.HomeViewModel
 import org.koin.android.viewmodel.ext.android.viewModel
 
 class HomeActivity : AppCompatActivity() {
+
+    private val TAG = "HomeActivity"
 
     private val APP_WIDGET_HOST_ID = 12345
 
@@ -39,6 +43,11 @@ class HomeActivity : AppCompatActivity() {
     lateinit var workspace: Workspace
     private lateinit var widgetSelectionView: WidgetSelectionView
     private lateinit var containerConnector: WidgetContainerConnector
+    private lateinit var backButton: Button
+    private lateinit var customBottons: LinearLayout
+    private lateinit var addButton: Button
+    private lateinit var rearrangeButton: Button
+
 
     /** Request Code */
     private val REQUEST_BIND_APPWIDGET = 1
@@ -67,6 +76,22 @@ class HomeActivity : AppCompatActivity() {
         workspace = findViewById(R.id.workspace)
         widgetSelectionView = findViewById(R.id.widget_preview)
         containerConnector = findViewById(R.id.widget_container_connector)
+        backButton = findViewById(R.id.back_button)
+        customBottons = findViewById(R.id.custom_buttons)
+        addButton = customBottons.findViewById(R.id.add_button)
+        rearrangeButton = customBottons.findViewById(R.id.rearrange_button)
+
+        backButton.setOnClickListener {
+            transitMode(HomeMode.DISPLAY)
+        }
+
+        addButton.setOnClickListener {
+            transitMode(HomeMode.SELECTION)
+        }
+
+        rearrangeButton.setOnClickListener {
+            containerConnector.rearrangeWidgets()
+        }
 
         homeModeChangeListeners[0] = containerConnector
         transitMode(mode)
@@ -103,7 +128,7 @@ class HomeActivity : AppCompatActivity() {
 
     private fun setCurrentWidgets() {
         val currentWidgetsLiveData = homeViewModel.currentWidgets
-        val currentWidgets = currentWidgetsLiveData.value
+        updateCurrentWidgets(currentWidgetList)
         currentWidgetsLiveData.observeForever {
             updateCurrentWidgets(it)
         }
@@ -138,6 +163,7 @@ class HomeActivity : AppCompatActivity() {
 
         /** handle Added Widgets */
         for (item in addedWidgetList) {
+            Log.d(TAG, "Widget added.(${item})")
             for (pInfo in installedWidgetList) {
                 if (pInfo.provider.className == item.className) {
                     val loader = WidgetHostViewLoader(this, pInfo, item)
@@ -150,11 +176,13 @@ class HomeActivity : AppCompatActivity() {
 
         /** handle Deleted Widgets */
         for (item in deletedWidgetList) {
+            Log.d(TAG, "Widget deleted.(${item})")
             containerConnector.deleteWidget(item)
         }
 
         /** handle Updated Widget */
         for ((pItem, lItem) in updatedWidgetList) {
+            Log.d(TAG, "Widget updated.(From(${pItem}), To(${lItem}))")
             containerConnector.updateWidget(pItem, lItem)
         }
 
@@ -188,18 +216,24 @@ class HomeActivity : AppCompatActivity() {
             HomeMode.DISPLAY -> {
                 workspace.visibility = View.VISIBLE
                 widgetSelectionView.visibility = View.GONE
+                backButton.visibility = View.GONE
+                customBottons.visibility = View.GONE
 
                 workspace.unShrink()
             }
             HomeMode.REARRANGEMENT -> {
                 workspace.visibility = View.VISIBLE
                 widgetSelectionView.visibility = View.GONE
+                backButton.visibility = View.VISIBLE
+                customBottons.visibility = View.VISIBLE
 
                 workspace.shrink()
             }
             HomeMode.SELECTION -> {
                 workspace.visibility = View.GONE
                 widgetSelectionView.visibility = View.VISIBLE
+                backButton.visibility = View.VISIBLE
+                customBottons.visibility = View.GONE
             }
         }
         notifyListeners(nextMode)

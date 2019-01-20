@@ -17,6 +17,11 @@ class WidgetMapUpdater(
     fun updateWidgetMap(widget: WidgetViewCell, containerId: Int, coordinateX: Int, coordinateY: Int): WidgetMap?
             = calculateWidgetRearrange(widget, containerId, coordinateX, coordinateY)
 
+    // TODO: Update is required
+    fun rearrangeWidgetMap(): WidgetMap {
+        return initialWidgetMap
+    }
+
     data class WidgetRearrangeInfo(val widget: WidgetViewCell, val containerId: Int, val coordinateX: Int, val coordinateY:Int)
 
     private fun calculateWidgetRearrange(widget: WidgetViewCell, containerId: Int, coordinateX: Int, coordinateY: Int): WidgetMap? {

@@ -189,6 +189,10 @@ class WidgetContainerConnector(
         widgetContainers[0].addWidget(widgetAddCell, 0, 0)
     }
 
+    fun rearrangeWidgets() {
+        // TODO
+    }
+
     override fun onHomeModeChanged(mode: HomeMode) {
         when (mode) {
             HomeMode.DISPLAY -> {

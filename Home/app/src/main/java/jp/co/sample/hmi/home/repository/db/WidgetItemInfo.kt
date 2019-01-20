@@ -6,7 +6,7 @@ import android.arch.persistence.room.PrimaryKey
 import jp.co.sample.hmi.home.common.WidgetIdProvider
 
 @Entity(tableName = "widgets")
-data class WidgetItemInfo private constructor(
+data class WidgetItemInfo (
     @PrimaryKey var id: Int,
     var packageName: String,
     var className: String,
@@ -19,6 +19,7 @@ data class WidgetItemInfo private constructor(
     constructor() : this(0, "", "", 0, 0, 0)
 
     // For WidgetViewCell
+    @Ignore
     constructor(
         packageName: String,
         className: String,
@@ -35,8 +36,9 @@ data class WidgetItemInfo private constructor(
     )
 
     // For WidgetViewCell
+    @Ignore
     constructor(item: WidgetItemInfo) : this(
-        item.id,
+        WidgetIdProvider.getInstance().getId(),
         item.packageName,
         item.className,
         item.containerId,
@@ -44,6 +46,17 @@ data class WidgetItemInfo private constructor(
         item.coordinateY,
         item.appWidgetId
     )
+
+    override fun toString(): String {
+        return if (appWidgetId == null) {
+            "id=${id}, package=${packageName}, class=${className}, " +
+            "containerId=${containerId}, coorinateX=${coordinateX}, coorinateY=${coordinateY}"
+        } else {
+            "id=${id}, package=${packageName}, class=${className}, " +
+            "containerId=${containerId}, coorinateX=${coordinateX}, coorinateY=${coordinateY}, " +
+            "appWidgetId=${appWidgetId}"
+        }
+    }
 
     override fun equals(other: Any?): Boolean {
         if (other is WidgetItemInfo) {

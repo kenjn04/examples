@@ -6,12 +6,44 @@
     android:layout_height="match_parent"
     tools:context=".view.HomeActivity">
 
-    <include layout="@layout/workspace"
+    <include
         android:id="@+id/workspace"
+        layout="@layout/workspace"
     />
 
-    <include layout="@layout/widget_selection"
+    <include
         android:id="@+id/widget_preview"
+        layout="@layout/widget_selection"
     />
+
+    <Button
+        android:id="@+id/back_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="BACK"
+        />
+
+    <LinearLayout
+        android:id="@+id/custom_buttons"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="50dp"
+        android:gravity="center_horizontal"
+        android:orientation="horizontal">
+
+
+        <Button
+            android:id="@+id/add_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="ADD" />
+
+        <Button
+            android:id="@+id/rearrange_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="REARRANGE" />
+
+    </LinearLayout>
 
 </FrameLayout>

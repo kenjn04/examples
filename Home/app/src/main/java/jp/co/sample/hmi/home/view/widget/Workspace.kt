@@ -4,8 +4,10 @@ import android.animation.ObjectAnimator
 import android.animation.PropertyValuesHolder
 import android.content.Context
 import android.util.AttributeSet
+import android.util.Log
 import android.widget.FrameLayout
 import android.view.MotionEvent
+import android.widget.Button
 import jp.co.sample.hmi.home.R
 import jp.co.sample.hmi.home.util.SwipeDetector
 import jp.co.sample.hmi.home.view.HomeActivity

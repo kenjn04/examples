@@ -18,7 +18,7 @@ class WidgetIdProvider private constructor(
         currentWidgetItems.observeForever {
             usedId.clear()
             if (it == null) return@observeForever
-            for (item in it!!) {
+            for (item in it) {
                 usedId.add(item.id)
             }
         }
