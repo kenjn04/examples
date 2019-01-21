@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<jp.co.sample.hmi.home.view.widget.Workspace
+<jp.co.sample.hmi.home.view.widget.ShrinkTable
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/workspace"
     android:layout_width="@dimen/target_screen_size_widthx2"
@@ -13,4 +13,4 @@
 
     </jp.co.sample.hmi.home.view.widget.WidgetContainerConnector>
 
-</jp.co.sample.hmi.home.view.widget.Workspace>
+</jp.co.sample.hmi.home.view.widget.ShrinkTable>

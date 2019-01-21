@@ -67,7 +67,7 @@ class WidgetContainerConnector(
 
     init {
         // TODO:
-        relativeTranslationX = -1.0F * displaySize.x // workspace.shiftX - shiftX
+        relativeTranslationX = -1.0F * displaySize.x // shrinkTable.shiftX - shiftX
 
         widgetMap = Array(totalX, {arrayOfNulls<WidgetViewCell>(totalY)})
 
@@ -226,7 +226,7 @@ class WidgetContainerConnector(
     }
 
     fun finishWidgetDragging() {
-        home.workspace.removeView(draggingWidget)
+        home.shrinkTable.removeView(draggingWidget)
         draggingWidget!!.revertPosition()
 
         val container = widgetContainers[currentMainContainer]

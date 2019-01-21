@@ -19,7 +19,24 @@ class WidgetMapUpdater(
 
     // TODO: Update is required
     fun rearrangeWidgetMap(): WidgetMap {
-        return initialWidgetMap
+        val rearrangedWidgetMap =  Array(totalX, {arrayOfNulls<WidgetViewCell>(totalY)})
+        val rearrangedWidget = mutableSetOf<Int>()
+        for (x in 0..(totalX - 1)) {
+            for (y in 0..(totalY - 1)) {
+                val widgetToRearrange = initialWidgetMap[x][y]
+                if ((widgetToRearrange == null) or (rearrangedWidget.contains(widgetToRearrange!!.widgetId))) continue
+                rearrangedWidget.add(widgetToRearrange.widgetId)
+                for (nx in 0..(totalX - 1)) {
+                    var nextX = nx % widgetNumInContainerX
+                    var nextId = nx / widgetNumInContainerX
+                    if (isWidgetRearrangeable(widgetToRearrange, nextId, nextX, y, rearrangedWidgetMap)) {
+                        addWidgetToMap(widgetToRearrange, nextId, nextX, y, rearrangedWidgetMap)
+                        break
+                    }
+                }
+            }
+        }
+        return rearrangedWidgetMap
     }
 
     data class WidgetRearrangeInfo(val widget: WidgetViewCell, val containerId: Int, val coordinateX: Int, val coordinateY:Int)

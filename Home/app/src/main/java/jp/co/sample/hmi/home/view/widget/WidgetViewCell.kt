@@ -89,15 +89,15 @@ class WidgetViewCell(
 
     private fun startDragging() {
         widgetContainerView.removeWidget(this)
-        home.workspace.addView(this)
+        home.shrinkTable.addView(this)
         translationX += widgetContainerView.relativeTranslationX
         translationY += widgetContainerView.translationY
 
-        home.workspace.startWidgetDragging(this)
+        home.shrinkTable.startWidgetDragging(this)
     }
 
     fun finishDragging() {
-        home.workspace.finishWidgetDragging()
+        home.shrinkTable.finishWidgetDragging()
         dragAllowed = false
     }
 

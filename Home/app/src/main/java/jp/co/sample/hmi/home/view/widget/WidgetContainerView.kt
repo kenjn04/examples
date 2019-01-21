@@ -200,7 +200,7 @@ class WidgetContainerView(
 
         /*
         if (drop) {
-            home.workspace.removeView(draggingWidget)
+            home.shrinkTable.removeView(draggingWidget)
             addWidget(draggingWidget, shadowX, shadowY)
         }
         */

@@ -19,7 +19,7 @@ import jp.co.sample.hmi.home.util.WidgetHostViewLoader
 import jp.co.sample.hmi.home.view.preview.WidgetSelectionView
 import jp.co.sample.hmi.home.view.widget.WidgetContainerConnector
 import jp.co.sample.hmi.home.view.widget.WidgetViewCell
-import jp.co.sample.hmi.home.view.widget.Workspace
+import jp.co.sample.hmi.home.view.widget.ShrinkTable
 import jp.co.sample.hmi.home.viewmodel.HomeViewModel
 import org.koin.android.viewmodel.ext.android.viewModel
 
@@ -40,7 +40,7 @@ class HomeActivity : AppCompatActivity() {
             = mutableMapOf<Int, Pair<HomeAppWidgetProviderInfo, WidgetHostViewLoader>>()
 
     /** Views */
-    lateinit var workspace: Workspace
+    lateinit var shrinkTable: ShrinkTable
     private lateinit var widgetSelectionView: WidgetSelectionView
     private lateinit var containerConnector: WidgetContainerConnector
     private lateinit var backButton: Button
@@ -73,7 +73,7 @@ class HomeActivity : AppCompatActivity() {
     }
 
     private fun setViews() {
-        workspace = findViewById(R.id.workspace)
+        shrinkTable = findViewById(R.id.workspace)
         widgetSelectionView = findViewById(R.id.widget_preview)
         containerConnector = findViewById(R.id.widget_container_connector)
         backButton = findViewById(R.id.back_button)
@@ -190,7 +190,7 @@ class HomeActivity : AppCompatActivity() {
     }
 
     fun onWidgetViewLoaded(hostView: AppWidgetHostView, pInfo: HomeAppWidgetProviderInfo, item: WidgetItemInfo) {
-        val widgetViewCell = layoutInflater.inflate(R.layout.widget_view_cell, workspace, false) as WidgetViewCell
+        val widgetViewCell = layoutInflater.inflate(R.layout.widget_view_cell, shrinkTable, false) as WidgetViewCell
         widgetViewCell.spanX = pInfo.spanX
         widgetViewCell.spanY = pInfo.spanY
         widgetViewCell.item = item
@@ -214,23 +214,23 @@ class HomeActivity : AppCompatActivity() {
     fun transitMode(nextMode: HomeMode) {
         when (nextMode) {
             HomeMode.DISPLAY -> {
-                workspace.visibility = View.VISIBLE
+                shrinkTable.visibility = View.VISIBLE
                 widgetSelectionView.visibility = View.GONE
                 backButton.visibility = View.GONE
                 customBottons.visibility = View.GONE
 
-                workspace.unShrink()
+                shrinkTable.unShrink()
             }
             HomeMode.REARRANGEMENT -> {
-                workspace.visibility = View.VISIBLE
+                shrinkTable.visibility = View.VISIBLE
                 widgetSelectionView.visibility = View.GONE
                 backButton.visibility = View.VISIBLE
                 customBottons.visibility = View.VISIBLE
 
-                workspace.shrink()
+                shrinkTable.shrink()
             }
             HomeMode.SELECTION -> {
-                workspace.visibility = View.GONE
+                shrinkTable.visibility = View.GONE
                 widgetSelectionView.visibility = View.VISIBLE
                 backButton.visibility = View.VISIBLE
                 customBottons.visibility = View.GONE
