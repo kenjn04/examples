@@ -19,5 +19,5 @@ interface WidgetDao {
     fun deleteAll()
 
     @Update
-    fun update(vararg widgets: WidgetItemInfo)
+    fun update(vararg widgets: WidgetItemInfo): Int
 }

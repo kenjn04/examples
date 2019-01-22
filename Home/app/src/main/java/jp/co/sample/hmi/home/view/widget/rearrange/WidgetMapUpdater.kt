@@ -23,7 +23,7 @@ class WidgetMapUpdater(
         val rearrangedWidget = mutableSetOf<Int>()
         for (x in 0..(totalX - 1)) {
             for (y in 0..(totalY - 1)) {
-                val widgetToRearrange = initialWidgetMap[x][y]
+                val widgetToRearrange = initialWidgetMap[x][y] ?: continue
                 if ((widgetToRearrange == null) or (rearrangedWidget.contains(widgetToRearrange!!.widgetId))) continue
                 rearrangedWidget.add(widgetToRearrange.widgetId)
                 for (nx in 0..(totalX - 1)) {
@@ -63,7 +63,7 @@ class WidgetMapUpdater(
                     val x = cId * widgetNumInContainerX + toX + dx
                     val y = toY + dy
 
-                    val widgetToRearrange = initialWidgetMap[x][y]
+                    val widgetToRearrange = initialWidgetMap[x][y] ?: continue
                     if ((widgetToRearrange == null) or (rearrangedWidget.contains(widgetToRearrange!!.widgetId))) continue
                     widgetToRearrange!!
                     rearrangedWidget.add(widgetToRearrange.widgetId)

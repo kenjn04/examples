@@ -77,7 +77,8 @@ class HomeRepositoryImpl private constructor(
     {
         override fun doInBackground(vararg params: WidgetItemInfo) {
             val items: List<WidgetItemInfo> = arrayOf(*params).toList()
-            dao.update(*items.toTypedArray())
+            val a = dao.update(*items.toTypedArray())
+            Log.d("ppppppp", a.toString())
         }
     }
 

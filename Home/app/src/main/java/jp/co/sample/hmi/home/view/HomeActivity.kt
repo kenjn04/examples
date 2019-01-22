@@ -14,6 +14,7 @@ import android.widget.Button
 import android.widget.LinearLayout
 import jp.co.sample.hmi.home.common.HomeAppWidgetProviderInfo
 import jp.co.sample.hmi.home.R
+import jp.co.sample.hmi.home.common.WidgetIdProvider
 import jp.co.sample.hmi.home.repository.db.WidgetItemInfo
 import jp.co.sample.hmi.home.util.WidgetHostViewLoader
 import jp.co.sample.hmi.home.view.preview.WidgetSelectionView
@@ -106,6 +107,7 @@ class HomeActivity : AppCompatActivity() {
     fun addWidget(componentName: ComponentName) {
         val addItem = containerConnector.widgetAddCell.item
         val item = WidgetItemInfo(addItem).apply {
+            id = WidgetIdProvider.getInstance().getId()
             packageName = componentName.packageName
             className = componentName.className
         }

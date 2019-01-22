@@ -226,14 +226,14 @@ class WidgetContainerConnector(
     }
 
     fun finishWidgetDragging() {
-        home.shrinkTable.removeView(draggingWidget)
-        draggingWidget!!.revertPosition()
-
         val container = widgetContainers[currentMainContainer]
         val newDraggingWidgetPosition = container.calculateDraggingWidgetPosition()
         val updatedWidgetMap = updater!!.updateWidgetMap(
                 draggingWidget!!, currentMainContainer, newDraggingWidgetPosition.first, newDraggingWidgetPosition.second
         )
+
+        home.shrinkTable.removeView(draggingWidget)
+        draggingWidget!!.revertPosition()
         if (updatedWidgetMap != null) {
             val items = getItemsFromWidgetMap(updatedWidgetMap)
             home.updateWidget(items)
@@ -263,19 +263,17 @@ class WidgetContainerConnector(
         val updatedItems = mutableListOf<WidgetItemInfo>()
         for (x in 0..(totalX - 1)) {
             for (y in 0..(totalY - 1)) {
-                val widget = map[x][y]
-                if (widget != null) {
-                    val item = widget.item
-                    if (!itemSet.contains(item.id)) {
-                        itemSet.add(item.id)
-                        val updatedItem = WidgetItemInfo(item).apply {
-                            containerId = x / widgetContainerNum
-                            coordinateX = x % widgetContainerNum
-                            coordinateY = y
-                        }
-                        if (updatedItem != item) {
-                            updatedItems.add(updatedItem)
-                        }
+                val widget = map[x][y] ?: continue
+                val item = widget.item
+                if (!itemSet.contains(item.id)) {
+                    itemSet.add(item.id)
+                    val updatedItem = WidgetItemInfo(item).apply {
+                        containerId = x / widgetNumInContainerX
+                        coordinateX = x % widgetNumInContainerX
+                        coordinateY = y
+                    }
+                    if (updatedItem != item) {
+                        updatedItems.add(updatedItem)
                     }
                 }
             }

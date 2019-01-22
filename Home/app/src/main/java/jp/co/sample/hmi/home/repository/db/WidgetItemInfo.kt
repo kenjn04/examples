@@ -38,7 +38,7 @@ data class WidgetItemInfo (
     // For WidgetViewCell
     @Ignore
     constructor(item: WidgetItemInfo) : this(
-        WidgetIdProvider.getInstance().getId(),
+        item.id,
         item.packageName,
         item.className,
         item.containerId,
