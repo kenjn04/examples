@@ -14,12 +14,12 @@ class WidgetSelectionView(
     context: Context,
     attrs: AttributeSet?,
     defStyle: Int
-) : FrameLayout(context, attrs, defStyle), View.OnClickListener, View.OnLongClickListener
+) : FrameLayout(context, attrs, defStyle)
 {
     private val home = context as HomeActivity
 
     private val adapter: WidgetsListAdapter =
-        WidgetsListAdapter(context,this, this)
+        WidgetsListAdapter(context)
 
     private lateinit var recyclerView: RecyclerView
 
@@ -38,16 +38,8 @@ class WidgetSelectionView(
         adapter.notifyDataSetChanged();
     }
 
-    override fun onClick(view: View?) {
-        if (view is WidgetPreviewCell) {
-            val previewCell = view as WidgetPreviewCell
-            home.addWidget(previewCell.pInfo.provider)
-        }
-    }
-
-    override fun onLongClick(view: View?): Boolean {
-        // Nothing to do
-        return false
+    fun scrollToLeft() {
+        recyclerView.scrollToPosition(0)
     }
 }
 

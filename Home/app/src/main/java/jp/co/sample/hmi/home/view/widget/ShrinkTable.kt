@@ -37,6 +37,8 @@ class ShrinkTable(
 
     override fun onFinishInflate() {
         super.onFinishInflate()
+
+        Log.d("aaabbbccc", width.toString() + " " + height.toString())
         containerConnector = findViewById(R.id.widget_container_connector)
 
         shiftX = 0.5F * home.params.displaySize.x

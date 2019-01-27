@@ -3,15 +3,21 @@ package jp.co.sample.hmi.home.view.widget
 import android.animation.Animator
 import android.animation.ObjectAnimator
 import android.animation.PropertyValuesHolder
+import android.content.ComponentName
 import android.content.Context
 import android.graphics.Color
 import android.graphics.Point
+import android.media.MicrophoneInfo
 import android.util.AttributeSet
+import android.util.Log
 import android.view.Gravity
 import android.widget.FrameLayout
 import android.view.MotionEvent
 import android.view.View
+import android.view.ViewGroup
 import jp.co.sample.hmi.home.R
+import jp.co.sample.hmi.home.common.HomeAppWidgetProviderInfo
+import jp.co.sample.hmi.home.common.WidgetIdProvider
 import jp.co.sample.hmi.home.repository.db.WidgetItemInfo
 import jp.co.sample.hmi.home.util.DraggingHelper
 import jp.co.sample.hmi.home.view.HomeActivity
@@ -45,7 +51,7 @@ class WidgetContainerConnector(
     private var draggingWidget: WidgetViewCell? = null
     private var draggingWidgetOriginalContainerId: Int = -1
 
-    private var draggingWidgetPosition: Pair<Int, Int> = Pair(-1, -1)
+    private var draggingWidgetPosition: Pair<Int, Int>? = null
 
     private val draggingHelper = DraggingHelper(this, false)
 
@@ -190,7 +196,46 @@ class WidgetContainerConnector(
     }
 
     fun rearrangeWidgets() {
-        // TODO
+    }
+
+    fun createAddItem(pInfo: HomeAppWidgetProviderInfo): WidgetItemInfo? {
+        var id = widgetAddCell.item.containerId
+        var x = widgetAddCell.item.coordinateX
+        var y = widgetAddCell.item.coordinateY
+
+        val spanX = pInfo.spanX
+        val spanY = pInfo.spanY
+        while (true) {
+            if (isAddable(id, x, y, spanX, spanY)) {
+                return WidgetItemInfo(
+                    pInfo.provider.packageName, pInfo.provider.className, id, x, y
+                )
+            }
+            y++
+            if (y == widgetNumInContainerY) {
+                x++
+                y = 0
+            }
+            if (x == widgetNumInContainerX) {
+                x = 0
+                id++
+            }
+            if (id == widgetContainerNum) break
+        }
+        return null
+    }
+
+    fun isAddable(containerId: Int, coordinateX: Int, coordinateY: Int, spanX: Int, spanY: Int): Boolean {
+        for (dx in 0..(spanX - 1)) {
+            for (dy in 0..(spanY - 1)) {
+                if ((coordinateX + dx) >= widgetNumInContainerX) return false
+                if ((coordinateY + dy) >= widgetNumInContainerY) return false
+                val x = containerId * widgetNumInContainerX + coordinateX + dx
+                val y = coordinateY + dy
+                if (widgetMap[x][y] != null) return false
+            }
+        }
+        return true
     }
 
     override fun onHomeModeChanged(mode: HomeMode) {
@@ -228,16 +273,26 @@ class WidgetContainerConnector(
     fun finishWidgetDragging() {
         val container = widgetContainers[currentMainContainer]
         val newDraggingWidgetPosition = container.calculateDraggingWidgetPosition()
-        val updatedWidgetMap = updater!!.updateWidgetMap(
+        if (newDraggingWidgetPosition != null) {
+            val updatedWidgetMap = updater!!.updateWidgetMap(
                 draggingWidget!!, currentMainContainer, newDraggingWidgetPosition.first, newDraggingWidgetPosition.second
-        )
+            )
 
-        home.shrinkTable.removeView(draggingWidget)
-        draggingWidget!!.revertPosition()
-        if (updatedWidgetMap != null) {
-            val items = getItemsFromWidgetMap(updatedWidgetMap)
-            home.updateWidget(items)
-            widgetMap = updatedWidgetMap
+            home.shrinkTable.removeView(draggingWidget)
+            draggingWidget!!.revertPosition()
+            if (updatedWidgetMap != null) {
+                val items = getItemsFromWidgetMap(updatedWidgetMap)
+                home.updateWidget(items)
+                widgetMap = updatedWidgetMap
+            }
+        } else {
+            // Revert
+            val widget = draggingWidget!!
+            home.shrinkTable.removeView(widget)
+            val id = widget.item.containerId
+            val x = widget.item.coordinateX
+            val y = widget.item.coordinateY
+            widgetContainers[id].addWidget(widget, x, y)
         }
 
         draggingWidget = null
@@ -248,7 +303,8 @@ class WidgetContainerConnector(
         val container = widgetContainers[currentMainContainer]
         val newDraggingWidgetPosition = container.calculateDraggingWidgetPosition()
 
-        if (newDraggingWidgetPosition != Pair(-1, -1)) {
+        container.disableShadowFrame()
+        if (newDraggingWidgetPosition != null) {
             if (newDraggingWidgetPosition != draggingWidgetPosition) {
                 container.showShadowFrame(newDraggingWidgetPosition.first, newDraggingWidgetPosition.second)
                 draggingWidgetPosition = newDraggingWidgetPosition

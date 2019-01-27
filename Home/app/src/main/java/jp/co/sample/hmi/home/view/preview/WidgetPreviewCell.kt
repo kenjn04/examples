@@ -6,19 +6,24 @@ import android.graphics.Bitmap
 import android.graphics.Bitmap.Config
 import android.graphics.Canvas
 import android.util.AttributeSet
+import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import jp.co.sample.hmi.home.R
 import jp.co.sample.hmi.home.common.HomeAppWidgetProviderInfo
+import jp.co.sample.hmi.home.view.HomeActivity
 
 class WidgetPreviewCell(
     context: Context,
     attrs: AttributeSet?,
     defStyle: Int
-) : LinearLayout(context, attrs, defStyle) {
+) : FrameLayout(context, attrs, defStyle) {
+
+    private val home = context as HomeActivity
 
     lateinit var pInfo: HomeAppWidgetProviderInfo
+    lateinit var base: LinearLayout
     lateinit var image: ImageView
     lateinit var name: TextView
     lateinit var size: TextView
@@ -28,17 +33,20 @@ class WidgetPreviewCell(
 
     override fun onFinishInflate() {
         super.onFinishInflate()
+        base = findViewById(R.id.widget_preview_base)
         image = findViewById(R.id.widget_preview)
         name = findViewById(R.id.widget_name)
         size = findViewById(R.id.widget_size)
+
+        base.setOnClickListener {
+            home.addWidget(pInfo)
+        }
     }
 
-    fun applyFromCellItem(info: HomeAppWidgetProviderInfo, packageManager: PackageManager) {
+    fun applyFromCellItem(info: HomeAppWidgetProviderInfo) {
         pInfo = info
-        name.text = pInfo.getLabel(packageManager)
+        name.text = pInfo.widgetLabel
         size.text = context.getString(R.string.widget_dims_format, pInfo.spanX, pInfo.spanY)
-        // TODO; Is this required?
-        size.contentDescription = context.getString(R.string.widget_accessible_dims_format, pInfo.spanX, pInfo.spanY)
     }
 
     fun ensurePreview() {

@@ -3,10 +3,8 @@ package jp.co.sample.hmi.home.view.widget
 import android.appwidget.AppWidgetHostView
 import android.content.Context
 import android.util.AttributeSet
-import android.view.MotionEvent
 import android.view.View
 import android.widget.Button
-import android.widget.FrameLayout
 import jp.co.sample.hmi.home.R
 import jp.co.sample.hmi.home.util.DraggingHelper
 import jp.co.sample.hmi.home.view.HomeActivity
@@ -21,8 +19,8 @@ class WidgetViewCell(
 
     private val home: HomeActivity = context as HomeActivity
 
-    lateinit var widgetView: FrameLayout
-    lateinit var deleteButton: Button
+    private lateinit var widgetView: WidgetBaseView
+    private lateinit var deleteButton: Button
 
     private val draggingHelper = DraggingHelper(this)
 
@@ -107,13 +105,5 @@ class WidgetViewCell(
         } else {
             draggingHelper.movePositionByDrag(x, y, false)
         }
-    }
-
-    override fun onInterceptTouchEvent(ev: MotionEvent?): Boolean {
-        // TODO: disable widget touch
-        if (home.mode == HomeMode.REARRANGEMENT) {
-            return false
-        }
-        return false
     }
 }

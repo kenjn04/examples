@@ -12,6 +12,7 @@ import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.LinearLayout
+import android.widget.Toast
 import jp.co.sample.hmi.home.common.HomeAppWidgetProviderInfo
 import jp.co.sample.hmi.home.R
 import jp.co.sample.hmi.home.common.WidgetIdProvider
@@ -48,7 +49,6 @@ class HomeActivity : AppCompatActivity() {
     private lateinit var customBottons: LinearLayout
     private lateinit var addButton: Button
     private lateinit var rearrangeButton: Button
-
 
     /** Request Code */
     private val REQUEST_BIND_APPWIDGET = 1
@@ -101,19 +101,22 @@ class HomeActivity : AppCompatActivity() {
     // TODO: Maybe need to be called when application is added and removed to get latest lists
     private fun updateInstalledWidgetList() {
         installedWidgetList = homeViewModel.installedWidgetList
+        for (pInfo in installedWidgetList) {
+            pInfo.initialize(this, params.widgetFrameWidth, params.widgetFrameHeight)
+        }
         widgetSelectionView.setWidgets(installedWidgetList)
     }
 
-    fun addWidget(componentName: ComponentName) {
-        val addItem = containerConnector.widgetAddCell.item
-        val item = WidgetItemInfo(addItem).apply {
-            id = WidgetIdProvider.getInstance().getId()
-            packageName = componentName.packageName
-            className = componentName.className
+    fun addWidget(pInfo: HomeAppWidgetProviderInfo) {
+        val itemToAdd = containerConnector.createAddItem(pInfo)
+        if (itemToAdd == null) {
+            // TODO: Need to confirm the specification
+            Toast.makeText(this, "No space to add", Toast.LENGTH_SHORT).show()
+        } else {
+            /** After adding from db, the updateCurrentWidgets will be called by LiveData */
+            homeViewModel.addWidget(itemToAdd)
+            transitMode(HomeMode.DISPLAY)
         }
-        /** After adding from db, the updateCurrentWidgets will be called by LiveData */
-        homeViewModel.addWidget(item)
-        transitMode(HomeMode.DISPLAY)
     }
 
     fun deleteWidget(item: WidgetItemInfo) {
@@ -236,6 +239,8 @@ class HomeActivity : AppCompatActivity() {
                 widgetSelectionView.visibility = View.VISIBLE
                 backButton.visibility = View.VISIBLE
                 customBottons.visibility = View.GONE
+
+                widgetSelectionView.scrollToLeft()
             }
         }
         notifyListeners(nextMode)

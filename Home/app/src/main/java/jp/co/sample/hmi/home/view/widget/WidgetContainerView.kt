@@ -127,11 +127,11 @@ class WidgetContainerView(
         shadowFrame.visibility = View.VISIBLE
     }
 
-    fun calculateDraggingWidgetPosition(): Pair<Int, Int> {
+    fun disableShadowFrame() {
+        shadowFrame.visibility = View.GONE
+    }
 
-        if (shadowFrame.visibility == View.VISIBLE) {
-            shadowFrame.visibility = View.GONE
-        }
+    fun calculateDraggingWidgetPosition(): Pair<Int, Int>? {
 
         val widget = draggingWidget!!
         val positionLeft = widget.translationX - relativeTranslationX
@@ -141,6 +141,7 @@ class WidgetContainerView(
 
         var toX: Int = -1
         var toY: Int = -1
+        var position: Pair<Int, Int>? = null
         var maxSize: Float = 0F
         for (x in 0..(numX - widget.spanX)) {
             for (y in 0..(numY - widget.spanY)) {
@@ -164,12 +165,11 @@ class WidgetContainerView(
                 val size = width * height
                 if (size > maxSize) {
                     maxSize = size
-                    toX = x
-                    toY = y
+                    position = Pair(x, y)
                 }
             }
         }
-        return Pair(toX, toY)
+        return position
     }
 
     fun showShadowFrame(x: Int, y: Int) {

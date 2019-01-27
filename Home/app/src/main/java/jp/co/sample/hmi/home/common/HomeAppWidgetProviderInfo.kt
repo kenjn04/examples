@@ -1,29 +1,44 @@
 package jp.co.sample.hmi.home.common
 
 import android.appwidget.AppWidgetProviderInfo
-import android.content.pm.PackageManager
+import android.content.Context
 import android.os.Parcel
+import android.appwidget.AppWidgetHostView
+import android.util.Log
+
 
 class HomeAppWidgetProviderInfo private constructor(parcel: Parcel)
     : AppWidgetProviderInfo(parcel)
 {
+    lateinit var widgetLabel: String
 
-    // TODO: Need to be updated. How to retrieve the value?
-    val spanX: Int = 2
-    val spanY: Int = 2
+    var spanX: Int = 1
+    var spanY: Int = 1
 
-    fun getLabel(packageManager: PackageManager) = super.loadLabel(packageManager)
+    fun initialize(context: Context, minWidgetWidth: Int, minWidgetHeight: Int) {
+        val widgetPadding = AppWidgetHostView.getDefaultPaddingForWidget(
+                context, provider, null)
+        spanX = Math.ceil(
+                    (minWidth + widgetPadding.left + widgetPadding.right).toDouble() / minWidgetWidth
+                ).toInt()
+        spanY = Math.ceil(
+                    (minHeight + widgetPadding.top + widgetPadding.bottom).toDouble() / minWidgetHeight
+                ).toInt()
+        widgetLabel = loadLabel(context.packageManager)
+        Log.d("aaabbbccc", widgetLabel + " " + minWidth + " " + minHeight + " " + minWidgetWidth + " " + minWidgetHeight)
+    }
 
     companion object {
+
         fun fromProviderInfo(info: AppWidgetProviderInfo)
                 : HomeAppWidgetProviderInfo
         {
             val p = Parcel.obtain()
             info.writeToParcel(p, 0)
             p.setDataPosition(0)
-            val launcherInfo = HomeAppWidgetProviderInfo(p)
+            val pInfo = HomeAppWidgetProviderInfo(p)
             p.recycle()
-            return launcherInfo
+            return pInfo
         }
     }
 

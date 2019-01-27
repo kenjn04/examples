@@ -7,6 +7,7 @@
     >
 
     <LinearLayout
+        android:id="@+id/widget_preview_base"
         android:layout_width="@dimen/widget_preview_cell_inner_width"
         android:layout_height="@dimen/widget_preview_cell_inner_height"
         android:orientation="vertical"
