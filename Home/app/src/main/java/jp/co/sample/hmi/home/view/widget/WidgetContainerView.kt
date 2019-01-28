@@ -110,7 +110,6 @@ class WidgetContainerView(
 
             widgetContainerView = this@WidgetContainerView
         }
-        Log.d("aaabbbccc", "" + widget.item.className + " " + widget.item.containerId)
         addView(widget)
     }
 

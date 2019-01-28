@@ -106,6 +106,10 @@ class ShrinkTable(
                 swipeDetector.onTouch(ev.x, ev.y)
             }
             MotionEvent.ACTION_UP -> {
+                if (draggingWidget != null) {
+                    onTouchEvent(ev)
+                    return true
+                }
                 when (swipeDetector.getSwipeDirectionIfSwiped(ev.x, ev.y)) {
                     SwipeDetector.SwipeDirection.Right -> {
                         onSwipe(true, swipeDetector.velocity!!)
