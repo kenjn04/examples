@@ -13,6 +13,8 @@ data class WidgetItemInfo (
     var containerId: Int,
     var coordinateX: Int,
     var coordinateY: Int,
+    var spanX: Int = 1,
+    var spanY: Int = 1,
     @Ignore var appWidgetId: Int? = null
 ) {
     // For WidgetAddCell. Id 0 is assigned to WidgetAddCell
@@ -25,14 +27,18 @@ data class WidgetItemInfo (
         className: String,
         containerId: Int,
         coordinateX: Int,
-        coordinateY: Int
+        coordinateY: Int,
+        spanX: Int,
+        spanY: Int
     ): this(
         WidgetIdProvider.getInstance().getId(),
         packageName,
         className,
         containerId,
         coordinateX,
-        coordinateY
+        coordinateY,
+        spanX,
+        spanY
     )
 
     // For WidgetViewCell
@@ -44,6 +50,8 @@ data class WidgetItemInfo (
         item.containerId,
         item.coordinateX,
         item.coordinateY,
+        item.spanX,
+        item.spanY,
         item.appWidgetId
     )
 

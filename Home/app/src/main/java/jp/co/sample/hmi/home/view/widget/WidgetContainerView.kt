@@ -3,7 +3,6 @@ package jp.co.sample.hmi.home.view.widget
 import android.content.Context
 import android.graphics.Color
 import android.util.AttributeSet
-import android.util.Log
 import android.widget.FrameLayout
 import android.view.Gravity
 import android.view.View

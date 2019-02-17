@@ -3,7 +3,6 @@ package jp.co.sample.hmi.home.view
 import android.appwidget.AppWidgetHost
 import android.appwidget.AppWidgetHostView
 import android.appwidget.AppWidgetManager
-import android.content.ComponentName
 import android.content.Intent
 import android.graphics.Color
 import android.support.v7.app.AppCompatActivity
@@ -15,7 +14,6 @@ import android.widget.LinearLayout
 import android.widget.Toast
 import jp.co.sample.hmi.home.common.HomeAppWidgetProviderInfo
 import jp.co.sample.hmi.home.R
-import jp.co.sample.hmi.home.common.WidgetIdProvider
 import jp.co.sample.hmi.home.repository.db.WidgetItemInfo
 import jp.co.sample.hmi.home.util.WidgetHostViewLoader
 import jp.co.sample.hmi.home.view.preview.WidgetSelectionView
@@ -55,7 +53,7 @@ class HomeActivity : AppCompatActivity() {
 
     lateinit var params: HomeParams
 
-    var mode = HomeMode.DISPLAY
+    var mode = HomeMode.REARRANGEMENT
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -196,8 +194,8 @@ class HomeActivity : AppCompatActivity() {
 
     fun onWidgetViewLoaded(hostView: AppWidgetHostView, pInfo: HomeAppWidgetProviderInfo, item: WidgetItemInfo) {
         val widgetViewCell = layoutInflater.inflate(R.layout.widget_view_cell, shrinkTable, false) as WidgetViewCell
-        widgetViewCell.spanX = pInfo.spanX
-        widgetViewCell.spanY = pInfo.spanY
+        widgetViewCell.spanX = item.spanX
+        widgetViewCell.spanY = item.spanY
         widgetViewCell.item = item
         widgetViewCell.setBackgroundColor(Color.YELLOW)
         widgetViewCell.addWidgetView(hostView)

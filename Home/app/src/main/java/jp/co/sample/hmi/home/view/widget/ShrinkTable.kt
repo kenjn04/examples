@@ -98,6 +98,7 @@ class ShrinkTable(
     }
 
     override fun onInterceptTouchEvent(ev: MotionEvent?): Boolean {
+        Log.d("qqqqqqq", ev.toString())
         when (ev!!.action) {
             MotionEvent.ACTION_MOVE -> {
                 if (draggingWidget != null) return true

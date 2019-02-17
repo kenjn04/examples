@@ -40,7 +40,7 @@ class WidgetContainerConnector(
     private val shiftX: Float = 1.5F * displaySize.x
     val relativeTranslationX: Float
 
-    private var currentMainContainer = 0
+    private var currentMainContainer = 2
 
     private var duringTransition = false
 
@@ -208,7 +208,7 @@ class WidgetContainerConnector(
         while (true) {
             if (isAddable(id, x, y, spanX, spanY)) {
                 return WidgetItemInfo(
-                    pInfo.provider.packageName, pInfo.provider.className, id, x, y
+                    pInfo.provider.packageName, pInfo.provider.className, id, x, y, 1, 1
                 )
             }
             y++
