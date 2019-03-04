@@ -25,6 +25,8 @@ class HomeAppWidgetProviderInfo private constructor(parcel: Parcel)
                     (minHeight + widgetPadding.top + widgetPadding.bottom).toDouble() / minWidgetHeight
                 ).toInt()
         widgetLabel = loadLabel(context.packageManager)
+        spanX = 1
+        spanY = 2
         Log.d("aaabbbccc", widgetLabel + " " + minWidth + " " + minHeight + " " + minWidgetWidth + " " + minWidgetHeight)
     }
 

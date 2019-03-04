@@ -8,6 +8,8 @@ import android.content.Context
 import android.graphics.Color
 import android.graphics.Point
 import android.media.MicrophoneInfo
+import android.os.Handler
+import android.os.HandlerThread
 import android.util.AttributeSet
 import android.util.Log
 import android.view.Gravity
@@ -33,6 +35,8 @@ class WidgetContainerConnector(
     attrs: AttributeSet?,
     defStyle: Int
 ): FrameLayout(context, attrs, defStyle), HomeModeChangeListener, Animator.AnimatorListener {
+
+    private val TAG = "WidgetContainerConnector"
 
     private val home = context as HomeActivity
 
@@ -71,6 +75,9 @@ class WidgetContainerConnector(
     private val totalX = widgetContainerNum * widgetNumInContainerX
     private val totalY = widgetNumInContainerY
 
+    private val aThread = HandlerThread("")
+    private val aHandler: Handler
+    private var previousTranslationX = 0F
     init {
         // TODO:
         relativeTranslationX = -1.0F * displaySize.x // shrinkTable.shiftX - shiftX
@@ -78,6 +85,39 @@ class WidgetContainerConnector(
         widgetMap = Array(totalX, {arrayOfNulls<WidgetViewCell>(totalY)})
 
         widgetAddCell = home.layoutInflater.inflate(R.layout.widget_add_cell, this, false) as WidgetAddCell
+
+        aThread.start()
+        aHandler = Handler(aThread.looper)
+    }
+
+    private var isOriginal = true
+    companion object {
+        val DURATION_MS = 100L
+    }
+
+    private fun monitorTransXChange() {
+        val translationXDiff = translationX - previousTranslationX
+        if (translationXDiff == 0F) {
+            if (!isOriginal) {
+                notifyChange(translationXDiff)
+                isOriginal = true
+            }
+        } else {
+            isOriginal = false
+            notifyChange(translationXDiff)
+            previousTranslationX = translationX
+        }
+
+        aHandler.postDelayed({
+            monitorTransXChange()
+        }, DURATION_MS)
+    }
+
+    private val listeners = mutableListOf<OnTransXChangeListener>()
+    private fun notifyChange(translationXDiff: Float) {
+        for (listener in listeners) {
+            listener.onTransXChage(translationXDiff, translationX == relativeTranslationX)
+        }
     }
 
     override fun onFinishInflate() {
@@ -95,6 +135,7 @@ class WidgetContainerConnector(
         }
         initializeWidgetContainers()
         widgetContainers[0].addWidget(widgetAddCell, 0, 0)
+        monitorTransXChange()
     }
 
     private fun initializeWidgetContainers() {
@@ -106,6 +147,7 @@ class WidgetContainerConnector(
 
     private fun reLayoutWidgetContainer() {
         translationX = relativeTranslationX
+        previousTranslationX = translationX
         for (container in widgetContainers) {
             container.visibility = View.GONE
             container.translationX = 0F
@@ -133,6 +175,7 @@ class WidgetContainerConnector(
                 widgetMap[absoluteX][absoluteY] = widget
             }
         }
+        listeners.add(widget)
         widgetViewCellMap[widget.item.id] = widget
         widgetContainers[containerId].addWidget(widget, x, y)
         reLayoutWidgetAddView()
@@ -151,6 +194,7 @@ class WidgetContainerConnector(
             }
         }
         widget.deleteFromContainer()
+        listeners.remove(widget)
     }
 
     fun updateWidget(pItem: WidgetItemInfo, lItem: WidgetItemInfo) {
@@ -339,7 +383,7 @@ class WidgetContainerConnector(
 
     private fun transitContainerIfRequired() {
         val translationDiffX = translationX - relativeTranslationX
-        if (abs(translationDiffX) < (displaySize.x.toFloat() * 0.5 * scale)) {
+        if (abs(translationDiffX) < (displaySize.x.toFloat() * 0.9 * scale)) {
             return
         }
         if (translationDiffX < 0) {

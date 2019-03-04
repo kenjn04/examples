@@ -39,4 +39,9 @@ abstract class WidgetCell(
         }
         get() = item.coordinateY
 
+    open fun setPosition(x: Float, y: Float) {
+        translationX = x
+        translationY = y
+    }
+
 }

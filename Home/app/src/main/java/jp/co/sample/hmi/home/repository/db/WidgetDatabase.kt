@@ -57,15 +57,27 @@ abstract class WidgetDatabase : RoomDatabase() {
             override fun doInBackground(vararg params: Unit?) {
                 widgetDao.deleteAll()
 
+                /*
                 val packageName1 = "com.android.chrome"
                 val className1 = "org.chromium.chrome.browser.searchwidget.SearchWidgetProvider"
                 val widget1 = WidgetItemInfo(packageName1, className1,  0,  0,  0)
                 widgetDao.insert(widget1)
+                */
 
                 val packageName2 = "com.google.android.apps.messaging"
                 val className2 = "com.google.android.apps.messaging.widget.BugleWidgetProvider"
-                val widget2 = WidgetItemInfo(packageName2, className2,  0,  2,  0)
+                val widget2 = WidgetItemInfo(packageName2, className2,  0,  1,  0)
                 widgetDao.insert(widget2)
+
+                val widget3 = WidgetItemInfo(packageName2, className2,  0,  2,  0)
+                widgetDao.insert(widget3)
+
+                /*
+                val packageName4 = "com.google.android.apps.messaging"
+                val className4 = "com.google.android.apps.messaging.widget.BugleWidgetProvider"
+                val widget4 = WidgetItemInfo(packageName2, className2,  0,  3,  0)
+                widgetDao.insert(widget4)
+                */
             }
         }
 

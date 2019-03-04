@@ -105,9 +105,7 @@ class WidgetContainerView(
             positionX = x
             positionY = y
 
-            translationX = widgetPositionX[x]
-            translationY = widgetPositionY[y]
-
+            setPosition(widgetPositionX[x], widgetPositionY[y])
             widgetContainerView = this@WidgetContainerView
         }
         addView(widget)

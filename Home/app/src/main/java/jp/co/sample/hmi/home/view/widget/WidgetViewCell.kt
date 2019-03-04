@@ -1,8 +1,11 @@
 package jp.co.sample.hmi.home.view.widget
 
+import android.animation.ObjectAnimator
+import android.animation.PropertyValuesHolder
 import android.appwidget.AppWidgetHostView
 import android.content.Context
 import android.util.AttributeSet
+import android.util.Log
 import android.view.View
 import android.widget.Button
 import jp.co.sample.hmi.home.R
@@ -15,7 +18,9 @@ class WidgetViewCell(
     context: Context,
     attrs: AttributeSet?,
     defStyle: Int
-): WidgetCell(context, attrs, defStyle), View.OnLongClickListener, HomeModeChangeListener {
+): WidgetCell(context, attrs, defStyle), View.OnLongClickListener, HomeModeChangeListener, OnTransXChangeListener {
+
+    private val TAG = "WidgetViewCell"
 
     private val home: HomeActivity = context as HomeActivity
 
@@ -51,6 +56,12 @@ class WidgetViewCell(
 
     fun deleteFromContainer() {
         widgetContainerView.removeWidget(this)
+    }
+
+    private var currentTranslationX = 0F
+    override fun setPosition(x: Float, y: Float) {
+        currentTranslationX = x
+        super.setPosition(x, y)
     }
 
     private var dragAllowed = false
@@ -104,6 +115,20 @@ class WidgetViewCell(
             draggingHelper.startDragging(x, y)
         } else {
             draggingHelper.movePositionByDrag(x, y, false)
+        }
+    }
+
+    private val animationDuration = (WidgetContainerConnector.DURATION_MS * 0.95).toLong()
+    private val maxAngle = 180F
+    override fun onTransXChage(diffX: Float, original: Boolean) {
+        val rotateAngle = (diffX / home.params.displaySize.x) * maxAngle
+        currentTranslationX -= diffX
+
+        val rotateY = PropertyValuesHolder.ofFloat("rotationY", rotateAngle)
+        val transX = PropertyValuesHolder.ofFloat("translationX", currentTranslationX)
+        ObjectAnimator.ofPropertyValuesHolder(this, rotateY, transX).apply {
+            duration = animationDuration
+            start()
         }
     }
 }
