@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:tools="http://schemas.android.com/tools"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            tools:context=".MainActivity">
+
+    <com.sample.myapplication.ContainerView
+            android:id="@+id/container"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/colorPrimary"
+    >
+    </com.sample.myapplication.ContainerView>
+
+    <include
+            android:id="@+id/panel1"
+            layout="@layout/panel_view"
+    />
+    <!--
+    <include
+            android:id="@+id/panel2"
+            layout="@layout/panel_view"
+    />
+    <include
+            android:id="@+id/panel3"
+            layout="@layout/panel_view"
+    />
+    <include
+            android:id="@+id/panel4"
+            layout="@layout/panel_view"
+    />
+    -->
+
+</FrameLayout>
