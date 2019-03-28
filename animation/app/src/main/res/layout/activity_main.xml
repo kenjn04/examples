@@ -7,7 +7,7 @@
     android:background="@color/black"
     tools:context=".MainActivity">
 
-    <androidx.recyclerview.widget.RecyclerView
+    <jp.co.sample.hmi.animation.AnimateRecyclerView
         android:id="@+id/recycler_view"
         android:layout_width="1600dp"
         android:layout_height="wrap_content"
