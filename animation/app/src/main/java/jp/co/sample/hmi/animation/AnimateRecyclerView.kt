@@ -2,7 +2,6 @@ package jp.co.sample.hmi.animation
 
 import android.content.Context
 import android.util.AttributeSet
-import android.util.Log
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import kotlin.math.abs
@@ -22,10 +21,6 @@ class AnimateRecyclerView(
 
     var scrollMode = ScrollMode.PAGE
     var currentPosition = 1
-        set(value) {
-            field = value
-            Log.d("aaabbbccc", "currentPosition updated: ${currentPosition}")
-        }
 
     private val VELOCITY_THRESHOLD = 500
 
@@ -49,8 +44,6 @@ class AnimateRecyclerView(
     }
 
     override fun fling(velocityX: Int, velocityY: Int): Boolean {
-        Log.d("aaabbbccc", "fling started with ${velocityX} and ${velocityY}.")
-
         if (abs(velocityX) < VELOCITY_THRESHOLD) return false
 
         val layoutManager = layoutManager as? LinearLayoutManager
@@ -65,7 +58,6 @@ class AnimateRecyclerView(
             ScrollMode.PAGE -> { pageFling(velocityX, first, bodyWidth, bodyCount, offset, itemCount) }
             ScrollMode.DOT  -> { dotFling(velocityX, first, bodyWidth, bodyCount, offset, itemCount) }
         }
-        Log.d("aaabbbccc", "After flinging current position is ${currentPosition}.")
         return true
     }
 

@@ -1,6 +1,5 @@
 package jp.co.sample.hmi.animation
 
-import android.util.Log
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import java.lang.Math.abs
@@ -16,18 +15,10 @@ class AnimateOnScrollListener: RecyclerView.OnScrollListener() {
         super.onScrollStateChanged(recyclerView, newState)
         when (newState) {
             RecyclerView.SCROLL_STATE_IDLE -> {
-                Log.d("aaabbbccc", "State Changed: SCROLL_STATE_IDLE")
                 alignEdgePosition(recyclerView)
             }
             // Nothing to do
-//            else -> {}
-            RecyclerView.SCROLL_STATE_DRAGGING -> {
-                Log.d("aaabbbccc", "State Changed: SCROLL_STATE_DRAGING")
-            }
-            RecyclerView.SCROLL_STATE_SETTLING -> {
-                Log.d("aaabbbccc", "State Changed: SCROLL_STATE_SETTLING")
-            }
-
+            else -> {}
         }
     }
 
@@ -88,7 +79,6 @@ class AnimateOnScrollListener: RecyclerView.OnScrollListener() {
 
     private fun smoothScrollBy(recyclerView: RecyclerView, dx: Int, dy: Int) {
         if ((dx == 0) and (dy == 0)) return
-        Log.d("aaabbbccc", "fix edge: ${dx}")
         recyclerView.smoothScrollBy(dx, dy)
     }
 
