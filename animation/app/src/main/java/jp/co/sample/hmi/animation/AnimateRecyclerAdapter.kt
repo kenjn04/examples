@@ -17,20 +17,28 @@ class AnimateRecyclerAdapter(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val type = ViewType.fromInt(viewType)
-        return ViewHolder(inflater.inflate(R.layout.fruit_view, parent, false), type)
+        return when (ViewType.fromInt(viewType)) {
+            ViewType.BODY -> {
+                BodyViewHolder(inflater.inflate(R.layout.fruit_view, parent, false), type)
+            }
+            ViewType.HEADER, ViewType.FOOTER -> {
+                HeaderFooterViewHolder(inflater.inflate(R.layout.header_hooter_view, parent, false), type)
+            }
+        }
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         when (holder.type) {
             ViewType.BODY -> {
+                val holder = holder as? BodyViewHolder
+                        ?: throw AssertionError("Invalid class: ${holder}")
                 holder.apply {
-                    if ((position != 0) and (position != 11)) image.setImageResource(list[position - 1])
+                    image.setImageResource(list[position - 1])
                     text.text = position.toString()
                 }
             }
-            else -> {
-                // Nothing to do as of now
-            }
+            // Nothing to do
+            else -> {}
         }
     }
 
@@ -44,10 +52,14 @@ class AnimateRecyclerAdapter(
         }.int
     }
 
-    inner class ViewHolder(view: View, val type: ViewType): RecyclerView.ViewHolder(view) {
+    abstract class ViewHolder(view: View, val type: ViewType): RecyclerView.ViewHolder(view)
+
+    class BodyViewHolder(view: View, type: ViewType): ViewHolder(view, type) {
         val image: ImageView by lazy { view.findViewById<ImageView>(R.id.imageView) }
         val text: TextView by lazy { view.findViewById<TextView>(R.id.textView) }
     }
+
+    class HeaderFooterViewHolder(view: View, type: ViewType): ViewHolder(view, type)
 
     enum class ViewType(val int: Int) {
         BODY(0),

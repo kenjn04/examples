@@ -1,5 +1,6 @@
 package jp.co.sample.hmi.animation
 
+import android.util.Log
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import java.lang.Math.abs
@@ -15,21 +16,57 @@ class AnimateOnScrollListener: RecyclerView.OnScrollListener() {
         super.onScrollStateChanged(recyclerView, newState)
         when (newState) {
             RecyclerView.SCROLL_STATE_IDLE -> {
-                fixEdgePosition(recyclerView)
+                Log.d("aaabbbccc", "State Changed: SCROLL_STATE_IDLE")
+                alignEdgePosition(recyclerView)
             }
-            else -> {
-                // Nothing to do
+            // Nothing to do
+//            else -> {}
+            RecyclerView.SCROLL_STATE_DRAGGING -> {
+                Log.d("aaabbbccc", "State Changed: SCROLL_STATE_DRAGING")
+            }
+            RecyclerView.SCROLL_STATE_SETTLING -> {
+                Log.d("aaabbbccc", "State Changed: SCROLL_STATE_SETTLING")
+            }
+
+        }
+    }
+
+    private fun alignEdgePosition(recyclerView: RecyclerView) {
+        // Nothing to do if there is no item
+        if (getItemCount(recyclerView) == 0) return
+
+        when (getScrollType(recyclerView)) {
+            AnimateRecyclerView.ScrollMode.DOT -> {
+                alignEdgePositionDot(recyclerView)
+            }
+            AnimateRecyclerView.ScrollMode.PAGE -> {
+                alignEdgePositionPage(recyclerView)
             }
         }
     }
 
-    private fun fixEdgePosition(recyclerView: RecyclerView) {
+    private fun alignEdgePositionPage(recyclerView: RecyclerView) {
+        val layoutManager = getLayoutManager(recyclerView)
+        val first = layoutManager.findFirstVisibleItemPosition()
+
+        val targetPosition = getCurrentPosition(recyclerView)
+        val width = recyclerView.getChildAt(1).width
+        val offset = -recyclerView.getChildAt(0).left
+        /**
+         * Suppose header and footer width is same sa body width
+         */
+        val dx: Int = if (first < targetPosition) {
+            (targetPosition - first) * width - offset
+        } else {
+            -((first - targetPosition) * width + offset)
+        }
+        smoothScrollBy(recyclerView, dx, 0)
+    }
+
+    private fun alignEdgePositionDot(recyclerView: RecyclerView) {
         val layoutManager = getLayoutManager(recyclerView)
         val first = layoutManager.findFirstVisibleItemPosition()
         val last = layoutManager.findLastVisibleItemPosition()
-
-        // Nothing to do if there is no item
-        if (getItemCount(recyclerView) == 0) return
 
         val dx: Int = if (isHeader(first)) {
             val secondView = recyclerView.getChildAt(1)
@@ -45,9 +82,20 @@ class AnimateOnScrollListener: RecyclerView.OnScrollListener() {
                 firstView.left
             }
         }
-        if (dx != 0) {
-            recyclerView.smoothScrollBy(dx, 0)
-        }
+        smoothScrollBy(recyclerView, dx, 0)
+        updateCurrentPosition(recyclerView, layoutManager.findFirstVisibleItemPosition())
+    }
+
+    private fun smoothScrollBy(recyclerView: RecyclerView, dx: Int, dy: Int) {
+        if ((dx == 0) and (dy == 0)) return
+        Log.d("aaabbbccc", "fix edge: ${dx}")
+        recyclerView.smoothScrollBy(dx, dy)
+    }
+
+    private fun updateCurrentPosition(recyclerView: RecyclerView, position: Int) {
+        val recyclerView = recyclerView as? AnimateRecyclerView
+                ?: throw AssertionError("Invalid class: ${recyclerView}")
+        recyclerView.currentPosition = position
     }
 
     private fun addAnimation(recyclerView: RecyclerView) {
@@ -85,17 +133,23 @@ class AnimateOnScrollListener: RecyclerView.OnScrollListener() {
     }
 
     private fun getItemCount(recyclerView: RecyclerView): Int {
-        return getAdapter(recyclerView).itemCount
+        return recyclerView.adapter!!.itemCount
+    }
+
+    private fun getScrollType(recyclerView: RecyclerView): AnimateRecyclerView.ScrollMode {
+        val recyclerView = recyclerView as? AnimateRecyclerView
+                ?: throw AssertionError("Invalid class: ${recyclerView}")
+        return recyclerView.scrollMode
+    }
+
+    private fun getCurrentPosition(recyclerView: RecyclerView): Int {
+        val recyclerView = recyclerView as? AnimateRecyclerView
+                ?: throw AssertionError("Invalid class: ${recyclerView}")
+        return recyclerView.currentPosition
     }
 
     private fun getLayoutManager(recyclerView: RecyclerView): LinearLayoutManager {
         return recyclerView.layoutManager!! as? LinearLayoutManager
-                ?: throw AssertionError("Only AnimateLinearLayoutManager is supported.")
+                ?: throw AssertionError("Only LinearLayoutManager is supported as of now.")
     }
-
-    private fun getAdapter(recyclerView: RecyclerView): AnimateRecyclerAdapter {
-        return recyclerView.adapter!! as? AnimateRecyclerAdapter
-                ?: throw AssertionError("Only AnimateRecyclerAdapter is supported.")
-    }
-
 }
