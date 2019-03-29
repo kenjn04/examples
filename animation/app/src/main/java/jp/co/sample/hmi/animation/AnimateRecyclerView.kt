@@ -52,7 +52,7 @@ class AnimateRecyclerView(
 
         val bodyWidth = getChildAt(1).width
         val bodyCount = width / bodyWidth
-        val offset = getChildAt(0).left
+        val offset = -getChildAt(0).left
         val itemCount = adapter!!.itemCount
         when (scrollMode) {
             ScrollMode.PAGE -> { pageFling(velocityX, first, bodyWidth, bodyCount, offset, itemCount) }
@@ -66,11 +66,11 @@ class AnimateRecyclerView(
         var dx = 0
         if (velocityX > 0) {
             nextPosition += bodyCount
-            dx = bodyWidth * (nextPosition - first) + offset
+            dx = bodyWidth * (nextPosition - first) - offset
             nextPosition = min(nextPosition, itemCount - bodyCount - 1)
         } else {
             nextPosition -= bodyCount
-            dx = bodyWidth * (first - nextPosition) - offset
+            dx = bodyWidth * (first - nextPosition) + offset
             dx *= -1
             nextPosition = max(nextPosition, 1)
         }
@@ -83,11 +83,11 @@ class AnimateRecyclerView(
         var dx = (getDistance(velocityX) / width) * width
         if (velocityX > 0) {
             nextPosition = first + dx / bodyWidth
-            dx += offset
+            dx -= offset
             nextPosition = min(nextPosition, itemCount - bodyCount - 1)
         } else {
             nextPosition = first - dx / bodyWidth
-            dx -= (bodyWidth + offset)
+            dx -= (bodyWidth - offset)
             dx *= -1
             nextPosition = max(nextPosition, 1)
         }
