@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="animate_recycler_view_horizontal_header_width">320dp</dimen>>
+    <dimen name="animate_recycler_view_horizontal_footer_width">320dp</dimen>>
+    <dimen name="animate_recycler_view_vertical_header_height">50dp</dimen>>
+    <dimen name="animate_recycler_view_vertical_footer_height">50dp</dimen>>
+</resources>
