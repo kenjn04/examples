@@ -33,7 +33,6 @@ class VerticalListActivity2 : AppCompatActivity() {
             layoutManager = LinearLayoutManager(this@VerticalListActivity2, RecyclerView.VERTICAL, false)
             adapter = NVerticalRecyclerAdapter(this@VerticalListActivity2, generateFruitList())
         }
-        itemTouchHelper.attachToRecyclerView(recyclerView)
     }
 
     private fun generateFruitList(): MutableList<Int> {

@@ -52,4 +52,14 @@
         android:layout_height="wrap_content"
     />
 
+    <jp.co.sample.componentslibrary.toggle.NToggleSwitch
+            android:id="@+id/toggle4"
+            android:layout_width="100dp"
+            android:layout_height="50dp"
+            app:level="2"
+            app:text0="aaaaa"
+            app:text1="bbbbb"
+            app:text2="ccccc"
+    />
+
 </LinearLayout>

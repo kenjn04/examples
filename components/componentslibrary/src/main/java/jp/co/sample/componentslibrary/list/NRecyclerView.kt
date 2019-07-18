@@ -16,7 +16,7 @@ import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.min
 
-class NRecyclerView(
+open class NRecyclerView(
     context: Context,
     attrs: AttributeSet?,
     defStyle: Int
@@ -28,8 +28,8 @@ class NRecyclerView(
 
     private val HORIZONTAL_HEADER_WIDTH: Int = resources.getDimensionPixelSize(R.dimen.animate_recycler_view_horizontal_header_width)
     private val HORIZONTAL_FOOTER_WIDTH: Int = resources.getDimensionPixelSize(R.dimen.animate_recycler_view_horizontal_footer_width)
-    private val VERTICAL_HEADER_HEIGHT: Int = resources.getDimensionPixelSize(R.dimen.animate_recycler_view_vertical_header_height)
-    private val VERTICAL_FOOTER_HEIGHT: Int = resources.getDimensionPixelSize(R.dimen.animate_recycler_view_vertical_footer_height)
+    private val VERTICAL_HEADER_HEIGHT: Int = 600
+    private val VERTICAL_FOOTER_HEIGHT: Int = 600
     private val VELOCITY_THRESHOLD = 500
 
     val helper: OrientationHelper by lazy {
@@ -75,26 +75,24 @@ class NRecyclerView(
         }
     }
 
-    override fun computeVerticalScrollOffset() = computeScrollOffset(super.computeVerticalScrollOffset())
-    override fun computeVerticalScrollRange()  = computeScrollRange(super.computeVerticalScrollRange())
-    override fun computeVerticalScrollExtent() = computeScrollExtent(super.computeVerticalScrollExtent())
-    override fun computeHorizontalScrollOffset() = computeScrollOffset(super.computeHorizontalScrollOffset())
-    override fun computeHorizontalScrollRange()  = computeScrollRange(super.computeHorizontalScrollRange())
-    override fun computeHorizontalScrollExtent() = computeScrollExtent(super.computeHorizontalScrollExtent())
-
-    override fun overScrollBy(deltaX: Int, deltaY: Int, scrollX: Int, scrollY: Int, scrollRangeX: Int, scrollRangeY: Int, maxOverScrollX: Int, maxOverScrollY: Int, isTouchEvent: Boolean): Boolean {
-        Log.d("aaabbbcc", "${deltaX} ${deltaY} ${scrollX} ${scrollY}")
-        return super.overScrollBy(deltaX, deltaY, scrollX, scrollY, scrollRangeX, scrollRangeY, maxOverScrollX, maxOverScrollY, isTouchEvent)
-    }
+//    override fun computeVerticalScrollOffset() = computeScrollOffset(super.computeVerticalScrollOffset())
+//    override fun computeVerticalScrollRange()  = computeScrollRange(super.computeVerticalScrollRange())
+//    override fun computeVerticalScrollExtent() = computeScrollExtent(super.computeVerticalScrollExtent())
+//    override fun computeHorizontalScrollOffset() = computeScrollOffset(super.computeHorizontalScrollOffset())
+//    override fun computeHorizontalScrollRange()  = computeScrollRange(super.computeHorizontalScrollRange())
+//    override fun computeHorizontalScrollExtent() = computeScrollExtent(super.computeHorizontalScrollExtent())
 
     private fun computeScrollOffset(original: Int): Int {
-        Log.d("aaabbbccc", "${overScrollMode} ${View.OVER_SCROLL_NEVER}")
         var offset = original - getHeaderSize()
         offset = max(0, offset)
         return offset
     }
 
     private fun computeScrollRange(original: Int): Int {
+        val a = getHeaderSize()
+        val b = getFooterSize()
+        val c = super.computeVerticalScrollRange()
+        Log.d("qqqqq", "${original} ${a} ${b} ${c}")
         return original - getHeaderSize() - getFooterSize()
     }
 

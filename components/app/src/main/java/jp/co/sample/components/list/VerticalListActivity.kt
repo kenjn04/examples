@@ -2,8 +2,10 @@ package jp.co.sample.components.list
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.Button
+import android.widget.EdgeEffect
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -42,7 +44,13 @@ class VerticalListActivity : AppCompatActivity() {
             layoutManager = LinearLayoutManager(this@VerticalListActivity, RecyclerView.VERTICAL, false)
             adapter = NVerticalRecyclerAdapter(this@VerticalListActivity, generateFruitList())
         }
-        itemTouchHelper.attachToRecyclerView(recyclerView)
+//        itemTouchHelper.attachToRecyclerView(recyclerView)
+        recyclerView.edgeEffectFactory = object : RecyclerView.EdgeEffectFactory() {
+            override fun createEdgeEffect(view: RecyclerView, direction: Int): EdgeEffect {
+                Log.d("aaabbbcccdddeeefff", "")
+                return EdgeEffect(view.context).apply { setColor(color) }
+            }
+        }
     }
 
     private fun generateFruitList(): MutableList<Int> {
@@ -66,7 +74,7 @@ class VerticalListActivity : AppCompatActivity() {
                 R.drawable.pear_pic,
                 R.drawable.pineapple_pic,
                 R.drawable.strawberry_pic,
-                R.drawable.watermelon_pic,
+                R.drawable.watermelon_pic/*,
                 R.drawable.banana_pic,
                 R.drawable.cherry_pic,
                 R.drawable.grape_pic,
@@ -166,6 +174,7 @@ class VerticalListActivity : AppCompatActivity() {
                 R.drawable.pineapple_pic,
                 R.drawable.strawberry_pic,
                 R.drawable.watermelon_pic
+                */
         )
     }
 

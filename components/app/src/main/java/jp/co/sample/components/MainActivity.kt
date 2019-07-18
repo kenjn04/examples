@@ -11,6 +11,7 @@ import android.widget.Toast
 import jp.co.sample.components.list.VerticalListActivity
 import jp.co.sample.components.list.VerticalListActivity2
 import jp.co.sample.componentslibrary.slider.Slider
+import jp.co.sample.componentslibrary.toggle.NToggleSwitch
 import jp.co.sample.componentslibrary.toggle.OnOffIndicator
 import jp.co.sample.componentslibrary.toggle.ToggleSwitchLevel2
 import jp.co.sample.componentslibrary.toggle.ToggleSwitchLevel3
@@ -84,6 +85,14 @@ class MainActivity : AppCompatActivity() {
             }
         }
         spinner.dropDownVerticalOffset = 100
+
+        toggle4.setOnLevelChangeListener(
+            object: NToggleSwitch.OnLevelChangeListener {
+                override fun onLevelChanged(level: Int) {
+                    Toast.makeText(this@MainActivity, "ntoggle level changed: ${level}", Toast.LENGTH_SHORT).show()
+                }
+            }
+        )
 
     }
 }
